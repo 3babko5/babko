@@ -1,0 +1,12 @@
+rootProject.name = 'babko'
+
+include("eureka")
+include("product")
+include("order")
+include("slack")
+include("user")
+include("ai")
+include("hub")
+include("company")
+include("delivery")
+include("gateway")
