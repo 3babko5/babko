@@ -1,10 +1,10 @@
-package com.business.babko;
+package com.business.auth;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class BabkoApplicationTests {
+class AuthApplicationTests {
 
     @Test
     void contextLoads() {
