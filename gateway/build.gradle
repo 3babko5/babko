@@ -60,3 +60,9 @@ clean {
 	delete file(generated)
 }
 
+bootJar {
+	enabled = true
+}
+jar {
+	enabled = false
+}

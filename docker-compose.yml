@@ -1,0 +1,210 @@
+services:
+  # Eureka Server 설정
+  eureka-server:
+    build:
+      context: ./eureka
+      dockerfile: Dockerfile
+    container_name: eureka-server
+    ports:
+      - "8761:8761"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    volumes:
+      - eureka_data:/data
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/eureka.jar"]
+
+  # API Gateway 설정
+  api-gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - eureka-server
+      - postgres
+    command: ["java", "-jar", "/app/gateway.jar"]
+
+  # AI 설정
+  ai:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    container_name: ai
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/ai.jar"]
+
+  # Auth 설정
+  auth:
+    build:
+      context: ./auth
+      dockerfile: Dockerfile
+    container_name: auth
+    ports:
+      - "8090:8090"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/auth.jar"]
+
+  # PostgreSQL 설정
+  postgres:
+    image: postgres:17
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: babko
+    networks:
+      - msa-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  common:
+    build:
+      context: ./common
+      dockerfile: Dockerfile
+    container_name: common
+    ports:
+      - "8089:8089"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/common.jar"]
+
+  delivery:
+    build:
+      context: ./delivery
+      dockerfile: Dockerfile
+    container_name: delivery
+    ports:
+      - "8088:8088"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/delivery.jar"]
+
+  hub:
+    build:
+      context: ./hub
+      dockerfile: Dockerfile
+    container_name: hub
+    ports:
+      - "8086:8086"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/hub.jar"]
+
+  order:
+    build:
+      context: ./order
+      dockerfile: Dockerfile
+    container_name: order
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/order.jar"]
+
+  product:
+    build:
+      context: ./product
+      dockerfile: Dockerfile
+    container_name: product
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/product.jar"]
+
+  slack:
+    build:
+      context: ./slack
+      dockerfile: Dockerfile
+    container_name: slack
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/slack.jar"]
+
+  user:
+    build:
+      context: ./user
+      dockerfile: Dockerfile
+    container_name: user
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: ["java", "-jar", "/app/user.jar"]
+
+  company:
+    build:
+      context: ./company
+      dockerfile: Dockerfile
+    container_name: company
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    networks:
+      - msa-network
+    depends_on:
+      - postgres
+    command: [ "java", "-jar", "/app/company.jar" ]
+
+networks:
+  msa-network:
+    driver: bridge
+
+volumes:
+  eureka_data:
+  postgres_data:
