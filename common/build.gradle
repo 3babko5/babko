@@ -12,3 +12,10 @@ dependencyManagement {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
 }
+
+bootJar {
+	enabled = true
+}
+jar {
+	enabled = false
+}
