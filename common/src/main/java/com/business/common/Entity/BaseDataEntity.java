@@ -1,5 +1,6 @@
 package com.business.common.Entity;
 
+import com.business.common.util.CommonUtil;
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
@@ -46,6 +47,14 @@ public abstract class BaseDataEntity {
     public void setDeletedBy(Integer userId) {
         this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
+    }
+
+    public void initBaseDataFromToken(Integer userId) {
+        String nowAsString = CommonUtil.LDTToString(LocalDateTime.now());
+        this.createdBy = userId;
+        this.createdAt = CommonUtil.stringToLDT(nowAsString);
+        this.updatedBy = userId;
+        this.updatedAt = CommonUtil.stringToLDT(nowAsString);
     }
 
 }
