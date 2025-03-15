@@ -1,4 +1,4 @@
-package com.business.common.Entity;
+package com.business.common.entity;
 
 import com.business.common.util.CommonUtil;
 import jakarta.persistence.Column;
@@ -9,6 +9,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Getter
 @MappedSuperclass
@@ -16,40 +17,40 @@ import java.time.LocalDateTime;
 public abstract class BaseDataEntity {
 
     @Column(name = "created_by", nullable = false, updatable = false)
-    private Integer createdBy;
+    private UUID createdBy;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_by")
-    private Integer updatedBy;
+    private UUID updatedBy;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @Column(name = "deleted_by")
-    private Integer deletedBy;
+    private UUID deletedBy;
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public void setCreatedBy(Integer userId) {
+    public void setCreatedBy(UUID userId) {
         this.createdBy = userId;
         this.createdAt = LocalDateTime.now();
     }
 
-    public void setUpdatedBy(Integer userId) {
+    public void setUpdatedBy(UUID userId) {
         this.updatedBy = userId;
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void setDeletedBy(Integer userId) {
+    public void setDeletedBy(UUID userId) {
         this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
     }
 
-    public void initBaseDataFromToken(Integer userId) {
+    public void initBaseDataFromToken(UUID userId) {
         String nowAsString = CommonUtil.LDTToString(LocalDateTime.now());
         this.createdBy = userId;
         this.createdAt = CommonUtil.stringToLDT(nowAsString);
