@@ -1,10 +1,7 @@
-package domain.entity;
+package com.business.hub.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -12,10 +9,10 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_hub_monvements")
-public class HubMovement extends BaseEntity {
+public class HubMovement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -24,11 +21,11 @@ public class HubMovement extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "departure_hub_id", nullable = false)
-    private Hub departureHubId;
+    private Hub departureHub;
 
     @ManyToOne
     @JoinColumn(name = "arrival_hub_id", nullable = false)
-    private Hub arrivalHubId;
+    private Hub arrivalHub;
 
     @Column(name = "duration_time", nullable = false)
     private int durationTime;

@@ -1,4 +1,4 @@
-package domain.entity;
+package com.business.hub.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -12,10 +12,10 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_hubs")
-public class Hub extends BaseEntity {
+public class Hub {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,8 +37,6 @@ public class Hub extends BaseEntity {
     @Column(name = "hub_manager_id", nullable = false)
     private UUID hubManagerId;
 
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
 
     @OneToMany(mappedBy = "departureHub")
     private List<HubMovement> departureMovements = new ArrayList<>();
