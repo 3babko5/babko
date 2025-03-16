@@ -1,74 +1,110 @@
 package com.business.common.exception;
 
-import com.business.common.dto.CommonDto;
-import feign.FeignException;
-import org.hibernate.exception.ConstraintViolationException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.naming.AuthenticationException;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
-
+@WebMvcTest(controllers = {TestController.class})
+@AutoConfigureMockMvc(addFilters = false)
 class GlobalExceptionHandlerTest {
 
-    private GlobalExceptionHandler globalExceptionHandler;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @BeforeEach
-    void setUp() {
-        globalExceptionHandler = new GlobalExceptionHandler();
+    @Autowired private ObjectMapper objectMapper;
+
+    @Test
+    void handleBusinessLogicException_ShouldReturnExpectedResponse() throws Exception {
+        // given
+        MockExceptionCode exceptionCode = MockExceptionCode.NOT_FOUND;
+        // when & then
+        mockMvc
+                .perform(get("/api/test"))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.httpStatus").value(exceptionCode.getStatus().value()))
+                .andExpect(jsonPath("$.errorCode").value(exceptionCode.getCode()))
+                .andExpect(jsonPath("$.message").value(exceptionCode.getMessage()))
+                .andExpect(jsonPath("$.timestamp").exists());
+    }
+
+
+    @Test
+    void handleMethodArgumentNotValid_ShouldReturnValidationErrors() throws Exception {
+        // given
+        TestRequest request = new TestRequest("");
+        ExceptionCode exceptionCode = GlobalExceptionCode.INVALID_INPUT;
+        String expectedErrorMessage = "이름은 필수입니다";
+
+        // when & then
+        mockMvc
+                .perform(
+                        post("/api/test")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.httpStatus").value(exceptionCode.getStatus().value()))
+                .andExpect(jsonPath("$.errorCode").value(exceptionCode.getCode()))
+                .andExpect(jsonPath("$.message").value(exceptionCode.getMessage()))
+                .andExpect(jsonPath("$.details.name").value(expectedErrorMessage))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
     @Test
-    @DisplayName("BusinessLogicException 예외 처리 테스트")
-    void handleBusinessLogicException() {
-        BusinessLogicException exception = new BusinessLogicException("비즈니스 로직 예외 발생");
-        ResponseEntity<CommonDto<Object>> response = globalExceptionHandler.handleBusinessLogicException(exception);
+    void handleHttpMessageNotReadable_ShouldReturnBadRequest() throws Exception {
+        // given
+        String invalidJson = "{invalid-json}";
+        ExceptionCode exceptionCode = GlobalExceptionCode.NOT_READABLE;
 
-        assertEquals(400, response.getStatusCode().value());
-        assertEquals("비즈니스 로직 예외 발생", response.getBody().getMessage());
+        // when & then
+        mockMvc
+                .perform(post("/api/test").contentType(MediaType.APPLICATION_JSON).content(invalidJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errorCode").value(exceptionCode.getCode()))
+                .andExpect(jsonPath("$.timestamp").exists());
     }
 
-    @Test
-    @DisplayName("FeignClient 예외 처리 테스트")
-    void handleFeignClientException() {
-        FeignException exception = mock(FeignException.class);
-        ResponseEntity<CommonDto<Object>> response = globalExceptionHandler.handleFeignClientException(exception);
+    @Getter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    static class TestRequest {
 
-        assertEquals(502, response.getStatusCode().value()); // BAD_GATEWAY
-        assertEquals("외부 서비스 호출 중 오류가 발생했습니다.", response.getBody().getMessage());
+        @NotBlank(message = "이름은 필수입니다")
+        private String name;
+
+    }
+}
+
+@RestController
+@RequestMapping("/api/test")
+class TestController {
+    @GetMapping
+    public void throwApiException() {
+        throw new BusinessLogicException(MockExceptionCode.NOT_FOUND);
     }
 
-    @Test
-    @DisplayName("AuthenticationException 예외 처리 테스트")
-    void handleAuthenticationException() {
-        AuthenticationException exception = new AuthenticationException("인증 실패");
-        ResponseEntity<CommonDto<Object>> response = globalExceptionHandler.handleAuthenticationException(exception);
-
-        assertEquals(401, response.getStatusCode().value()); // UNAUTHORIZED
-        assertEquals("인증에 실패했습니다.", response.getBody().getMessage());
-    }
-
-    @Test
-    @DisplayName("DataAccessException 예외 처리 테스트")
-    void handleDatabaseException() {
-        org.springframework.dao.DataAccessException exception = mock(org.springframework.dao.DataAccessException.class);
-        ResponseEntity<CommonDto<Object>> response = globalExceptionHandler.handleDatabaseException(exception);
-
-        assertEquals(500, response.getStatusCode().value()); // INTERNAL_SERVER_ERROR
-        assertEquals("데이터베이스 처리 중 오류가 발생했습니다.", response.getBody().getMessage());
-    }
-
-    @Test
-    @DisplayName("Exception 예외 처리 테스트")
-    void handleGeneralException() {
-        Exception exception = new Exception("서버 오류");
-        ResponseEntity<CommonDto<Object>> response = globalExceptionHandler.handleGeneralException(exception);
-
-        assertEquals(500, response.getStatusCode().value()); // INTERNAL_SERVER_ERROR
-        assertEquals("서버 내부 오류가 발생했습니다.", response.getBody().getMessage());
-    }
+    @PostMapping
+    public void validateRequest(@Valid @RequestBody GlobalExceptionHandlerTest.TestRequest request) {}
 }
