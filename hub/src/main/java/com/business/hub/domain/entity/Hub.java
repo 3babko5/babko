@@ -1,7 +1,9 @@
 package com.business.hub.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -10,12 +12,12 @@ import java.util.UUID;
 
 
 @Getter
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_hubs")
-public class Hub {
+public class Hub extends BaseDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
