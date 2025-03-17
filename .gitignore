@@ -40,4 +40,4 @@ out/
 .yml
 
 ### QueryDSL 생성파일 ###
-src/main/generated/
+**/src/main/generated/**
