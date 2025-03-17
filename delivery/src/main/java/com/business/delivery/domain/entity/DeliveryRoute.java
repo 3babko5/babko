@@ -1,6 +1,5 @@
 package com.business.delivery.domain.entity;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -92,4 +91,19 @@ public class DeliveryRoute {
   @JdbcTypeCode(SqlTypes.UUID)
   @Comment("업체 배송 담당자 ID")
   private UUID companyDriverId;
+
+  public static DeliveryRoute create(UUID deliveryId, Long routeSequence, UUID originHubId,
+      UUID destinationHubId, BigDecimal estimatedDistance, Long estimatedTime,
+      DeliveryRouteStatus deliveryRouteStatus) {
+
+    return DeliveryRoute.builder()
+        .deliveryId(deliveryId)
+        .routeSequence(routeSequence)
+        .originHubId (originHubId)
+        .destinationHubId(destinationHubId)
+        .estimatedDistance(estimatedDistance)
+        .estimatedTime(estimatedTime)
+        .deliveryRouteStatus(deliveryRouteStatus)
+        .build();
+  }
 }
