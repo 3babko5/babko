@@ -15,11 +15,9 @@ public class DeliveryRouteController {
 
   private final DeliveryRouteService deliveryRouteService;
 
-  //    @PreAuthorize("hasRole('MASTER')")
   @PostMapping
   public ResponseEntity<DeliveryRouteResponseDto> createDeliveryRoute(
       @Valid @RequestBody CreateDeliveryRouteRequestDto request
-//      @AuthenticationPrincipal CustomUserDetails principal
   ) {
     DeliveryRouteResponseDto response = deliveryRouteService.createDeliveryRoute(request);
     return ResponseEntity.ok(response);
