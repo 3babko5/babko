@@ -5,7 +5,7 @@ FROM openjdk:17
 WORKDIR /app
 
 # hub 서브모듈에서 빌드된 JAR 파일을 컨테이너 내 /app 디렉토리로 복사
-COPY build/libs/hub.jar /app/hub.jar
+COPY build/libs/hub.jar hub.jar
 
 # 컨테이너 실행 시, eureka.jar 파일을 실행하도록 설정
-ENTRYPOINT ["java", "-jar", "/app/hub.jar"]
+ENTRYPOINT ["java", "-jar", "hub.jar"]

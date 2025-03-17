@@ -11,4 +11,4 @@ COPY build/libs/gateway.jar gateway.jar
 EXPOSE 8080
 
 # JAR 파일 실행
-ENTRYPOINT ["java", "-jar", "/app/gateway.jar"]
+ENTRYPOINT ["java", "-jar", "gateway.jar"]

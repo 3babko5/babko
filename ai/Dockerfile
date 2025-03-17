@@ -6,7 +6,7 @@ WORKDIR /app
 
 
 # ai 서브모듈에서 빌드된 JAR 파일을 컨테이너 내 /app 디렉토리로 복사
-COPY build/libs/ai.jar /app/ai.jar
+COPY build/libs/ai.jar ai.jar
 
 # 컨테이너 실행 시, eureka.jar 파일을 실행하도록 설정
-ENTRYPOINT ["java", "-jar", "/app/ai.jar"]
+ENTRYPOINT ["java", "-jar", "ai.jar"]
