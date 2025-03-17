@@ -1,5 +1,6 @@
 package com.business.user.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.type.SqlTypes;
 
 @Entity
@@ -25,19 +25,15 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_delivery_drivers")
 @Comment("배송 담당자")
-public class DeliveryDriver {
+public class DeliveryDriver extends BaseDataEntity {
 
   @Id
-  @UuidGenerator
-  @JdbcTypeCode(SqlTypes.UUID)
   @Comment("배달 담당자 ID")
-  private UUID deliveryDriverId;
+  private Long deliveryDriverId;
 
-  @NotNull
   @Comment("소속 허브 ID")
   private UUID hubId;
 
-  @NotNull
   @Column(nullable = false)
   @JdbcTypeCode(SqlTypes.UUID)
   @Comment("슬랙 ID")
@@ -53,4 +49,15 @@ public class DeliveryDriver {
   @Column(nullable = false)
   @Comment("배송 담당자 배정 순서")
   private Long deliverySequence;
+
+  public static DeliveryDriver create(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
+
+    return DeliveryDriver.builder()
+        .deliveryDriverId(userId)
+        .hubId(hubId)
+        .slackId(slackId)
+        .driverType(driverType)
+        .deliverySequence(deliverySequence)
+        .build();
+  }
 }
