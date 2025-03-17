@@ -1,4 +1,4 @@
-package com.business.company.domain;
+package com.business.company.domain.entity;
 
 public enum CompanyType {
     SUPPLIER,
