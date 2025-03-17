@@ -1,4 +1,4 @@
-package com.business.common.config;
+package com.business.common.infrastructure.config;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;

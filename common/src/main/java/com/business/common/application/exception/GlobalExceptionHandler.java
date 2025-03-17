@@ -1,6 +1,6 @@
-package com.business.common.exception;
+package com.business.common.application.exception;
 
-import com.business.common.exception.dto.ExceptionResponse;
+import com.business.common.application.exception.dto.ExceptionResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
