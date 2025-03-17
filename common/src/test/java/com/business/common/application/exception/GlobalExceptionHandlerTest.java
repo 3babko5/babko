@@ -1,4 +1,4 @@
-package com.business.common.exception;
+package com.business.common.application.exception;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

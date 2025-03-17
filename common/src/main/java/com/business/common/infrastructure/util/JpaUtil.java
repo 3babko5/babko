@@ -1,4 +1,4 @@
-package com.business.common.util;
+package com.business.common.infrastructure.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

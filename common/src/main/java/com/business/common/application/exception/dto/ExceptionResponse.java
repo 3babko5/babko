@@ -1,4 +1,4 @@
-package com.business.common.exception.dto;
+package com.business.common.application.exception.dto;
 
 import lombok.*;
 
