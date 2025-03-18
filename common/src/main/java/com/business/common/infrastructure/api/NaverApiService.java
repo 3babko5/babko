@@ -1,4 +1,4 @@
-package com.business.common.application.api;
+package com.business.common.infrastructure.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
