@@ -32,3 +32,7 @@ eureka:
     prefer-ip-address: true
     instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
 
+naver:
+  api:
+    client-id: "gsvvhkp9nc"
+    client-secret: "tta5CdMXf29b4hz0Edsnav1gIb64pIwWODSCLpZx"
