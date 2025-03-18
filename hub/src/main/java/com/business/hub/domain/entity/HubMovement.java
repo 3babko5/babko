@@ -1,5 +1,6 @@
 package com.business.hub.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -12,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_hub_monvements")
-public class HubMovement {
+public class HubMovement extends BaseDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

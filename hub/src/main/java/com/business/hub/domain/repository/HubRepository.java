@@ -9,5 +9,6 @@ import org.springframework.stereotype.Repository;
 public interface HubRepository extends JpaRepository<Hub, UUID> {
 
   boolean existsByHubId(UUID hubId);
+  boolean existsByHubName(String hubName);
 }
 
