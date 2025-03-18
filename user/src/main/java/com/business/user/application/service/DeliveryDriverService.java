@@ -8,6 +8,7 @@ import com.business.user.application.exception.DeliveryDriverErrorCode;
 import com.business.user.domain.entity.DeliveryDriver;
 import com.business.user.domain.entity.DriverType;
 import com.business.user.domain.repository.DeliveryDriverRepository;
+import com.business.user.infrastructure.client.HubClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryDriverService {
 
   private final DeliveryDriverRepository deliveryDriverRepository;
+  private final HubClientService hubClientService;
 
   public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request) {
 
@@ -29,8 +31,8 @@ public class DeliveryDriverService {
       throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_DRIVER_TYPE);
     }
 
-    if (request.getDriverType() == DriverType.COMPANY && request.getHubId() == null) {
-      throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_HUB_FOR_COMPANY_DRIVER);
+    if (request.getDriverType() == DriverType.COMPANY) {
+      hubClientService.validateHubId(request.getHubId());
     }
 
     if (request.getDriverType() == DriverType.HUB) {
