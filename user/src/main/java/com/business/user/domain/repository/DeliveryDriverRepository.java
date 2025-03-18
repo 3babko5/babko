@@ -20,4 +20,54 @@ public interface DeliveryDriverRepository extends JpaRepository<DeliveryDriver, 
 
   long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
 
+  @Query("""
+        SELECT d FROM DeliveryDriver d
+        WHERE d.assignAt IS NOT NULL 
+        AND d.deletedAt IS NULL
+        ORDER BY d.assignAt DESC 
+        LIMIT 1
+    """)
+  Optional<DeliveryDriver> findLastAssignedDriver();
+
+  @Query("""
+        SELECT d FROM DeliveryDriver d
+        WHERE d.deliverySequence > :currentSequence 
+        AND d.deletedAt IS NULL
+        ORDER BY d.deliverySequence ASC 
+        LIMIT 1
+    """)
+  Optional<DeliveryDriver> findNextAvailableDriver(@Param("currentSequence") Long currentSequence);
+
+
+  @Query("""
+        SELECT d FROM DeliveryDriver d
+        WHERE d.deletedAt IS NULL
+        ORDER BY d.deliverySequence ASC 
+        LIMIT 1
+    """)
+  Optional<DeliveryDriver> findFirstAvailableDriver();
+
+  @Query("""
+      SELECT d FROM DeliveryDriver d
+      WHERE d.assignAt IS NOT NULL 
+      AND d.deletedAt IS NULL
+      AND d.driverType = :driverType
+      AND (:hubId IS NULL OR d.hubId = :hubId)
+      ORDER BY d.assignAt DESC 
+      LIMIT 1
+  """)
+  Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(@Param("driverType") DriverType driverType, @Param("hubId") UUID hubId);
+
+  @Query("""
+      SELECT d FROM DeliveryDriver d
+      WHERE d.deliverySequence > :currentSequence 
+      AND d.deletedAt IS NULL
+      AND d.driverType = :driverType
+      AND (:hubId IS NULL OR d.hubId = :hubId)
+      ORDER BY d.deliverySequence ASC 
+      LIMIT 1
+  """)
+  Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(@Param("currentSequence") Long currentSequence, @Param("driverType") DriverType driverType, @Param("hubId") UUID hubId);
+
+
 }
