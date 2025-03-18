@@ -1,5 +1,6 @@
 package com.business.delivery.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,7 +27,7 @@ import org.hibernate.type.SqlTypes;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_delivery_routes")
 @Comment("배송 경로 기록")
-public class DeliveryRoute {
+public class DeliveryRoute extends BaseDataEntity {
 
   @Id
   @UuidGenerator
