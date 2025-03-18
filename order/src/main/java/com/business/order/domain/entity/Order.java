@@ -30,16 +30,16 @@ public class Order extends BaseDataEntity {
     @Column(name = "receiver_id", nullable = false)
     private UUID receiverId;
 
-    @Column(name = "company_address", nullable = false)
+    @Column(name = "delivery_address", nullable = false)
     private String deliveryAddress; //배송지 주소
 
     @Column(name = "delivery_id")
     private UUID deliveryId;
 
-    @Column(name = "supplier_hub_id", nullable = false)
+    @Column(name = "origin_hub_id", nullable = false)
     private UUID originHubId; //출발허브
 
-    @Column(name = "receiver_hub_id", nullable = false)
+    @Column(name = "destination_hub_id", nullable = false)
     private UUID destinationHubId; //도착허브
 
     @Column(name = "total_price", nullable = false)
@@ -47,4 +47,20 @@ public class Order extends BaseDataEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    public static Order create(Long userId, UUID receiverId, String deliveryAddress,
+                               UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+        return Order.builder()
+                .userId(userId)
+                .receiverId(receiverId)
+                .deliveryAddress(deliveryAddress)
+                .originHubId(originHubId)
+                .destinationHubId(destinationHubId)
+                .totalPrice(totalPrice)
+                .build();
+    }
+
+    public void addOrderItems(List<OrderItem> items) {
+        this.orderItems.addAll(items);
+    }
 }

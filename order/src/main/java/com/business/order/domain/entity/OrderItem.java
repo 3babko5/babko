@@ -37,4 +37,13 @@ public class OrderItem extends BaseDataEntity {
     @JoinColumn(name = "order_id")
     private Order order;
 
+    public static OrderItem create(Order order, UUID productId, Integer orderItemAmount, Long orderItemPrice) {
+        return OrderItem.builder()
+                .order(order)
+                .productId(productId)
+                .orderItemAmount(orderItemAmount)
+                .orderItemPrice(orderItemPrice)
+                .build();
+    }
+
 }
