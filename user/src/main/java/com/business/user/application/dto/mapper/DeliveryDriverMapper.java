@@ -1,5 +1,6 @@
 package com.business.user.application.dto.mapper;
 
+import com.business.user.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.domain.entity.DeliveryDriver;
 
@@ -12,6 +13,17 @@ public class DeliveryDriverMapper {
         .slackId(deliveryDriver.getSlackId())
         .driverType(deliveryDriver.getDriverType())
         .deliverySequence(deliveryDriver.getDeliverySequence())
+        .build();
+  }
+
+  public static AssignDeliveryDriverResponseDto toAssignedDto(DeliveryDriver deliveryDriver) {
+    return AssignDeliveryDriverResponseDto.builder()
+        .deliveryDriverId(deliveryDriver.getDeliveryDriverId())
+        .driverType(deliveryDriver.getDriverType())
+        .hubId(deliveryDriver.getHubId())
+        .deliveryRouteId(deliveryDriver.getDeliveryRouteId())
+        .routeSequence(deliveryDriver.getRouteSequence())
+        .assignAt(deliveryDriver.getAssignAt())
         .build();
   }
 }
