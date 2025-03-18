@@ -2,6 +2,7 @@ package com.business.hub.application.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -11,8 +12,11 @@ import java.nio.charset.StandardCharsets;
 @Service
 public class NaverApiService {
 
-    private static final String CLIENT_ID = "gsvvhkp9nc"; // 네이버 클라이언트 ID
-    private static final String CLIENT_SECRET = "tta5CdMXf29b4hz0Edsnav1gIb64pIwWODSCLpZx"; // 네이버 클라이언트 시크릿
+    @Value("${naver.api.client-id}")
+    private String clientId;
+
+    @Value("${naver.api.client-secret}")
+    private String clientSecret;
 
     public double[] getCoordinates(String address) {
         try {
@@ -21,8 +25,8 @@ public class NaverApiService {
 
 
             HttpHeaders headers = new HttpHeaders();
-            headers.set("X-NCP-APIGW-API-KEY-ID", CLIENT_ID);
-            headers.set("X-NCP-APIGW-API-KEY", CLIENT_SECRET);
+            headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
+            headers.set("X-NCP-APIGW-API-KEY", clientSecret);
             headers.set("Content-Type", "application/json");
             headers.set("Accept", "*/*");
 
