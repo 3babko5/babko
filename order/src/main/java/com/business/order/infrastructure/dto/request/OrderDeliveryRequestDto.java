@@ -5,7 +5,7 @@ import java.util.UUID;
 public class OrderDeliveryRequestDto {
 
     private UUID orderId;
-    private UUID userId;
+    private Long userId;
     private UUID receiverId;
     private String companyAddress;
     private UUID supplierHubId;

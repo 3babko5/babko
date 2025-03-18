@@ -25,7 +25,7 @@ public class Order extends BaseDataEntity {
     private UUID orderId;
 
     @Column(name = "user_id", nullable = false)
-    private UUID userId;
+    private Long userId;
 
     @Column(name = "supplier_id", nullable = false)
     private UUID supplierId;
