@@ -16,7 +16,9 @@ public enum DeliveryDriverErrorCode implements ExceptionCode {
   INVALID_HUB_FOR_COMPANY_DRIVER(HttpStatus.BAD_REQUEST, "업체 배송 담당자는 허브 ID가 필요합니다."),
   MAX_HUB_DRIVERS_EXCEEDED(HttpStatus.BAD_REQUEST, "허브 배송 담당자는 최대 10명까지만 등록 가능합니다."),
   MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED(HttpStatus.BAD_REQUEST, "해당 허브에는 최대 10명의 업체 배송 담당자만 추가할 수 있습니다."),
-  INVALID_REQUEST(HttpStatus.BAD_REQUEST, "입력 데이터가 올바르지 않습니다.");
+  INVALID_REQUEST(HttpStatus.BAD_REQUEST, "입력 데이터가 올바르지 않습니다."),
+  NO_AVAILABLE_DRIVER(HttpStatus.NOT_FOUND, "배정할 담당자가 없습니다.");
+
 
   private final HttpStatus status;
   private final String message;
