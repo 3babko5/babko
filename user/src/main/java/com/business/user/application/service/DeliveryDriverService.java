@@ -8,6 +8,7 @@ import com.business.user.application.exception.DeliveryDriverErrorCode;
 import com.business.user.domain.entity.DeliveryDriver;
 import com.business.user.domain.entity.DriverType;
 import com.business.user.domain.repository.DeliveryDriverRepository;
+import com.business.user.infrastructure.client.HubClientService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryDriverService {
 
   private final DeliveryDriverRepository deliveryDriverRepository;
+  private final HubClientService hubClientService;
 
   public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request) {
 
@@ -25,12 +27,32 @@ public class DeliveryDriverService {
       throw new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_ALREADY_EXISTS);
     }
 
-    Long lastSequence = deliveryDriverRepository.findLastDeliverySequence().orElse(0L);
-    Long newSequence = lastSequence + 1;
-
-    if (request.getDriverType() == DriverType.HUB && request.getHubId() == null) {
+    if (request.getDriverType() == DriverType.HUB && request.getHubId() != null) {
       throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_DRIVER_TYPE);
     }
+
+    if (request.getDriverType() == DriverType.COMPANY) {
+      hubClientService.validateHubId(request.getHubId());
+    }
+
+    if (request.getDriverType() == DriverType.HUB) {
+      long hubDriverCount = deliveryDriverRepository.countByDriverType(DriverType.HUB);
+      if (hubDriverCount >= 10) {
+        throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_HUB_DRIVERS_EXCEEDED);
+      }
+    }
+
+    if (request.getDriverType() == DriverType.COMPANY) {
+      long companyDriverCount = deliveryDriverRepository.countByHubIdAndDriverType(request.getHubId(), DriverType.COMPANY);
+      if (companyDriverCount >= 10) {
+        throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED);
+      }
+    }
+
+    Long newSequence = switch (request.getDriverType()) {
+      case HUB -> deliveryDriverRepository.findLastDeliverySequenceForHubDrivers().orElse(0L) + 1;
+      case COMPANY -> deliveryDriverRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
+    };
 
     DeliveryDriver deliveryDriver = DeliveryDriver.create(
         request.getDeliveryDriverId(),
