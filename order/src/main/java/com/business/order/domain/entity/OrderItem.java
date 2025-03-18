@@ -24,11 +24,14 @@ public class OrderItem extends BaseDataEntity {
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
+    @Column(name = "supplier_id", nullable = false)
+    private UUID supplierId;
+
     @Column(name = "order_item_amount", nullable = false)
     private Integer orderItemAmount;
 
     @Column(name = "order_item_price", nullable = false)
-    private Integer orderItemPrice;
+    private Long orderItemPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")

@@ -27,23 +27,20 @@ public class Order extends BaseDataEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "supplier_id", nullable = false)
-    private UUID supplierId;
-
     @Column(name = "receiver_id", nullable = false)
     private UUID receiverId;
 
     @Column(name = "company_address", nullable = false)
-    private String companyAddress;
+    private String deliveryAddress; //배송지 주소
 
     @Column(name = "delivery_id")
     private UUID deliveryId;
 
     @Column(name = "supplier_hub_id", nullable = false)
-    private UUID supplierHubId;
+    private UUID originHubId; //출발허브
 
     @Column(name = "receiver_hub_id", nullable = false)
-    private UUID receiverHubId;
+    private UUID destinationHubId; //도착허브
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
