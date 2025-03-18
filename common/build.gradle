@@ -3,7 +3,7 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
 	// FeignClient
-	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+	api 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
 	// Querydsl
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -55,8 +55,8 @@ clean {
 }
 
 bootJar {
-	enabled = true
+	enabled = false
 }
 jar {
-	enabled = false
+	enabled = true
 }
