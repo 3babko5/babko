@@ -18,10 +18,16 @@ public class NaverApiService {
     @Value("${naver.api.client-secret}")
     private String clientSecret;
 
+    @Value("${naver.api.base-url}")
+    private String baseUrl;
+
+    @Value("${naver.api.geocode-api}")
+    private String geocodeUrl;
+
     public double[] getCoordinates(String address) {
         try {
             // 주소 인코딩
-            String url = "https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=" + address;
+            String url = baseUrl+ geocodeUrl + "?query=" + address;
 
 
             HttpHeaders headers = new HttpHeaders();
