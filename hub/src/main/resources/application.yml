@@ -38,3 +38,4 @@ naver:
     client-secret: "tta5CdMXf29b4hz0Edsnav1gIb64pIwWODSCLpZx"
     base-url: "https://naveropenapi.apigw.ntruss.com"
     geocode-api: "/map-geocode/v2/geocode"
+    direction-api: "/map-direction/v1/driving"

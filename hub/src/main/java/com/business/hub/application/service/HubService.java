@@ -2,6 +2,7 @@ package com.business.hub.application.service;
 
 
 
+import com.business.common.infrastructure.api.NaverApiService;
 import com.business.hub.application.dto.request.HubCreateRequest;
 import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.mapper.HubMapper;
@@ -14,8 +15,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Map;
-import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
