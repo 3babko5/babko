@@ -7,8 +7,8 @@ public class OrderDeliveryRequestDto {
     private UUID orderId;
     private Long userId;
     private UUID receiverId;
-    private String companyAddress;
-    private UUID supplierHubId;
-    private UUID receiverHubId;
+    private String deliveryAddress;
+    private UUID originHubId;
+    private UUID destinationHubId;
 
 }
