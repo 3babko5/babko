@@ -25,12 +25,32 @@ public class DeliveryDriverService {
       throw new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_ALREADY_EXISTS);
     }
 
-    Long lastSequence = deliveryDriverRepository.findLastDeliverySequence().orElse(0L);
-    Long newSequence = lastSequence + 1;
-
-    if (request.getDriverType() == DriverType.HUB && request.getHubId() == null) {
+    if (request.getDriverType() == DriverType.HUB && request.getHubId() != null) {
       throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_DRIVER_TYPE);
     }
+
+    if (request.getDriverType() == DriverType.COMPANY && request.getHubId() == null) {
+      throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_HUB_FOR_COMPANY_DRIVER);
+    }
+
+    if (request.getDriverType() == DriverType.HUB) {
+      long hubDriverCount = deliveryDriverRepository.countByDriverType(DriverType.HUB);
+      if (hubDriverCount >= 10) {
+        throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_HUB_DRIVERS_EXCEEDED);
+      }
+    }
+
+    if (request.getDriverType() == DriverType.COMPANY) {
+      long companyDriverCount = deliveryDriverRepository.countByHubIdAndDriverType(request.getHubId(), DriverType.COMPANY);
+      if (companyDriverCount >= 10) {
+        throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED);
+      }
+    }
+
+    Long newSequence = switch (request.getDriverType()) {
+      case HUB -> deliveryDriverRepository.findLastDeliverySequenceForHubDrivers().orElse(0L) + 1;
+      case COMPANY -> deliveryDriverRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
+    };
 
     DeliveryDriver deliveryDriver = DeliveryDriver.create(
         request.getDeliveryDriverId(),
