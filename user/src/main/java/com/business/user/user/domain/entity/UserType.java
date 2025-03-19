@@ -1,4 +1,4 @@
-package com.business.user.domain.entity;
+package com.business.user.user.domain.entity;
 
 public enum UserType {
 	ROLE_MASTER,

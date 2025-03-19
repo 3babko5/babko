@@ -1,15 +1,15 @@
-package com.business.user.application.service;
+package com.business.user.user.application.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.business.common.application.exception.BusinessLogicException;
-import com.business.user.application.dto.mapper.UserMapper;
-import com.business.user.application.dto.request.UserSignupRequestDto;
-import com.business.user.application.dto.response.UserSigninResponseDto;
-import com.business.user.application.dto.response.UserSignupResponseDto;
-import com.business.user.application.exception.UserExceptionCode;
-import com.business.user.domain.entity.User;
-import com.business.user.domain.repository.UserRepository;
+import com.business.user.user.application.dto.mapper.UserMapper;
+import com.business.user.user.application.dto.request.UserSignupRequestDto;
+import com.business.user.user.application.dto.response.UserSigninResponseDto;
+import com.business.user.user.application.dto.response.UserSignupResponseDto;
+import com.business.user.user.application.exception.UserExceptionCode;
+import com.business.user.user.domain.entity.User;
+import com.business.user.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 

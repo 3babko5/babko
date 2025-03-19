@@ -1,10 +1,6 @@
-package com.business.user.domain.entity;
-
-import java.util.UUID;
+package com.business.user.user.domain.entity;
 
 import org.hibernate.annotations.Comment;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 
 import com.business.common.domain.entity.BaseDataEntity;
 

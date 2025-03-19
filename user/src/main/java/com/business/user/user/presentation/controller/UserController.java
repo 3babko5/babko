@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.business.user.application.dto.request.UserSignupRequestDto;
-import com.business.user.application.dto.response.UserSigninResponseDto;
-import com.business.user.application.dto.response.UserSignupResponseDto;
-import com.business.user.application.service.UserService;
+import com.business.user.user.application.dto.request.UserSignupRequestDto;
+import com.business.user.user.application.dto.response.UserSigninResponseDto;
+import com.business.user.user.application.dto.response.UserSignupResponseDto;
+import com.business.user.user.application.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
-package com.business.user.application.dto.request;
+package com.business.user.user.application.dto.request;
 
-import com.business.user.domain.entity.UserType;
+import com.business.user.user.domain.entity.UserType;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

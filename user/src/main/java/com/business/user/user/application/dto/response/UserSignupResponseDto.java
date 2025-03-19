@@ -1,6 +1,6 @@
-package com.business.user.application.dto.response;
+package com.business.user.user.application.dto.response;
 
-import com.business.user.domain.entity.UserType;
+import com.business.user.user.domain.entity.UserType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,11 +1,10 @@
-package com.business.user.domain.repository;
+package com.business.user.user.domain.repository;
 
 import java.util.Optional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import com.business.user.user.domain.entity.User;
 
-import com.business.user.domain.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
