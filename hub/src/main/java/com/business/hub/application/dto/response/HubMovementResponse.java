@@ -12,6 +12,8 @@ public class HubMovementResponse {
 
     private UUID departureHubId;
     private UUID arrivalHubId;
+    private String departureHubName;
+    private String arrivalHubName;
     private BigDecimal distance;
     private int durationTime;
 

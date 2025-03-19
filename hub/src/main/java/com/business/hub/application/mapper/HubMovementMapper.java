@@ -13,6 +13,8 @@ public class HubMovementMapper {
                 .departureHubId(hubMovement.getDepartureHub().getHubId())
                 .arrivalHubId(hubMovement.getArrivalHub().getHubId())
                 .distance(hubMovement.getDistance())
+                .departureHubName(hubMovement.getDepartureHub().getHubName())
+                .arrivalHubName(hubMovement.getArrivalHub().getHubName())
                 .durationTime(hubMovement.getDurationTime())
                 .build();
     }
