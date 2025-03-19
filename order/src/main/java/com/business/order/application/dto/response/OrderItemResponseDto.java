@@ -12,8 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class OrderItemResponseDto {
-    private UUID itemId;
+    private UUID orderItemId;
     private Integer orderItemAmount;
     private Long orderItemPrice;
     private UUID productId;
+    private UUID supplierId;
 }
