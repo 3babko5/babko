@@ -42,22 +42,22 @@ public class OrderService {
                 destinationHubId,
                 25000
         );
-        orderRepository.save(order);
+        Order savedOrder  = orderRepository.save(order);
 
         //주문 아이템 생성(상품 가격 더미 데이터 활용)
         List<OrderItem> orderItems = request.getItems().stream()
                 .map(item -> OrderItem.create(
-                        order,
+                        savedOrder,
                         item.getProductId(),
                         item.getOrderItemAmount(),
                         10000L
                 ))
                 .collect(Collectors.toList());
 
-        order.addOrderItems(orderItems);
-        orderItemRepository.saveAll(orderItems);
+        savedOrder.addOrderItems(orderItems);
+        List<OrderItem> saveOrderItems = orderItemRepository.saveAll(orderItems);
 
-        return OrderMapper.toOrderCreateResponseDto(order, orderItems);
+        return OrderMapper.toOrderCreateResponseDto(savedOrder, saveOrderItems);
     }
 
 }
