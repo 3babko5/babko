@@ -13,30 +13,35 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class HubRepositoryImpl implements HubRepository {
 
-    private final HubRepository hubRepository;
+    private final HubJpaRepository hubJpaRepository;
 
     @Override
     public Hub save(Hub hub) {
-        return hubRepository.save(hub);
+        return hubJpaRepository.save(hub);
     }
 
     @Override
     public boolean existsByHubId(UUID hubId) {
-        return hubRepository.existsByHubId(hubId);
+        return hubJpaRepository.existsByHubId(hubId);
     }
 
     @Override
     public boolean existsByHubName(String hubName) {
-        return hubRepository.existsByHubName(hubName);
+        return hubJpaRepository.existsByHubName(hubName);
     }
 
     @Override
     public Optional<Hub> findById(UUID departureHubId) {
-        return Optional.empty();
+        return hubJpaRepository.findById(departureHubId);
     }
 
     @Override
     public List<Hub> findAll() {
-        return hubRepository.findAll();
+        return hubJpaRepository.findAll();
+    }
+
+    @Override
+    public boolean existsByHubNameAndHubAddress(String hubName, String hubAddress) {
+        return hubJpaRepository.existsByHubNameAndHubAddress(hubName, hubAddress);
     }
 }

@@ -8,14 +8,18 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
+
 public interface HubRepository{
   Hub save(Hub hub);
+
   boolean existsByHubId(UUID hubId);
+
   boolean existsByHubName(String hubName);
 
   Optional<Hub> findById(UUID departureHubId);
 
   List<Hub> findAll();
+
+  boolean existsByHubNameAndHubAddress(String hubName, String hubAddress);
 }
 
