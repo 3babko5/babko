@@ -10,10 +10,9 @@ import java.util.UUID;
 
 @Getter
 @SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(name = "p_hub_monvements")
+@Table(name = "p_hub_movements")
 public class HubMovement extends BaseDataEntity {
 
     @Id
@@ -21,19 +20,32 @@ public class HubMovement extends BaseDataEntity {
     @Column(name = "hub_movement_id")
     private UUID movementId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "departure_hub_id", nullable = false)
     private Hub departureHub;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "arrival_hub_id", nullable = false)
     private Hub arrivalHub;
 
     @Column(name = "duration_time", nullable = false)
     private int durationTime;
 
-    @Column(name = "distance", nullable = false)
+    @Column(name = "distance", nullable = false, precision = 10, scale = 2)
     private BigDecimal distance;
 
-
+    public static HubMovement create(
+            Hub departureHub,
+            Hub arrivalHub,
+            int durationTime,
+            BigDecimal distance,
+            Long createdBy) {
+        return HubMovement.builder()
+                .departureHub(departureHub)
+                .arrivalHub(arrivalHub)
+                .durationTime(durationTime)
+                .distance(distance)
+                .createdBy(createdBy)
+                .build();
+    }
 }
