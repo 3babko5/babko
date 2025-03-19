@@ -8,6 +8,7 @@ import com.business.user.deliverydriver.application.dto.response.DeliveryDriverR
 import com.business.user.deliverydriver.application.exception.DeliveryDriverErrorCode;
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.domain.entity.DriverType;
+import com.business.user.deliverydriver.domain.repository.DeliveryDriverRepository;
 import com.business.user.deliverydriver.infrastructure.client.DeliveryRouteClient;
 import com.business.user.deliverydriver.infrastructure.client.HubClientService;
 import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryRouteClientResponseDto;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DeliveryDriverService {
 
-  private final DeliveryDriverJpaRepository deliveryDriverJpaRepository;
+  private final DeliveryDriverRepository deliveryDriverRepository;
   private final HubClientService hubClientService;
   private final DeliveryRouteClient deliveryRouteClient;
 
@@ -35,7 +36,7 @@ public class DeliveryDriverService {
    */
   public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request) {
 
-    if (deliveryDriverJpaRepository.existsById(request.getDeliveryDriverId())) {
+    if (deliveryDriverRepository.existsById(request.getDeliveryDriverId())) {
       throw new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_ALREADY_EXISTS);
     }
 
@@ -48,29 +49,29 @@ public class DeliveryDriverService {
     }
 
     if (request.getDriverType() == DriverType.HUB) {
-      long hubDriverCount = deliveryDriverJpaRepository.countByDriverType(DriverType.HUB);
+      long hubDriverCount = deliveryDriverRepository.countByDriverType(DriverType.HUB);
       if (hubDriverCount >= 10) {
         throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_HUB_DRIVERS_EXCEEDED);
       }
     }
 
     if (request.getDriverType() == DriverType.COMPANY) {
-      long companyDriverCount = deliveryDriverJpaRepository.countByHubIdAndDriverType(request.getHubId(), DriverType.COMPANY);
+      long companyDriverCount = deliveryDriverRepository.countByHubIdAndDriverType(request.getHubId(), DriverType.COMPANY);
       if (companyDriverCount >= 10) {
         throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED);
       }
     }
 
     Long newSequence = switch (request.getDriverType()) {
-      case HUB -> deliveryDriverJpaRepository.findLastDeliverySequenceForHubDrivers().orElse(0L) + 1;
-      case COMPANY -> deliveryDriverJpaRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
+      case HUB -> deliveryDriverRepository.findLastDeliverySequenceForHubDrivers().orElse(0L) + 1;
+      case COMPANY -> deliveryDriverRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
     };
 
     DeliveryDriver deliveryDriver =
         DeliveryDriverMapper.createRequestToEntity(request, newSequence);
 
+    deliveryDriverRepository.save(deliveryDriver);
 
-    deliveryDriverJpaRepository.save(deliveryDriver);
     return DeliveryDriverMapper.toDto(deliveryDriver);
   }
 
@@ -102,12 +103,12 @@ public class DeliveryDriverService {
    * 배정된 담당자를 배송 담당자 테이블에 저장하고 반환
    */
   private DeliveryDriver saveAssignedDriver(Long deliveryDriverId, UUID deliveryRouteId, Long routeSequence) {
-    DeliveryDriver driver = deliveryDriverJpaRepository.findById(deliveryDriverId)
+    DeliveryDriver driver = deliveryDriverRepository.findById(deliveryDriverId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));
 
     driver.assignToRoute(deliveryRouteId, routeSequence);
 
-    return deliveryDriverJpaRepository.save(driver);
+    return deliveryDriverRepository.save(driver);
   }
 
   /**
@@ -116,23 +117,23 @@ public class DeliveryDriverService {
   private Long assignNextDeliveryDriver(DriverType driverType, UUID hubId) {
     Optional<DeliveryDriver> lastAssignedDriver =
         driverType == DriverType.COMPANY
-            ? deliveryDriverJpaRepository.findLastAssignedDriverByTypeAndHub(driverType, hubId)
-            : deliveryDriverJpaRepository.findLastAssignedDriver();
+            ? deliveryDriverRepository.findLastAssignedDriverByTypeAndHub(driverType, hubId)
+            : deliveryDriverRepository.findLastAssignedDriver();
 
     if (lastAssignedDriver.isPresent()) {
       Long currentSequence = lastAssignedDriver.get().getDeliverySequence();
 
       Optional<DeliveryDriver> nextDriver =
           driverType == DriverType.COMPANY
-              ? deliveryDriverJpaRepository.findNextAvailableDriverByTypeAndHub(currentSequence, driverType, hubId)
-              : deliveryDriverJpaRepository.findNextAvailableDriver(currentSequence);
+              ? deliveryDriverRepository.findNextAvailableDriverByTypeAndHub(currentSequence, driverType, hubId)
+              : deliveryDriverRepository.findNextAvailableDriver(currentSequence);
 
       if (nextDriver.isPresent()) {
         return updateAssignedDriver(nextDriver.get()).getDeliveryDriverId();
       }
     }
 
-    return deliveryDriverJpaRepository.findFirstAvailableDriver()
+    return deliveryDriverRepository.findFirstAvailableDriver()
         .map(this::updateAssignedDriver)
         .map(DeliveryDriver::getDeliveryDriverId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));

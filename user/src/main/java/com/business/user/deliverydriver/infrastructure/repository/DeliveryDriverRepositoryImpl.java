@@ -58,4 +58,19 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
   public Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(Long currentSequence, DriverType driverType, UUID hubId) {
     return deliveryDriverJpaRepository.findNextAvailableDriverByTypeAndHub(currentSequence, driverType, hubId);
   }
+
+  @Override
+  public boolean existsById(Long id) {
+    return deliveryDriverJpaRepository.existsById(id);
+  }
+
+  @Override
+  public Optional<DeliveryDriver> findById(Long id) {
+    return deliveryDriverJpaRepository.findById(id);
+  }
+
+  @Override
+  public DeliveryDriver save(DeliveryDriver deliveryDriver) {
+    return deliveryDriverJpaRepository.save(deliveryDriver);
+  }
 }
