@@ -65,6 +65,7 @@ public class User extends BaseDataEntity {
 
 	public static User create(String username, String password, String email, String slackId, UserType role) {
 		return User.builder()
+
 			.username(username)
 			.password(password)
 			.email(email)

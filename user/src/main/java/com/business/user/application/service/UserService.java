@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class UserService {
 
 	private final UserRepository userRepository;
@@ -26,17 +26,22 @@ public class UserService {
 	public UserSignupResponseDto registerUser(UserSignupRequestDto requestDto) {
 		validateDuplicateUser(requestDto); // 중복 체크
 
-		// Auth 서비스에서 해싱된 비밀번호를 받아옴
-		String encryptedPassword = requestDto.getPassword(); // 암호화된 비밀번호를 받아옴
+		// 암호화 없이 평문 비밀번호를 그대로 사용 (테스트 환경에서만!!)
+		String passwordToSave = requestDto.getPassword();
 
 		// User 엔티티를 builder 패턴을 사용하여 생성
 		User user = User.builder()
 			.username(requestDto.getUsername())
-			.password(encryptedPassword)  // 암호화된 비밀번호
+			.password(passwordToSave)  // 평문 비밀번호를 저장
 			.email(requestDto.getEmail())
 			.slackId(requestDto.getSlackId())
 			.role(requestDto.getRole())
 			.build();
+			user.setCreatedBy(100L); //userId를 전달하여 createdBy
+
+		/**
+		 * common --> BaseDataEntity 객체를 생성할 때 만든 유저아이디가 없어서 오류
+		 */
 
 		// DB에 저장
 		userRepository.save(user);

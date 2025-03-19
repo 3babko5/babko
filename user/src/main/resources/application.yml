@@ -3,9 +3,9 @@ spring:
     name: user-service
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/babko
+    url: jdbc:postgresql://localhost:5432/ex
     username: postgres
-    password: 1234
+    password: 12345678
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -36,3 +36,10 @@ auth:
 hub:
   service:
     url: http://localhost:8086
+
+naver:
+  api:
+    client-id: "gsvvhkp9nc"
+    client-secret: "tta5CdMXf29b4hz0Edsnav1gIb64pIwWODSCLpZx"
+    base-url: "https://naveropenapi.apigw.ntruss.com"
+    geocode-api: "/map-geocode/v2/geocode"
