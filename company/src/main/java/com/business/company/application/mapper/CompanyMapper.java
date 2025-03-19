@@ -1,0 +1,32 @@
+package com.business.company.application.mapper;
+
+import com.business.company.application.dto.request.CreateCompanyRequestDto;
+import com.business.company.application.dto.response.CreateCompanyResponseDto;
+import com.business.company.domain.entity.Company;
+
+public class CompanyMapper {
+
+    public static Company toEntity(CreateCompanyRequestDto dto) {
+        return Company.builder()
+                .companyName(dto.getCompanyName())
+                .companyAddress(dto.getCompanyAddress())
+                .companyType(dto.getCompanyType())
+                .hubId(dto.getHubId())
+                .companyManagerId(dto.getCompanyManagerId())
+                .build();
+    }
+
+    public static CreateCompanyResponseDto toResponseDto(Company company) {
+        return CreateCompanyResponseDto.builder()
+                .message("업체가 등록되었습니다.")
+                .stateCode(201)
+                .company(CreateCompanyResponseDto.CompanyData.builder()
+                        .companyId(company.getCompanyId())
+                        .companyName(company.getCompanyName())
+                        .companyType(company.getCompanyType())
+                        .hubId(company.getHubId())
+                        .companyManagerId(company.getCompanyManagerId())
+                        .build())
+                .build();
+    }
+}

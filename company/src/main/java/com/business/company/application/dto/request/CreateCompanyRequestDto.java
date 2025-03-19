@@ -1,6 +1,5 @@
 package com.business.company.application.dto.request;
 
-import com.business.company.domain.entity.Company;
 import com.business.company.domain.entity.CompanyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,14 +30,4 @@ public class CreateCompanyRequestDto {
 
     @NotNull(message = "해당 업체의 관리자 ID는 필수입니다.")
     private UUID companyManagerId;
-
-    public Company toEntity() {
-        return Company.builder()
-                .companyName(companyName)
-                .companyAddress(companyAddress)
-                .companyType(companyType)
-                .hubId(hubId)
-                .companyManagerId(companyManagerId)
-                .build();
-    }
 }

@@ -2,6 +2,7 @@ package com.business.company.application.service;
 
 import com.business.company.application.dto.request.CreateCompanyRequestDto;
 import com.business.company.application.dto.response.CreateCompanyResponseDto;
+import com.business.company.application.mapper.CompanyMapper;
 import com.business.company.domain.entity.Company;
 import com.business.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +16,9 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
 
     @Transactional
-    public CreateCompanyResponseDto createCompany(CreateCompanyRequestDto createCompanyRequestDto) {
-        Company company = companyRepository.save(createCompanyRequestDto.toEntity());
-        return CreateCompanyResponseDto.from(company);
+    public CreateCompanyResponseDto createCompany(CreateCompanyRequestDto dto) {
+        Company company = CompanyMapper.toEntity(dto);
+        Company saved = companyRepository.save(company);
+        return CompanyMapper.toResponseDto(saved);
     }
 }
