@@ -7,6 +7,8 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+
 @Service
 public class NaverApiService {
 
@@ -26,62 +28,65 @@ public class NaverApiService {
     private String directionApi;
 
     private final RestTemplate restTemplate = new RestTemplate();
-
-    public double[] getCoordinates(String address) {
-        try {
-            // 주소 인코딩
-            String url = baseUrl+ geocodeUrl + "?query=" + address;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
-            headers.set("X-NCP-APIGW-API-KEY", clientSecret);
-            headers.set("Content-Type", "application/json");
-            headers.set("Accept", "*/*");
-
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-            RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            // 로그 추가
-            System.out.println("API 요청 URL: " + url);
-            System.out.println("요청 헤더: " + headers.toString());
-            System.out.println("응답 상태 코드: " + response.getStatusCode());
-            System.out.println("응답 바디: " + response.getBody());
-
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode root = objectMapper.readTree(response.getBody());
-
-            JsonNode addresses = root.path("addresses");
-            if (addresses.isArray() && addresses.size() > 0) {
-                JsonNode firstResult = addresses.get(0);
-                double latitude = firstResult.path("y").asDouble();
-                double longitude = firstResult.path("x").asDouble();
-                return new double[]{latitude, longitude};
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("네이버 API 요청 중 오류 발생: " + e.getMessage());
-        }
-        throw new RuntimeException("네이버 API 요청 중 오류 발생: 유효한 좌표를 찾을 수 없습니다.");
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
+        headers.set("X-NCP-APIGW-API-KEY", clientSecret);
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
     }
 
+    private String sendRequest(String url) {
+        HttpEntity<Void> entity = new HttpEntity<>(createHeaders());
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
 
-    public String getOptimalRoute(double startLat, double startLon, double goalLat, double goalLon) {
-        try {
-            String url = baseUrl + directionApi + "?start=" + startLon + "," + startLat + "&goal=" + goalLon + "," + goalLat;
+        return response.getBody();
+    }
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
-            headers.set("X-NCP-APIGW-API-KEY", clientSecret);
-            headers.set("Content-Type", "application/json");
+    public double[] getCoordinates(String address) {
+        String url = baseUrl + geocodeUrl + "?query=" + address;
+        String jsonResponse = sendRequest(url);
+        JsonNode root = parseJsonResponse(jsonResponse);
 
-            HttpEntity<Void> entity = new HttpEntity<>(headers);
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-
-            return response.getBody();
-        } catch (Exception e) {
-            throw new RuntimeException("네이버 Directions API 오류: " + e.getMessage());
+        JsonNode addresses = root.path("addresses");
+        if (addresses.isArray() && !addresses.isEmpty()) {
+            JsonNode firstResult = addresses.get(0);
+            return new double[]{
+                    firstResult.path("y").asDouble(),
+                    firstResult.path("x").asDouble()
+            };
         }
+        throw new RuntimeException("유효한 좌표를 찾을 수 없습니다.");
+    }
+
+    /** 최적 경로 조회 */
+    public String getOptimalRoute(double startLat, double startLon, double goalLat, double goalLon) {
+        String url = baseUrl + directionApi + "?start=" + startLon + "," + startLat + "&goal=" + goalLon + "," + goalLat;
+        return sendRequest(url);
+    }
+
+    private JsonNode parseJsonResponse(String jsonResponse) {
+        try {
+            return objectMapper.readTree(jsonResponse);
+        } catch (Exception e) {
+            throw new RuntimeException("JSON 파싱 오류: " + e.getMessage(), e);
+        }
+    }
+
+    public BigDecimal extractDistanceFromJson(String jsonResponse) {
+        JsonNode summaryNode = parseJsonResponse(jsonResponse)
+                .path("route").path("traoptimal").get(0).path("summary");
+
+        return BigDecimal.valueOf(summaryNode.path("distance").asDouble());
+    }
+
+    public int extractDurationFromJson(String jsonResponse) {
+        JsonNode summaryNode = parseJsonResponse(jsonResponse)
+                .path("route").path("traoptimal").get(0).path("summary");
+
+        return summaryNode.path("duration").asInt() / 1000;
     }
 }
