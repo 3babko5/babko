@@ -21,8 +21,6 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
-@Builder(access = AccessLevel.PUBLIC)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_delivery_drivers")
 @Comment("배송 담당자")
@@ -60,16 +58,18 @@ public class DeliveryDriver extends BaseDataEntity {
   @Comment("배정된 배송 경로 순서")
   private Long routeSequence;
 
-  @Builder
-  public static DeliveryDriver create(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
+  private DeliveryDriver(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
 
-    return DeliveryDriver.builder()
-        .deliveryDriverId(userId)
-        .hubId(hubId)
-        .slackId(slackId)
-        .driverType(driverType)
-        .deliverySequence(deliverySequence)
-        .build();
+    this.deliveryDriverId = userId;
+    this.hubId = hubId;
+    this.slackId = slackId;
+    this.driverType = driverType;
+    this.deliverySequence = deliverySequence;
+  }
+
+  @Builder(builderMethodName = "deliveryDriverCreateBuilder")
+  public static DeliveryDriver createUsingBuilder(Long deliveryDriverId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
+    return new DeliveryDriver(deliveryDriverId, hubId, slackId, driverType, deliverySequence);
   }
 
   public void assignToRoute(UUID deliveryRouteId, Long routeSequence) {

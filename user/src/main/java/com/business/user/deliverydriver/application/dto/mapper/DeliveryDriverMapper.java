@@ -9,7 +9,7 @@ public class DeliveryDriverMapper {
 
   public static DeliveryDriver createRequestToEntity(CreateDeliveryDriverRequestDto request, Long newSequence) {
 
-    return DeliveryDriver.builder()
+    return DeliveryDriver.deliveryDriverCreateBuilder()
         .deliveryDriverId(request.getDeliveryDriverId())
         .hubId(request.getHubId())
         .slackId(request.getSlackId())
