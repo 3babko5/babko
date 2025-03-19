@@ -4,7 +4,9 @@ package com.business.hub.presentation;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubCreateRequest;
+import com.business.hub.application.dto.request.HubUpdateRequest;
 import com.business.hub.application.dto.response.HubResponse;
+import com.business.hub.application.mapper.HubMapper;
 import com.business.hub.application.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,19 @@ public class HubController {
         return ResponseEntity.ok(hubResponse);
     }
 
+    @PatchMapping("/{hubId}")
+    public ResponseEntity<HubResponse> updateHub(
+            @RequestBody @Valid HubUpdateRequest request,
+            @PathVariable UUID hubId
+            ,Long userId
+            ){
+        userId =111L;
+        HubResponse hubResponse = hubService.updateHub(hubId, request, userId);
+
+        return ResponseEntity.ok(hubResponse);
+
+
+    }
 
 
 }
