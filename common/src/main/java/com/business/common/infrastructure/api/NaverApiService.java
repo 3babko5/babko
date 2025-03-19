@@ -1,4 +1,4 @@
-package com.business.hub.application.service;
+package com.business.common.infrastructure.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 
 @Service
 public class NaverApiService {
@@ -23,6 +21,11 @@ public class NaverApiService {
 
     @Value("${naver.api.geocode-api}")
     private String geocodeUrl;
+
+    @Value("${naver.api.direction-api}")
+    private String directionApi;
+
+    private final RestTemplate restTemplate = new RestTemplate();
 
     public double[] getCoordinates(String address) {
         try {
@@ -61,5 +64,24 @@ public class NaverApiService {
             throw new RuntimeException("네이버 API 요청 중 오류 발생: " + e.getMessage());
         }
         throw new RuntimeException("네이버 API 요청 중 오류 발생: 유효한 좌표를 찾을 수 없습니다.");
+    }
+
+
+    public String getOptimalRoute(double startLat, double startLon, double goalLat, double goalLon) {
+        try {
+            String url = baseUrl + directionApi + "?start=" + startLon + "," + startLat + "&goal=" + goalLon + "," + goalLat;
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set("X-NCP-APIGW-API-KEY-ID", clientId);
+            headers.set("X-NCP-APIGW-API-KEY", clientSecret);
+            headers.set("Content-Type", "application/json");
+
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+            return response.getBody();
+        } catch (Exception e) {
+            throw new RuntimeException("네이버 Directions API 오류: " + e.getMessage());
+        }
     }
 }
