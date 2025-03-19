@@ -9,8 +9,6 @@ import java.util.UUID;
 @Table(name = "p_companies")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Builder
 public class Company {
 
     @Id
@@ -26,10 +24,19 @@ public class Company {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CompanyType companyType;
-    
+
     @Column(nullable = false)
     private UUID hubId;
 
     @Column(nullable = false)
     private UUID companyManagerId;
+
+    @Builder
+    public Company(String companyName, String companyAddress, CompanyType companyType, UUID hubId, UUID companyManagerId) {
+        this.companyName = companyName;
+        this.companyAddress = companyAddress;
+        this.companyType = companyType;
+        this.hubId = hubId;
+        this.companyManagerId = companyManagerId;
+    }
 }
