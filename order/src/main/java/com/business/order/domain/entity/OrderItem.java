@@ -2,18 +2,14 @@ package com.business.order.domain.entity;
 
 import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
 import java.util.UUID;
 
 @Entity
 @Table(name = "p_order_items")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class OrderItem extends BaseDataEntity {
 
     @Id
@@ -24,14 +20,27 @@ public class OrderItem extends BaseDataEntity {
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
+    @Column(name = "supplier_id", nullable = false)
+    private UUID supplierId;
+
     @Column(name = "order_item_amount", nullable = false)
     private Integer orderItemAmount;
 
     @Column(name = "order_item_price", nullable = false)
-    private Integer orderItemPrice;
+    private Long orderItemPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @Builder
+    public static OrderItem create(Order order, UUID productId, Integer orderItemAmount, Long orderItemPrice) {
+        return OrderItem.builder()
+                .order(order)
+                .productId(productId)
+                .orderItemAmount(orderItemAmount)
+                .orderItemPrice(orderItemPrice)
+                .build();
+    }
 
 }
