@@ -1,0 +1,18 @@
+package com.business.order.infrastructure.repository;
+
+import com.business.order.domain.entity.Order;
+import com.business.order.domain.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class OrderRepositoryImpl implements OrderRepository {
+
+    private final OrderJpaRepository orderJpaRepository;
+
+    @Override
+    public Order save(Order order) {
+        return orderJpaRepository.save(order);
+    }
+}

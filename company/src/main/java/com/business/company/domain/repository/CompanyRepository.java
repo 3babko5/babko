@@ -1,4 +1,7 @@
 package com.business.company.domain.repository;
 
-public class CompanyRepository {
+import com.business.company.domain.entity.Company;
+
+public interface CompanyRepository {
+    Company save(Company company);
 }
