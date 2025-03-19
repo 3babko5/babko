@@ -17,6 +17,7 @@ public class UserMapper {
 			.userId(user.getUserId())
 			.username(user.getUsername())
 			.email(user.getEmail())
+			.slackId(user.getSlackId())
 			.role(user.getRole())
 			.build();
 	}
@@ -26,6 +27,7 @@ public class UserMapper {
 			.userId(user.getUserId())
 			.username(user.getUsername())
 			.email(user.getEmail())
+			.slackId(user.getSlackId())
 			.role(user.getRole())
 			.build();
 	}
