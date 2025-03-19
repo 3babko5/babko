@@ -2,10 +2,7 @@ package com.business.order.domain.entity;
 
 import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +11,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "p_orders")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends BaseDataEntity {
 
     @Id
@@ -48,6 +43,7 @@ public class Order extends BaseDataEntity {
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems = new ArrayList<>();
 
+    @Builder
     public static Order create(Long userId, UUID receiverId, String deliveryAddress,
                                UUID originHubId, UUID destinationHubId, Integer totalPrice) {
         return Order.builder()
