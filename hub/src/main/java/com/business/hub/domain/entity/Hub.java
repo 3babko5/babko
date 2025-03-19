@@ -35,7 +35,7 @@ public class Hub extends BaseDataEntity {
     private BigDecimal hubLongitude;
 
     @Column(name = "hub_manager_id", nullable = false)
-    private UUID hubManagerId;
+    private Long hubManagerId;
 
     @OneToMany(mappedBy = "departureHub")
     private List<HubMovement> departureMovements = new ArrayList<>();
@@ -44,22 +44,36 @@ public class Hub extends BaseDataEntity {
     private List<HubMovement> arrivalMovements = new ArrayList<>();
 
     @Builder
-    public static Hub create(
+    public Hub(
             LocalDateTime createdAt,
             Long createdBy,
             String hubName,
             String hubAddress,
             BigDecimal hubLatitude,
             BigDecimal hubLongitude,
-            UUID hubManagerId) {
-        return Hub.builder()
-                .createdAt(createdAt)
-                .createdBy(createdBy)
-                .hubName(hubName)
-                .hubAddress(hubAddress)
-                .hubLatitude(hubLatitude)
-                .hubLongitude(hubLongitude)
-                .hubManagerId(hubManagerId)
-                .build();
+            Long hubManagerId) {
+        this.setCreatedBy(createdBy);
+        this.hubName = hubName;
+        this.hubAddress = hubAddress;
+        this.hubLatitude = hubLatitude;
+        this.hubLongitude = hubLongitude;
+        this.hubManagerId = hubManagerId;
     }
+
+
+    public void update(
+            String hubName,
+            String hubAddress,
+            BigDecimal hubLatitude,
+            BigDecimal hubLongitude,
+            Long hubManagerId,
+            Long updatedBy) {
+        this.hubName = hubName;
+        this.hubAddress = hubAddress;
+        this.hubLatitude = hubLatitude;
+        this.hubLongitude = hubLongitude;
+        this.hubManagerId = hubManagerId;
+        this.setUpdatedBy(updatedBy);
+    }
+
 }
