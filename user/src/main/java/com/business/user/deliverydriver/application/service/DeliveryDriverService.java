@@ -66,15 +66,9 @@ public class DeliveryDriverService {
       case COMPANY -> deliveryDriverJpaRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
     };
 
-    DeliveryDriver deliveryDriver = DeliveryDriver.create(
-        request.getDeliveryDriverId(),
-        request.getHubId(),
-        request.getSlackId(),
-        request.getDriverType(),
-        newSequence,
-        null,
-        null
-    );
+    DeliveryDriver deliveryDriver =
+        DeliveryDriverMapper.createRequestToEntity(request, newSequence);
+
 
     deliveryDriverJpaRepository.save(deliveryDriver);
     return DeliveryDriverMapper.toDto(deliveryDriver);

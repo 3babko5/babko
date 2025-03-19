@@ -60,7 +60,8 @@ public class DeliveryDriver extends BaseDataEntity {
   @Comment("배정된 배송 경로 순서")
   private Long routeSequence;
 
-  public static DeliveryDriver create(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence, UUID deliveryRouteId, Long routeSequence) {
+  @Builder
+  public static DeliveryDriver create(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
 
     return DeliveryDriver.builder()
         .deliveryDriverId(userId)
@@ -68,8 +69,6 @@ public class DeliveryDriver extends BaseDataEntity {
         .slackId(slackId)
         .driverType(driverType)
         .deliverySequence(deliverySequence)
-        .deliveryRouteId(deliveryRouteId)
-        .routeSequence(routeSequence)
         .build();
   }
 
