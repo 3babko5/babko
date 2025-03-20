@@ -21,7 +21,6 @@ public class CompanyRepositoryImpl implements CompanyRepository {
 
     @Override
     public List<Company> search(String companyName, CompanyType companyType) {
-        // 간단한 조건별 분기
         if (companyName != null && companyType != null) {
             return companyJpaRepository.findByCompanyNameContainingAndCompanyType(companyName, companyType);
         } else if (companyName != null) {
