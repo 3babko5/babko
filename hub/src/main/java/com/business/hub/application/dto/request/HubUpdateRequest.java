@@ -8,7 +8,7 @@ import java.util.UUID;
 
 @Getter
 @Builder
-public class HubCreateRequest {
+public class HubUpdateRequest {
 
     private String hubName;
     private String hubAddress;
