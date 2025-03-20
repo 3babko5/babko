@@ -11,7 +11,6 @@ import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,8 +21,6 @@ import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
-@Builder(access = AccessLevel.PUBLIC)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_delivery_routes")
 @Comment("배송 경로 기록")
@@ -93,18 +90,24 @@ public class DeliveryRoute extends BaseDataEntity {
   @Comment("업체 배송 담당자 ID")
   private UUID companyDriverId;
 
+  private DeliveryRoute(UUID deliveryId, Long routeSequence, UUID originHubId,
+      UUID destinationHubId, BigDecimal estimatedDistance, Long estimatedTime,
+      DeliveryRouteStatus deliveryRouteStatus) {
+
+    this.deliveryId = deliveryId;
+    this.routeSequence = routeSequence;
+    this.originHubId = originHubId;
+    this.destinationHubId = destinationHubId;
+    this.estimatedDistance = estimatedDistance;
+    this.estimatedTime = estimatedTime;
+    this.deliveryRouteStatus = deliveryRouteStatus;
+  }
+
+  @Builder(builderMethodName = "deliveryRouteCreateBuilder")
   public static DeliveryRoute create(UUID deliveryId, Long routeSequence, UUID originHubId,
       UUID destinationHubId, BigDecimal estimatedDistance, Long estimatedTime,
       DeliveryRouteStatus deliveryRouteStatus) {
 
-    return DeliveryRoute.builder()
-        .deliveryId(deliveryId)
-        .routeSequence(routeSequence)
-        .originHubId (originHubId)
-        .destinationHubId(destinationHubId)
-        .estimatedDistance(estimatedDistance)
-        .estimatedTime(estimatedTime)
-        .deliveryRouteStatus(deliveryRouteStatus)
-        .build();
+    return new DeliveryRoute(deliveryId, routeSequence, originHubId, destinationHubId, estimatedDistance, estimatedTime, deliveryRouteStatus);
   }
 }
