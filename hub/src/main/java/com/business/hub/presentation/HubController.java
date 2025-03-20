@@ -5,13 +5,17 @@ package com.business.hub.presentation;
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubCreateRequest;
 import com.business.hub.application.dto.request.HubUpdateRequest;
+import com.business.hub.application.dto.response.HubPageResponse;
 import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -60,6 +64,24 @@ public class HubController {
         hubService.deleteHub(hubId, userId);
         return ResponseEntity.noContent().build();
     }
+
+    //허브 단일 조회
+    @GetMapping("/{hubId}")
+    public ResponseEntity<HubResponse> getHub(@PathVariable UUID hubId)
+    {
+        HubResponse hubResponse = hubService.getHub(hubId);
+        return ResponseEntity.ok(hubResponse);
+    }
+
+    //허브 전체 조회
+    @GetMapping
+    public ResponseEntity<HubPageResponse<HubResponse>> getAllHubs(
+            @PageableDefault(size = 10)Pageable pageable)
+    {
+        HubPageResponse<HubResponse> hubResponse = hubService.getAllHubs(pageable);
+        return ResponseEntity.ok(hubResponse);
+    }
+
 
 
 }
