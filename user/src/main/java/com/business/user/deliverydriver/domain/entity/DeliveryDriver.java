@@ -68,11 +68,12 @@ public class DeliveryDriver extends BaseDataEntity {
   }
 
   @Builder(builderMethodName = "deliveryDriverCreateBuilder")
-  public static DeliveryDriver createUsingBuilder(Long deliveryDriverId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
+  public static DeliveryDriver create(Long deliveryDriverId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
     return new DeliveryDriver(deliveryDriverId, hubId, slackId, driverType, deliverySequence);
   }
 
   public void assignToRoute(UUID deliveryRouteId, Long routeSequence) {
+
     this.deliveryRouteId = deliveryRouteId;
     this.routeSequence = routeSequence;
     this.assignAt = LocalDateTime.now();
