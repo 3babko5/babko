@@ -10,4 +10,8 @@ public class SearchCompanyRequestDto {
 
     private final String companyName;
     private final CompanyType companyType;
+    private final Integer page;
+    private final Integer size;
+    private final String orderBy;
+    private final String sort;
 }

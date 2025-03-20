@@ -8,6 +8,8 @@ import com.business.company.application.mapper.CompanyMapper;
 import com.business.company.domain.entity.Company;
 import com.business.company.domain.repository.CompanyRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,9 +29,12 @@ public class CompanyService {
     }
 
     @Transactional(readOnly = true)
-    public SearchCompanyResponseDto searchCompanies(SearchCompanyRequestDto request) {
-        final List<Company> companies = companyRepository.search(request.getCompanyName(), request.getCompanyType());
-
-        return CompanyMapper.toSearchResponseDto(companies);
+    public SearchCompanyResponseDto searchCompanies(SearchCompanyRequestDto request, Pageable pageable) {
+        Page<Company> companyPage = companyRepository.search(
+                request.getCompanyName(),
+                request.getCompanyType(),
+                pageable
+        );
+        return CompanyMapper.toSearchResponseDto(companyPage);
     }
 }

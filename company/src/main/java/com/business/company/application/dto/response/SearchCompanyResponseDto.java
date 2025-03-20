@@ -13,6 +13,7 @@ public class SearchCompanyResponseDto {
     private final String message;
     private final int stateCode;
     private final List<CompanyData> company;
+    private final PageInfo pageInfo;
 
     @Getter
     @Builder
@@ -22,5 +23,17 @@ public class SearchCompanyResponseDto {
         private final CompanyType companyType;
         private final UUID hubId;
         private final UUID companyManagerId;
+    }
+
+    @Getter
+    @Builder
+    public static class PageInfo {
+        private final int page;
+        private final int size;
+        private final long totalElements;
+        private final int totalPages;
+        private final boolean isLast;
+        private final String sort;
+        private final String direction;
     }
 }

@@ -4,6 +4,8 @@ import com.business.company.application.dto.request.CreateCompanyRequestDto;
 import com.business.company.application.dto.response.CreateCompanyResponseDto;
 import com.business.company.application.dto.response.SearchCompanyResponseDto;
 import com.business.company.domain.entity.Company;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,8 +36,8 @@ public class CompanyMapper {
                 .build();
     }
 
-    public static SearchCompanyResponseDto toSearchResponseDto(final List<Company> companyList) {
-        List<SearchCompanyResponseDto.CompanyData> companyDataList = companyList.stream()
+    public static SearchCompanyResponseDto toSearchResponseDto(Page<Company> companyPage) {
+        List<SearchCompanyResponseDto.CompanyData> companyDataList = companyPage.getContent().stream()
                 .map(company -> SearchCompanyResponseDto.CompanyData.builder()
                         .companyId(company.getCompanyId())
                         .companyName(company.getCompanyName())
@@ -45,10 +47,21 @@ public class CompanyMapper {
                         .build())
                 .collect(Collectors.toList());
 
+        SearchCompanyResponseDto.PageInfo pageInfo = SearchCompanyResponseDto.PageInfo.builder()
+                .page(companyPage.getNumber())
+                .size(companyPage.getSize())
+                .totalElements(companyPage.getTotalElements())
+                .totalPages(companyPage.getTotalPages())
+                .isLast(companyPage.isLast())
+                .sort(companyPage.getSort().toString())
+                .direction(companyPage.getSort().stream().findFirst().map(Sort.Order::getDirection).orElse(Sort.Direction.DESC).name())
+                .build();
+
         return SearchCompanyResponseDto.builder()
                 .message("조회 완료하였습니다.")
                 .stateCode(200)
                 .company(companyDataList)
+                .pageInfo(pageInfo)
                 .build();
     }
 }
