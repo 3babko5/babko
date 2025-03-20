@@ -1,0 +1,54 @@
+### 1. 허브 수정 요청 (정상 요청)
+PATCH http://localhost:8086/api/v1/hubs/b94ef9d8-9f98-45df-b783-6952d27d9b0b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Content-Type: application/json
+
+{
+  "hubName": "경남센터 허브",
+  "hubAddress": "경남 창원시 의창구 중앙대로 300",
+  "hubLatitude": 38.475081089936,
+  "hubLongitude": 127.12349734954,
+  "hubManagerId": 111123
+}
+
+
+### 2. 존재하지 않는 허브 수정 요청
+PATCH http://localhost:8086/api/v1/hubs/00000000-0000-0000-0000-000000000000
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Content-Type: application/json
+
+{
+  "hubName": "없는 허브",
+  "hubAddress": "서울특별시 송파구 송파대로 100",
+  "hubLatitude": 37.475081089936,
+  "hubLongitude": 127.12349734954,
+  "hubManagerId": "123e4567-e89b-12d3-a456-426614174000"
+}
+
+
+### 3. 허브 수정 요청 - 유효하지 않은 입력값
+PATCH http://localhost:8086/api/v1/hubs/b94ef9d8-9f98-45df-b783-6952d27d9b0b
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+Content-Type: application/json
+
+{
+  "hubName": "",
+  "hubAddress": "",
+  "hubLatitude": null,
+  "hubLongitude": null,
+  "hubManagerId": null
+}
+
+
+### 4. 권한 없는 사용자가 허브 수정 요청
+PATCH http://localhost:8086/api/v1/hubs/b94ef9d8-9f98-45df-b783-6952d27d9b0b
+Authorization: Bearer 12354623
+Content-Type: application/json
+
+{
+  "hubName": "경상남도 센터",
+  "hubAddress": "경남 창원시 의창구 중앙대로 300",
+  "hubLatitude": 35.23779740,
+  "hubLongitude": 128.69194030,
+  "hubManagerId": 31455555
+}
