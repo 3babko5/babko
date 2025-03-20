@@ -6,6 +6,7 @@ import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.api.NaverApiService;
 import com.business.hub.application.dto.request.HubCreateRequest;
 import com.business.hub.application.dto.request.HubUpdateRequest;
+import com.business.hub.application.dto.response.HubPageResponse;
 import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.exception.HubExceptionCode;
 import com.business.hub.application.mapper.HubMapper;
@@ -14,6 +15,8 @@ import com.business.hub.domain.repository.HubRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -78,7 +81,6 @@ public class HubService {
                 userId
         );
 
-
         hubRepository.save(existingHub);
         return HubMapper.toHubResponse(existingHub);
 
@@ -93,5 +95,20 @@ public class HubService {
         existingHub.setDeletedBy(userId);
         hubRepository.save(existingHub);
 
+    }
+
+    public HubResponse getHub(UUID hubId) {
+
+        Hub hub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+        return HubMapper.toHubResponse(hub);
+    }
+
+
+    public HubPageResponse<HubResponse> getAllHubs(Pageable pageable) {
+
+        Page<Hub> hubs = hubRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
+
+        return HubPageResponse.of(hubs.map(HubMapper::toHubResponse));
     }
 }
