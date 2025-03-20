@@ -9,14 +9,14 @@ public class HubMovementMapper {
 
   public static DeliveryRoute toEntity(HubMovementResponseDto hubMovement, UUID deliveryId, Long routeSequence) {
 
-    return DeliveryRoute.create(
-        deliveryId,
-        routeSequence,
-        hubMovement.getDepartureHubId(),
-        hubMovement.getArrivalHubId(),
-        hubMovement.getDistance(),
-        hubMovement.getDurationTime(),
-        DeliveryRouteStatus.WAITING_AT_HUB
-    );
+    return DeliveryRoute.deliveryRouteCreateBuilder()
+        .deliveryId(deliveryId)
+        .routeSequence(routeSequence)
+        .originHubId(hubMovement.getDepartureHubId())
+        .destinationHubId(hubMovement.getArrivalHubId())
+        .estimatedDistance(hubMovement.getDistance())
+        .estimatedTime(hubMovement.getDurationTime())
+        .deliveryRouteStatus(DeliveryRouteStatus.WAITING_AT_HUB)
+        .build();
   }
 }
