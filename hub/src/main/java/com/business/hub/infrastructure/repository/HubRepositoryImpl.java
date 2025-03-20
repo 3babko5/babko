@@ -3,6 +3,8 @@ package com.business.hub.infrastructure.repository;
 import com.business.hub.domain.entity.Hub;
 import com.business.hub.domain.repository.HubRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -43,5 +45,15 @@ public class HubRepositoryImpl implements HubRepository {
     @Override
     public boolean existsByHubNameAndHubAddress(String hubName, String hubAddress) {
         return hubJpaRepository.existsByHubNameAndHubAddress(hubName, hubAddress);
+    }
+
+    @Override
+    public Optional<Hub> findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(UUID hubId){
+        return hubJpaRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId);
+    }
+
+    @Override
+    public Page<Hub> findAllByDeletedAtIsNullAndDeletedByIsNull(Pageable pageable) {
+        return hubJpaRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
     }
 }

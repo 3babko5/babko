@@ -5,6 +5,9 @@ import com.business.hub.domain.entity.Hub;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -21,5 +24,9 @@ public interface HubRepository{
   List<Hub> findAll();
 
   boolean existsByHubNameAndHubAddress(String hubName, String hubAddress);
+
+  Optional<Hub> findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(UUID hubId);
+
+  Page<Hub> findAllByDeletedAtIsNullAndDeletedByIsNull(Pageable pageable);
 }
 
