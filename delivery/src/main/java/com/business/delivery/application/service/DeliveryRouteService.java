@@ -4,12 +4,11 @@ import com.business.delivery.application.dto.mapper.DeliveryRouteMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRouteRequestDto;
 import com.business.delivery.application.dto.response.DeliveryRouteResponseDto;
 import com.business.delivery.domain.entity.DeliveryRoute;
-import com.business.delivery.domain.entity.DeliveryRouteStatus;
-import com.business.delivery.domain.repository.DeliveryRouteJpaRepository;
+import com.business.delivery.domain.repository.DeliveryRouteRepository;
+import com.business.delivery.infrastructure.repository.DeliveryRouteJpaRepository;
 import com.business.delivery.infrastructure.client.HubMovementClient;
 import com.business.delivery.infrastructure.dto.mapper.HubMovementMapper;
 import com.business.delivery.infrastructure.dto.response.HubMovementResponseDto;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,7 +21,7 @@ import java.util.stream.IntStream;
 @Transactional
 public class DeliveryRouteService {
 
-  private final DeliveryRouteJpaRepository deliveryRouteJpaRepository;
+  private final DeliveryRouteRepository deliveryRouteRepository;
   private final HubMovementClient hubMovementClient;
 
   public DeliveryRouteResponseDto createDeliveryRoute(CreateDeliveryRouteRequestDto request) {
@@ -39,7 +38,7 @@ public class DeliveryRouteService {
                 request.getDeliveryId(), (long) i + 1))
         .toList();
 
-    List<DeliveryRoute> savedRoutes = deliveryRouteJpaRepository.saveAll(deliveryRoutes);
+    List<DeliveryRoute> savedRoutes = deliveryRouteRepository.saveAll(deliveryRoutes);
 
     return DeliveryRouteMapper.toDto(savedRoutes);
   }
