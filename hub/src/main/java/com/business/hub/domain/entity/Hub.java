@@ -6,14 +6,12 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-
 @Getter
-@SuperBuilder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "p_hubs")
@@ -37,13 +35,45 @@ public class Hub extends BaseDataEntity {
     private BigDecimal hubLongitude;
 
     @Column(name = "hub_manager_id", nullable = false)
-    private UUID hubManagerId;
-
+    private Long hubManagerId;
 
     @OneToMany(mappedBy = "departureHub")
     private List<HubMovement> departureMovements = new ArrayList<>();
 
     @OneToMany(mappedBy = "arrivalHub")
     private List<HubMovement> arrivalMovements = new ArrayList<>();
+
+    @Builder
+    public Hub(
+            LocalDateTime createdAt,
+            Long createdBy,
+            String hubName,
+            String hubAddress,
+            BigDecimal hubLatitude,
+            BigDecimal hubLongitude,
+            Long hubManagerId) {
+        this.setCreatedBy(createdBy);
+        this.hubName = hubName;
+        this.hubAddress = hubAddress;
+        this.hubLatitude = hubLatitude;
+        this.hubLongitude = hubLongitude;
+        this.hubManagerId = hubManagerId;
+    }
+
+
+    public void update(
+            String hubName,
+            String hubAddress,
+            BigDecimal hubLatitude,
+            BigDecimal hubLongitude,
+            Long hubManagerId,
+            Long updatedBy) {
+        this.hubName = hubName;
+        this.hubAddress = hubAddress;
+        this.hubLatitude = hubLatitude;
+        this.hubLongitude = hubLongitude;
+        this.hubManagerId = hubManagerId;
+        this.setUpdatedBy(updatedBy);
+    }
 
 }

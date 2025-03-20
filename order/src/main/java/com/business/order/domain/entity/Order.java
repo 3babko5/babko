@@ -1,23 +1,19 @@
 package com.business.order.domain.entity;
 
-import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Entity
 @Table(name = "p_orders")
 @Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-public class Order extends BaseDataEntity {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Order{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -27,27 +23,51 @@ public class Order extends BaseDataEntity {
     @Column(name = "user_id", nullable = false)
     private Long userId;
 
-    @Column(name = "supplier_id", nullable = false)
-    private UUID supplierId;
-
     @Column(name = "receiver_id", nullable = false)
     private UUID receiverId;
 
-    @Column(name = "company_address", nullable = false)
-    private String companyAddress;
+    @Column(name = "delivery_address", nullable = false)
+    private String deliveryAddress; //배송지 주소
 
     @Column(name = "delivery_id")
     private UUID deliveryId;
 
-    @Column(name = "supplier_hub_id", nullable = false)
-    private UUID supplierHubId;
+    @Column(name = "origin_hub_id", nullable = false)
+    private UUID originHubId; //출발허브
 
-    @Column(name = "receiver_hub_id", nullable = false)
-    private UUID receiverHubId;
+    @Column(name = "destination_hub_id", nullable = false)
+    private UUID destinationHubId; //도착허브
 
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @Builder
+    public Order(Long userId, UUID receiverId, String deliveryAddress,
+                  UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+        this.userId = userId;
+        this.receiverId = receiverId;
+        this.deliveryAddress = deliveryAddress;
+        this.originHubId = originHubId;
+        this.destinationHubId = destinationHubId;
+        this.totalPrice = totalPrice;
+    }
+
+    public static Order create(Long userId, UUID receiverId, String deliveryAddress,
+                               UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+        return Order.builder()
+                .userId(userId)
+                .receiverId(receiverId)
+                .deliveryAddress(deliveryAddress)
+                .originHubId(originHubId)
+                .destinationHubId(destinationHubId)
+                .totalPrice(totalPrice)
+                .build();
+    }
+
+    public void addOrderItems(List<OrderItem> items) {
+        this.orderItems.addAll(items);
+    }
 }

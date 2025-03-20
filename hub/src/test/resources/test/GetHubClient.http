@@ -1,0 +1,26 @@
+### 1. 허브 단건 조회 (성공)
+GET http://localhost:8086/api/v1/hubs/a00ed850-d139-4eda-9294-f95c309dafc4
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+
+### 2. 허브 단건 조회 - 없는 허브 요청
+GET http://localhost:8086/api/v1/hubs/d3b0b58d-5fc8-4c8e-987e-1e2b238af000
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+
+### 3. 허브 전체 조회
+GET http://localhost:8086/api/v1/hubs
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+### 4. 허브 전체 조회 - 페이징 적용 (첫 번째 페이지)
+GET http://localhost:8086/api/v1/hubs?page=0&size=10
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+### 5. 허브 전체 조회 - 페이징 적용 (두 번째 페이지)
+GET http://localhost:8086/api/v1/hubs?page=1&size=10
+Authorization: Bearer jwt_token_string
+Accept: application/json
