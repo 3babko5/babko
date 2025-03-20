@@ -1,4 +1,4 @@
-package com.business.order.application.mapper;
+package com.business.order.application.dto.mapper;
 
 import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.response.OrderItemResponseDto;
