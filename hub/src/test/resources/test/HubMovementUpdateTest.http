@@ -1,0 +1,35 @@
+### 1. 허브 간 이동 정보 수정
+PATCH http://localhost:8086/api/v1/hub-movements/cb0e2428-d371-45ea-b8c4-1fa6f39a1e26
+Content-Type: application/json
+
+{
+  "departureHubId": "13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd",
+  "arrivalHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e"
+}
+
+### 2. 도착 허브 누락
+PATCH http://localhost:8086/api/v1/hub-movements/cb0e2428-d371-45ea-b8c4-1fa6f39a1e26
+Content-Type: application/json
+
+{
+  "departureHubId": "",
+  "arrivalHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e"
+}
+
+### 3. 출발 허브 누락
+PATCH http://localhost:8086/api/v1/hub-movements/cb0e2428-d371-45ea-b8c4-1fa6f39a1e26
+Content-Type: application/json
+
+{
+  "departureHubId": "13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd",
+  "arrivalHubId": ""
+}
+
+### 4. 존재 하지 않는 허브 등록
+PATCH http://localhost:8086/api/v1/hub-movements/cb0e2428-d371-45ea-b8c4-1fa6f39a1e26
+Content-Type: application/json
+
+{
+  "departureHubId": "13a1ca90-5a81-4f2e-b426-5b2d05dd5cf3",
+  "arrivalHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e"
+}
