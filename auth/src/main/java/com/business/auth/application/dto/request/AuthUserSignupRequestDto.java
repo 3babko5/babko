@@ -10,7 +10,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class AuthSignupRequestDto {
+public class AuthUserSignupRequestDto { // User 서비스와 통신용
 
 	@NotBlank
 	private String username;

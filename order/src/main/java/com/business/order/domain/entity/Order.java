@@ -1,5 +1,6 @@
 package com.business.order.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import java.util.UUID;
 @Table(name = "p_orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order{
+public class Order extends BaseDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,18 +47,19 @@ public class Order{
 
     @Builder
     public Order(Long userId, UUID receiverId, String deliveryAddress,
-                  UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+                 UUID originHubId, UUID destinationHubId, Integer totalPrice) {
         this.userId = userId;
         this.receiverId = receiverId;
         this.deliveryAddress = deliveryAddress;
         this.originHubId = originHubId;
         this.destinationHubId = destinationHubId;
         this.totalPrice = totalPrice;
+        setCreatedBy(userId);
     }
 
     public static Order create(Long userId, UUID receiverId, String deliveryAddress,
                                UUID originHubId, UUID destinationHubId, Integer totalPrice) {
-        return Order.builder()
+        Order order = Order.builder()
                 .userId(userId)
                 .receiverId(receiverId)
                 .deliveryAddress(deliveryAddress)
@@ -65,6 +67,8 @@ public class Order{
                 .destinationHubId(destinationHubId)
                 .totalPrice(totalPrice)
                 .build();
+        order.setCreatedBy(userId);
+        return order;
     }
 
     public void addOrderItems(List<OrderItem> items) {
