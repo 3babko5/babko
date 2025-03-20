@@ -16,7 +16,8 @@ public enum HubExceptionCode implements ExceptionCode {
     INVALID_HUB_ADDRESS(HttpStatus.BAD_REQUEST, "HUB-005", "유효하지 않은 허브 주소입니다."),
     INVALID_HUB_NAME(HttpStatus.BAD_REQUEST, "HUB-006", "허브 이름을 입력해주세요."),
     MANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "HUB-007", "존재하지 않는 허브 관리자 ID입니다."),
-    DUPLICATE_HUB(HttpStatus.CONFLICT, "HUB-008", "이미 등록된 허브입니다.");
+    DUPLICATE_HUB(HttpStatus.CONFLICT, "HUB-008", "이미 등록된 허브입니다."),
+    Hub_MOVEMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "HUB-M-001","요청한 허브 간 이동 정보가 존재하지 않습니다." );
 
     private final HttpStatusCode status;
     private final String code;
