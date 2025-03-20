@@ -2,7 +2,11 @@ package com.business.company.application.mapper;
 
 import com.business.company.application.dto.request.CreateCompanyRequestDto;
 import com.business.company.application.dto.response.CreateCompanyResponseDto;
+import com.business.company.application.dto.response.SearchCompanyResponseDto;
 import com.business.company.domain.entity.Company;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class CompanyMapper {
 
@@ -27,6 +31,24 @@ public class CompanyMapper {
                         .hubId(company.getHubId())
                         .companyManagerId(company.getCompanyManagerId())
                         .build())
+                .build();
+    }
+
+    public static SearchCompanyResponseDto toSearchResponseDto(final List<Company> companyList) {
+        List<SearchCompanyResponseDto.CompanyData> companyDataList = companyList.stream()
+                .map(company -> SearchCompanyResponseDto.CompanyData.builder()
+                        .companyId(company.getCompanyId())
+                        .companyName(company.getCompanyName())
+                        .companyType(company.getCompanyType())
+                        .hubId(company.getHubId())
+                        .companyManagerId(company.getCompanyManagerId())
+                        .build())
+                .collect(Collectors.toList());
+
+        return SearchCompanyResponseDto.builder()
+                .message("조회 완료하였습니다.")
+                .stateCode(200)
+                .company(companyDataList)
                 .build();
     }
 }
