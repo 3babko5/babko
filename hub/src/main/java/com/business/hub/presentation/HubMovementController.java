@@ -1,6 +1,7 @@
 package com.business.hub.presentation;
 
 import com.business.hub.application.dto.request.HubMovementCreateRequest;
+import com.business.hub.application.dto.request.HubMovementUpdateRequest;
 import com.business.hub.application.dto.response.HubMovementPageResponse;
 import com.business.hub.application.dto.response.HubMovementResponse;
 import com.business.hub.application.service.HubMovementService;
@@ -81,6 +82,17 @@ public class HubMovementController {
     ){
         HubMovementResponse response = hubMovementService.getMovementsByHubs(departureHubId,arrivalHubId);
 
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{hubMovementId}")
+    public ResponseEntity<HubMovementResponse> updateHubMovement(
+            @PathVariable UUID hubMovementId,
+            @RequestBody @Valid HubMovementUpdateRequest request,
+            Long userId
+    ){
+        userId = 1112L;
+        HubMovementResponse response = hubMovementService.updateHubMovement(hubMovementId, request, userId);
         return ResponseEntity.ok(response);
     }
 
