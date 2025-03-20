@@ -18,14 +18,14 @@ public class HubMovement extends BaseDataEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "hub_movement_id")
-    private UUID movementId;
+    private UUID hubMovementId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "departure_hub_id", nullable = false)
+    @JoinColumn(name = "departure_hub_id", referencedColumnName = "hub_id", nullable = false)
     private Hub departureHub;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "arrival_hub_id", nullable = false)
+    @JoinColumn(name = "arrival_hub_id", referencedColumnName = "hub_id", nullable = false)
     private Hub arrivalHub;
 
     @Column(name = "duration_time", nullable = false)
