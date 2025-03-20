@@ -1,6 +1,8 @@
 package com.business.delivery.application.dto.mapper;
 
+import com.business.common.application.exception.BusinessLogicException;
 import com.business.delivery.application.dto.response.DeliveryRouteResponseDto;
+import com.business.delivery.application.exception.DeliveryRouteErrorCode;
 import com.business.delivery.domain.entity.DeliveryRoute;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,7 +24,7 @@ public class DeliveryRouteMapper {
   public static DeliveryRouteResponseDto toDto(List<DeliveryRoute> deliveryRoutes) {
 
     if (deliveryRoutes == null || deliveryRoutes.isEmpty()) {
-      throw new IllegalArgumentException("배송 경로 데이터가 없습니다.");
+      throw new BusinessLogicException(DeliveryRouteErrorCode.ROUTE_NOT_FOUND);
     }
 
     return DeliveryRouteResponseDto.builder()

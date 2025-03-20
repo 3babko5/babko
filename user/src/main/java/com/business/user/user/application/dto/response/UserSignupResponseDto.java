@@ -1,0 +1,20 @@
+package com.business.user.user.application.dto.response;
+
+import com.business.user.user.domain.entity.UserType;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class UserSignupResponseDto {
+	private Long userId;
+	private String username;
+	private String email;
+	private String slackId;
+	private UserType role;
+}

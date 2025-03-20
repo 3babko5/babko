@@ -14,5 +14,5 @@ public class HubResponse {
     private String hubAddress;
     private BigDecimal hubLatitude;
     private BigDecimal hubLongitude;
-    private UUID hubManagerId;
+    private Long hubManagerId;
 }

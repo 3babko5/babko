@@ -13,6 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class OrderItemRequestDto {
     private UUID productId;
+    private UUID supplierId;
     private Integer orderItemAmount;
-    private Integer orderItemPrice;
 }

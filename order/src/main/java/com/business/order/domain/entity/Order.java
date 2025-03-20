@@ -1,18 +1,19 @@
 package com.business.order.domain.entity;
 
-import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Entity
 @Table(name = "p_orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Order extends BaseDataEntity {
+public class Order{
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -44,6 +45,16 @@ public class Order extends BaseDataEntity {
     private List<OrderItem> orderItems = new ArrayList<>();
 
     @Builder
+    public Order(Long userId, UUID receiverId, String deliveryAddress,
+                  UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+        this.userId = userId;
+        this.receiverId = receiverId;
+        this.deliveryAddress = deliveryAddress;
+        this.originHubId = originHubId;
+        this.destinationHubId = destinationHubId;
+        this.totalPrice = totalPrice;
+    }
+
     public static Order create(Long userId, UUID receiverId, String deliveryAddress,
                                UUID originHubId, UUID destinationHubId, Integer totalPrice) {
         return Order.builder()
