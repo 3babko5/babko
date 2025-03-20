@@ -1,7 +1,10 @@
 package com.business.hub.application.service;
 
+import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubMovementCreateRequest;
+import com.business.hub.application.dto.response.HubMovementPageResponse;
 import com.business.hub.application.dto.response.HubMovementResponse;
+import com.business.hub.application.exception.HubExceptionCode;
 import com.business.hub.application.mapper.HubMovementMapper;
 import com.business.hub.domain.entity.Hub;
 import com.business.hub.domain.entity.HubMovement;
@@ -11,6 +14,8 @@ import com.business.hub.infrastructure.client.RouteNaverService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -98,5 +103,54 @@ public class HubMovementService {
         }
         Collections.reverse(path);
         return path;
+    }
+
+    public HubMovementResponse getHubMovement(UUID hubmovementId) {
+        HubMovement hubMoveMent = hubMovementRepository.findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubmovementId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+        return HubMovementMapper.toHubMovementResponse(hubMoveMent);
+    }
+
+
+    public HubMovementPageResponse<HubMovementResponse> getAllHubMovements(Pageable pageable) {
+        Page<HubMovement> hubMovement = hubMovementRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
+
+        return HubMovementPageResponse.of(hubMovement.map(HubMovementMapper::toHubMovementResponse));
+    }
+
+
+    public List<HubMovementResponse> getMovementsByDepartureHub(UUID depatureHubId) {
+        List<HubMovement> departureHubMovement = hubMovementRepository
+                .findByDepartureHub_HubIdAndDeletedByIsNullAndDeletedAtIsNull(depatureHubId);
+
+        if (departureHubMovement.isEmpty()) {
+            throw new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND);
+        }
+
+        return departureHubMovement.stream().map(HubMovementMapper::toHubMovementResponse).toList();
+    }
+
+    public List<HubMovementResponse> getMovementsByArrivalHub(UUID arrivalHubId) {
+        List<HubMovement> arrivalHubMovement = hubMovementRepository
+                .findByArrivalHub_HubIdAndDeletedByIsNullAndDeletedAtIsNull(arrivalHubId);
+
+        if (arrivalHubMovement.isEmpty()) {
+            throw new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND);
+        }
+
+        return arrivalHubMovement.stream().map(HubMovementMapper::toHubMovementResponse).toList();
+
+    }
+
+
+    public HubMovementResponse getMovementsByHubs(
+            UUID depatureHubId,
+            UUID arrivalHubId) {
+        HubMovement hubMovement = hubMovementRepository
+                .findByDepartureHub_HubIdAndArrivalHub_HubIdAndDeletedAtIsNullAndDeletedByIsNull(depatureHubId, arrivalHubId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+        return HubMovementMapper.toHubMovementResponse(hubMovement);
     }
 }
