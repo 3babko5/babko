@@ -30,7 +30,6 @@ public class HubService {
 
     @Transactional
     public HubResponse registerHub(@Valid HubCreateRequest requestDto, Long userId) throws BusinessLogicException {
-    // TODO: 허브 관리자 아이디 User에서 받아오기
         LocalDateTime createdAt = LocalDateTime.now();
         double[] coordinates = naverApiService.getCoordinates(requestDto.getHubAddress());
 
@@ -82,6 +81,17 @@ public class HubService {
 
         hubRepository.save(existingHub);
         return HubMapper.toHubResponse(existingHub);
+
+    }
+
+    public void deleteHub(
+            UUID hubId,
+            Long userId) {
+        Hub existingHub = hubRepository.findById(hubId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+
+        existingHub.setDeletedBy(userId);
+        hubRepository.save(existingHub);
 
     }
 }
