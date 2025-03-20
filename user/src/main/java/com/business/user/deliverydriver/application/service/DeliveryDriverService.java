@@ -10,9 +10,8 @@ import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.domain.entity.DriverType;
 import com.business.user.deliverydriver.domain.repository.DeliveryDriverRepository;
 import com.business.user.deliverydriver.infrastructure.client.DeliveryRouteClient;
-import com.business.user.deliverydriver.infrastructure.client.HubClientService;
+import com.business.user.deliverydriver.infrastructure.client.HubClient;
 import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryRouteClientResponseDto;
-import com.business.user.deliverydriver.infrastructure.repository.DeliveryDriverJpaRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryDriverService {
 
   private final DeliveryDriverRepository deliveryDriverRepository;
-  private final HubClientService hubClientService;
+  private final HubClient hubClient;
   private final DeliveryRouteClient deliveryRouteClient;
 
   /**
@@ -45,7 +44,9 @@ public class DeliveryDriverService {
     }
 
     if (request.getDriverType() == DriverType.COMPANY) {
-      hubClientService.validateHubId(request.getHubId());
+      if (request.getHubId() == null || !hubClient.existsByHubId(request.getHubId().toString())) {
+        throw new BusinessLogicException(DeliveryDriverErrorCode.HUB_NOT_FOUND);
+      }
     }
 
     if (request.getDriverType() == DriverType.HUB) {
