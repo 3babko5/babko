@@ -16,6 +16,6 @@ public interface UserClient {
 	@PostMapping("/register")
 	AuthSignupResponseDto registerUser(@RequestBody AuthSignupRequestDto request);
 
-	@GetMapping("/{username}")
-	AuthSigninResponseDto getUser(@PathVariable("username") String username);
+	@GetMapping("/{user_id}") // 사용자 조회 요청
+	AuthUserSigninResponseDto getUserByUserId(@PathVariable("user_id") String userId);
 }
