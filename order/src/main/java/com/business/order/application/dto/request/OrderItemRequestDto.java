@@ -1,5 +1,7 @@
 package com.business.order.application.dto.request;
 
+import com.business.order.domain.entity.Order;
+import com.business.order.domain.entity.OrderItem;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,4 +17,9 @@ public class OrderItemRequestDto {
     private UUID productId;
     private UUID supplierId;
     private Integer orderItemAmount;
+    private Long orderItemPrice;
+
+    public OrderItem createOrderItem(Order order,UUID supplierId) {
+        return OrderItem.create(order, productId, supplierId, orderItemAmount, orderItemPrice);
+    }
 }
