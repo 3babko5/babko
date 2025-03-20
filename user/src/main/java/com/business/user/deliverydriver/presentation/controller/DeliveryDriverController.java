@@ -34,5 +34,4 @@ public class DeliveryDriverController {
 
     return ResponseEntity.ok(assignedDrivers);
   }
-
 }
