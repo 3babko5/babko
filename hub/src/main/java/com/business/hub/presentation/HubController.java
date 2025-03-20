@@ -6,7 +6,6 @@ import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubCreateRequest;
 import com.business.hub.application.dto.request.HubUpdateRequest;
 import com.business.hub.application.dto.response.HubResponse;
-import com.business.hub.application.mapper.HubMapper;
 import com.business.hub.application.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,16 @@ public class HubController {
 
         return ResponseEntity.ok(hubResponse);
 
+    }
 
+    @DeleteMapping("/{hubId}")
+    public ResponseEntity<HubResponse> deleteHub(
+            @PathVariable UUID hubId,
+            Long userId
+    ){
+        userId =111L;
+        hubService.deleteHub(hubId, userId);
+        return ResponseEntity.noContent().build();
     }
 
 
