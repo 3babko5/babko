@@ -10,7 +10,11 @@ import org.springframework.http.HttpStatus;
 public enum OrderExceptionCode implements ExceptionCode {
 
     DELIVERY_REQUEST_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "배송 생성 요청 실패"),
-    DELIVERY_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 상태를 찾을 수 없습니다.");
+    DELIVERY_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 상태를 찾을 수 없습니다."),
+
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 없는 주문입니다");
+
+
 
     private final HttpStatus status;
     private final String message;
