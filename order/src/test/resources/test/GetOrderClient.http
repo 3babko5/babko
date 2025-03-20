@@ -1,0 +1,9 @@
+### 1. 주문 단건 조회 - 성공
+GET http://localhost:8082/api/v1/orders/d807cfe9-d191-4b35-8165-180128cbfdef
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+### 2. 주문 단건 조회 - 없는 주문 요청
+GET http://localhost:8082/api/v1/orders/e82764a7-87f2-4b2e-a9c5-2c43bde53bd8
+Authorization: Bearer jwt_token_string
+Accept: application/json
