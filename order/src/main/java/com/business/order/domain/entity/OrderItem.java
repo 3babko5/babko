@@ -1,20 +1,21 @@
 package com.business.order.domain.entity;
 
-import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.UUID;
 
+@Slf4j
 @Entity
 @Table(name = "p_order_items")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrderItem extends BaseDataEntity {
+public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_item_id", updatable = false, nullable = false)
+    @Column(name = "order_item_id")
     private UUID orderItemId;
 
     @Column(name = "product_id", nullable = false)
@@ -34,10 +35,21 @@ public class OrderItem extends BaseDataEntity {
     private Order order;
 
     @Builder
-    public static OrderItem create(Order order, UUID productId, Integer orderItemAmount, Long orderItemPrice) {
+    public OrderItem(Order order, UUID productId, UUID supplierId, Integer orderItemAmount,
+                      Long orderItemPrice) {
+        this.order = order;
+        this.productId = productId;
+        this.supplierId = supplierId;
+        this.orderItemAmount = orderItemAmount;
+        this.orderItemPrice = orderItemPrice;
+    }
+
+    public static OrderItem create(Order order, UUID productId, UUID supplierId,
+                                   Integer orderItemAmount, Long orderItemPrice) {
         return OrderItem.builder()
                 .order(order)
                 .productId(productId)
+                .supplierId(supplierId)
                 .orderItemAmount(orderItemAmount)
                 .orderItemPrice(orderItemPrice)
                 .build();

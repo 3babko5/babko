@@ -18,8 +18,7 @@ public class OrderCreateResponseDto {
     private UUID receiverId;
     private String deliveryAddress;
     private Integer totalPrice;
-    private List<OrderItemResponseDto> orderItems;
-    private UUID supplierId;
     private UUID deliveryId;
+    private List<OrderItemResponseDto> orderItems;
 
 }
