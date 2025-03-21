@@ -9,16 +9,13 @@ import java.util.List;
 import java.util.UUID;
 
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderCreateResponseDto {
-
+@Builder
+public class OrderGetResponseDto {
     private UUID orderId;
     private UUID receiverId;
     private String deliveryAddress;
     private Integer totalPrice;
-//    private UUID deliveryId;
     private List<OrderItemResponseDto> orderItems;
-
 }

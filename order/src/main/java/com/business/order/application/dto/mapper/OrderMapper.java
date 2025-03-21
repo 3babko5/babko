@@ -1,6 +1,7 @@
 package com.business.order.application.dto.mapper;
 
 import com.business.order.application.dto.response.OrderCreateResponseDto;
+import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.dto.response.OrderItemResponseDto;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
@@ -17,6 +18,7 @@ public class OrderMapper {
                 .deliveryAddress(order.getDeliveryAddress())
                 .totalPrice(order.getTotalPrice())
                 .orderItems(toOrderItemResponseList(orderItems))
+//                .deliveryId(order.getDeliveryId())
                 .build();
     }
 
@@ -33,6 +35,16 @@ public class OrderMapper {
                 .orderItemPrice(item.getOrderItemPrice())
                 .productId(item.getProductId())
                 .supplierId(item.getSupplierId())
+                .build();
+    }
+
+    public static OrderGetResponseDto toOrderGetResponse(Order order) {
+        return OrderGetResponseDto.builder()
+                .orderId(order.getOrderId())
+                .receiverId(order.getReceiverId())
+                .deliveryAddress(order.getDeliveryAddress())
+                .totalPrice(order.getTotalPrice())
+                .orderItems(toOrderItemResponseList(order.getOrderItems()))
                 .build();
     }
 }

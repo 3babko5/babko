@@ -4,12 +4,12 @@ import com.business.common.application.exception.BusinessLogicException;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.mapper.OrderMapper;
+import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
 import com.business.order.domain.repository.OrderRepository;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
-import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,12 +50,23 @@ public class OrderService {
 
         savedOrder.addOrderItems(orderItems);
 
-        OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
-        if(!deliveryFeignClient.createDelivery(deliveryRequest)){
-            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
-        }
+//        OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
+//        if(!deliveryFeignClient.createDelivery(deliveryRequest)){
+//            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
+//        }
 
         return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
     }
 
+    @Transactional(readOnly = true)
+    public OrderGetResponseDto getOrder(UUID orderId) {
+
+        Order order = orderRepository.findByOrderIdWithItems(orderId);
+
+        if (order == null) {
+            throw new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND);
+        }
+
+        return OrderMapper.toOrderGetResponse(order);
+    }
 }

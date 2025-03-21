@@ -5,6 +5,8 @@ import com.business.order.domain.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
+import java.util.UUID;
+
 @Repository
 @RequiredArgsConstructor
 public class OrderRepositoryImpl implements OrderRepository {
@@ -15,4 +17,10 @@ public class OrderRepositoryImpl implements OrderRepository {
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }
+
+    @Override
+    public Order findByOrderIdWithItems(UUID orderId) {
+        return orderJpaRepository.findByOrderIdWithItems(orderId);
+    }
+
 }
