@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class DeliveryRouteClientResponseDto {
+public class DeliveryClientResponseDto {
 
   private UUID deliveryRouteId;
   private UUID deliveryId;
@@ -15,7 +15,7 @@ public class DeliveryRouteClientResponseDto {
   private Long routeSequence;
   private String deliveryAddress;
 
-  public DeliveryRouteClientResponseDto(
+  public DeliveryClientResponseDto(
       UUID deliveryRouteId,
       UUID deliveryId,
       UUID originHubId,
