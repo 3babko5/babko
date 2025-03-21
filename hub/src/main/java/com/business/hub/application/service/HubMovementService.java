@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -189,5 +190,36 @@ public class HubMovementService {
 
         hubMovement.setDeletedBy(userId);
         hubMovementRepository.save(hubMovement);
+    }
+
+    public List<HubMovementResponse> getRoutes(
+            UUID departureHubId,
+            UUID arrivalHubId) {
+
+        Hub departureHub = hubRepository.findById(departureHubId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+
+        Hub arrivalHub = hubRepository.findById(arrivalHubId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+
+        List<Hub> allHubs = hubRepository.findAll();
+        Map<UUID, Hub> hubMap = allHubs.stream().collect(Collectors.toMap(Hub::getHubId, h -> h));
+
+        List<Hub> shortestPath = findShortestPath(departureHub, arrivalHub, hubMap);
+
+        List<HubMovementResponse> result = new ArrayList<>();
+
+        for (int i = 0; i < shortestPath.size() - 1; i++) {
+            UUID fromHub = shortestPath.get(i).getHubId();
+            UUID toHub = shortestPath.get(i + 1).getHubId();
+
+            HubMovement movement = hubMovementRepository
+                    .findByDepartureHub_HubIdAndArrivalHub_HubIdAndDeletedAtIsNullAndDeletedByIsNull(fromHub, toHub)
+                    .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+            result.add(HubMovementMapper.toHubMovementResponse(movement));
+        }
+
+        return result;
     }
 }
