@@ -1,0 +1,36 @@
+### 1. 정상적인 허브 이동 정보 등록
+POST http://localhost:8086/api/v1/hub-movements
+Content-Type: application/json
+
+{
+  "departureHubId": "bc71a7fc-4f55-4cdb-8813-b4aedf99d909",
+  "arrivalHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e"
+}
+
+### 2. 출발 허브가 존재하지 않는 경우
+POST http://localhost:8086/api/v1/hub-movements
+Content-Type: application/json
+
+{
+  "departureHubId": "00000000-0000-0000-0000-000000000000",
+  "arrivalHubId": "660f8501-f39c-41d4-a716-556766551111"
+}
+
+### 3. 도착 허브가 존재하지 않는 경우
+POST http://localhost:8086/api/v1/hub-movements
+Content-Type: application/json
+
+{
+  "departureHubId": "550e8400-e29b-41d4-a716-446655440000",
+  "arrivalHubId": "00000000-0000-0000-0000-000000000000"
+}
+
+### 4. 출발 허브와 도착 허브가 동일한 경우
+POST http://localhost:8086/api/v1/hub-movements
+Content-Type: application/json
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+{
+  "departureHubId": "550e8400-e29b-41d4-a716-446655440000",
+  "arrivalHubId": "550e8400-e29b-41d4-a716-446655440000"
+}
