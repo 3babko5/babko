@@ -11,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 import java.math.BigDecimal;
 
 @Service
+@ConditionalOnProperty(name = "naver.api.client-id", matchIfMissing = false)
 public class NaverApiService {
 
     @Value("${naver.api.client-id}")
