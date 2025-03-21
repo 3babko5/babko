@@ -17,6 +17,9 @@ public class CreateProductRequestDto {
     @NotNull(message = "상품 가격은 필수입니다.")
     private Integer productPrice;
 
+    @NotNull(message = "상품 수량은 필수입니다.")
+    private Integer productQuantity;
+
     @NotNull(message = "해당 상품을 갖고 있는 업체 ID는 필수입니다.")
     private UUID companyId;
 }
