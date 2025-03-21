@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HubMovementResponseDto {
+public class HubRoutesResponseDto {
 
   private UUID departureHubId;
   private UUID arrivalHubId;

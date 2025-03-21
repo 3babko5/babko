@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class HubMovementRequestDto {
+public class HubRoutesRequestDto {
 
   private UUID departureHubId;
   private UUID arrivalHubId;
