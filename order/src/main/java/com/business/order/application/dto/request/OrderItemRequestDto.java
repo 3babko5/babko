@@ -19,7 +19,15 @@ public class OrderItemRequestDto {
     private Integer orderItemAmount;
     private Long orderItemPrice;
 
-    public OrderItem createOrderItem(Order order,UUID supplierId) {
+    public void setSupplierId(UUID supplierId) {
+        this.supplierId = supplierId;
+    }
+
+    public void setOrderItemPrice(Long orderItemPrice) {
+        this.orderItemPrice = orderItemPrice;
+    }
+
+    public OrderItem createOrderItem(Order order) {
         return OrderItem.create(order, productId, supplierId, orderItemAmount, orderItemPrice);
     }
 }
