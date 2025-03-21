@@ -155,6 +155,7 @@ public class HubMovementService {
         return HubMovementMapper.toHubMovementResponse(hubMovement);
     }
 
+    @Transactional
     public HubMovementResponse updateHubMovement(
             UUID hubMovementId,
             @Valid HubMovementUpdateRequest request,
@@ -177,5 +178,16 @@ public class HubMovementService {
         return HubMovementMapper.toHubMovementResponse(hubMovement);
     }
 
+    @Transactional
+    public void deleteHubMovement(
+            UUID hubMovementId,
+            Long userId) {
 
+        HubMovement hubMovement = hubMovementRepository
+                .findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubMovementId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+        hubMovement.setDeletedBy(userId);
+        hubMovementRepository.save(hubMovement);
+    }
 }
