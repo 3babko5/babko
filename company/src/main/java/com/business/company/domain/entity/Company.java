@@ -1,5 +1,6 @@
 package com.business.company.domain.entity;
 
+import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,7 +10,7 @@ import java.util.UUID;
 @Table(name = "p_companies")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Company {
+public class Company extends BaseDataEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
