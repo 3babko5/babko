@@ -50,7 +50,7 @@ public class JwtTokenProvider {
 		return Long.parseLong(Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject());
 	}
 
-	// 토큰에서 역할 추출
+	// 토큰에서 역할 추출 (이 부분 다시 변경)
 	public String getRoleFromToken(String token) {
 		return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get("role", String.class);
 	}
