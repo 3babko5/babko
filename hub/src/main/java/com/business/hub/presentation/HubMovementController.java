@@ -106,4 +106,14 @@ public class HubMovementController {
         hubMovementService.deleteHubMovement(hubMovementId, userId);
         return ResponseEntity.noContent().build();
     }
+    @GetMapping("/routes")
+    public ResponseEntity<List<HubMovementResponse>> getRoutes(
+            @RequestParam UUID departureHubId,
+            @RequestParam UUID arrivalHubId
+    ) {
+        List<HubMovementResponse> route = hubMovementService.getRoutes(departureHubId, arrivalHubId);
+        return ResponseEntity.ok(route);
+    }
+
+
 }
