@@ -9,9 +9,9 @@ import com.business.user.deliverydriver.application.exception.DeliveryDriverErro
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.domain.entity.DriverType;
 import com.business.user.deliverydriver.domain.repository.DeliveryDriverRepository;
-import com.business.user.deliverydriver.infrastructure.client.DeliveryRouteClient;
+import com.business.user.deliverydriver.infrastructure.client.DeliveryClient;
 import com.business.user.deliverydriver.infrastructure.client.HubClient;
-import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryRouteClientResponseDto;
+import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryClientResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public class DeliveryDriverService {
 
   private final DeliveryDriverRepository deliveryDriverRepository;
   private final HubClient hubClient;
-  private final DeliveryRouteClient deliveryRouteClient;
+  private final DeliveryClient deliveryClient;
 
   /**
    * 🚀 배송 담당자 생성
@@ -81,11 +81,11 @@ public class DeliveryDriverService {
    */
   public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId) {
 
-    List<DeliveryRouteClientResponseDto> routes = deliveryRouteClient.getRoutesByDeliveryId(deliveryId);
+    List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId);
 
     List<AssignDeliveryDriverResponseDto> assignedDrivers = new ArrayList<>();
 
-    for (DeliveryRouteClientResponseDto route : routes) {
+    for (DeliveryClientResponseDto route : routes) {
       Long assignedDriverId;
 
       if (isLastDestination(route)) {
@@ -151,7 +151,7 @@ public class DeliveryDriverService {
   /**
    * 마지막 배송 경로인지 확인 (배송지면 업체 담당자 배정)
    */
-  private boolean isLastDestination(DeliveryRouteClientResponseDto route) {
+  private boolean isLastDestination(DeliveryClientResponseDto route) {
     return route.getDeliveryAddress() != null;
   }
 }
