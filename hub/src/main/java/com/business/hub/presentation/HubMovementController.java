@@ -1,8 +1,10 @@
 package com.business.hub.presentation;
 
 import com.business.hub.application.dto.request.HubMovementCreateRequest;
+import com.business.hub.application.dto.request.HubMovementUpdateRequest;
 import com.business.hub.application.dto.response.HubMovementPageResponse;
 import com.business.hub.application.dto.response.HubMovementResponse;
+import com.business.hub.application.mapper.HubMovementMapper;
 import com.business.hub.application.service.HubMovementService;
 import com.business.hub.domain.entity.HubMovement;
 import com.business.hub.domain.repository.HubMovementRepository;
@@ -84,4 +86,24 @@ public class HubMovementController {
         return ResponseEntity.ok(response);
     }
 
+    @PatchMapping("/{hubMovementId}")
+    public ResponseEntity<HubMovementResponse> updateHubMovement(
+            @PathVariable UUID hubMovementId,
+            @RequestBody @Valid HubMovementUpdateRequest request,
+            Long userId
+    ){
+        userId = 1112L;
+        HubMovementResponse response = hubMovementService.updateHubMovement(hubMovementId, request, userId);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{hubMovementId}")
+    public ResponseEntity<HubMovementResponse> deleteHubMovement(
+            @PathVariable UUID hubMovementId,
+            Long userId
+    ){
+        userId = 1111L;
+        hubMovementService.deleteHubMovement(hubMovementId, userId);
+        return ResponseEntity.noContent().build();
+    }
 }

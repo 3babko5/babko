@@ -28,22 +28,22 @@ GET http://localhost:8086/api/v1/hub-movements/arrival/d3b0b58d-5fc8-4c8e-987e-1
 Authorization: Bearer jwt_token_string
 Accept: application/json
 
-### 1️⃣ 특정 허브 간 이동 정보 조회 (성공)
+### 7. 특정 허브 간 이동 정보 조회 (성공)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=8212d99c-c9a2-4e86-9f46-41627ed23760&arrivalHubId=7609a092-134a-428a-9cb6-bfa8a7db1d9e
 Authorization: Bearer jwt_token_string
 Accept: application/json
 
-### 2️⃣ 특정 허브 간 이동 정보 조회 (출발 허브가 존재하지 않는 경우)
+### 8. 특정 허브 간 이동 정보 조회 (출발 허브가 존재하지 않는 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=d3b0b58d-5fc8-4c8e-987e-1e2b238af000&arrivalHubId=5c434274-b54f-46d7-88a7-2f8178823358
 Authorization: Bearer jwt_token_string
 Accept: application/json
 
-### 3️⃣ 특정 허브 간 이동 정보 조회 (도착 허브가 존재하지 않는 경우)
+### 9. 특정 허브 간 이동 정보 조회 (도착 허브가 존재하지 않는 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476&arrivalHubId=d3b0b58d-5fc8-4c8e-987e-1e2b238af000
 Authorization: Bearer jwt_token_string
 Accept: application/json
 
-### 3️⃣ 특정 허브 간 이동 정보 조회 (출발과 도착 허브가 같은 경우)
+### 10. 특정 허브 간 이동 정보 조회 (출발과 도착 허브가 같은 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476&arrivalHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476
 Authorization: Bearer jwt_token_string
 Accept: application/json

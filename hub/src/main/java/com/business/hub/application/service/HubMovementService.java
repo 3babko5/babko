@@ -2,6 +2,7 @@ package com.business.hub.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubMovementCreateRequest;
+import com.business.hub.application.dto.request.HubMovementUpdateRequest;
 import com.business.hub.application.dto.response.HubMovementPageResponse;
 import com.business.hub.application.dto.response.HubMovementResponse;
 import com.business.hub.application.exception.HubExceptionCode;
@@ -152,5 +153,41 @@ public class HubMovementService {
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
 
         return HubMovementMapper.toHubMovementResponse(hubMovement);
+    }
+
+    @Transactional
+    public HubMovementResponse updateHubMovement(
+            UUID hubMovementId,
+            @Valid HubMovementUpdateRequest request,
+            Long userId) {
+        HubMovement hubMovement = hubMovementRepository
+                .findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubMovementId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+        Hub departureHub = hubRepository.findById(request.getDepartureHubId())
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+        Hub arrivalHub = hubRepository.findById(request.getArrivalHubId())
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+
+        BigDecimal newDistance = BigDecimal.valueOf(routeNaverService.getDistance(departureHub, arrivalHub));
+        int newDurationTime = routeNaverService.getDuration(departureHub, arrivalHub);
+
+        hubMovement.update(departureHub, arrivalHub, newDistance, newDurationTime, userId);
+        hubMovementRepository.save(hubMovement);
+
+        return HubMovementMapper.toHubMovementResponse(hubMovement);
+    }
+
+    @Transactional
+    public void deleteHubMovement(
+            UUID hubMovementId,
+            Long userId) {
+
+        HubMovement hubMovement = hubMovementRepository
+                .findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubMovementId)
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
+
+        hubMovement.setDeletedBy(userId);
+        hubMovementRepository.save(hubMovement);
     }
 }

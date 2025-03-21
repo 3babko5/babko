@@ -48,4 +48,17 @@ public class HubMovement extends BaseDataEntity {
                 .createdBy(createdBy)
                 .build();
     }
+
+    public void update(
+            Hub departureHub,
+            Hub arrivalHub,
+            BigDecimal distance,
+            int durationTime,
+            Long updatedBy) {
+        this.departureHub = departureHub;
+        this.arrivalHub = arrivalHub;
+        this.distance = distance;
+        this.durationTime = durationTime;
+        this.setUpdatedBy(updatedBy);
+    }
 }

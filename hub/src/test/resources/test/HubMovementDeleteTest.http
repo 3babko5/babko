@@ -1,0 +1,15 @@
+### 1. 삭제 요청 성공
+DELETE http://localhost:8086/api/v1/hub-movements/a976d25f-6788-4e49-b5c2-d19886ca4d07
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+
+### 2. 존재하지 않는 허브 이동 정보 삭제 요청
+DELETE http://localhost:8086/api/v1/hub-movements/a976d25f-6788-4e49-b5c2-d19886ca4d03
+Authorization: Bearer jwt_token_string
+Accept: application/json
+
+### 3. 이미 삭제된 허브 이동 정보 삭제 요청
+DELETE http://localhost:8086/api/v1/hub-movements/a976d25f-6788-4e49-b5c2-d19886ca4d07
+Authorization: Bearer invalid_or_non_admin_token
+Accept: application/json
