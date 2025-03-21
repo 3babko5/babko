@@ -9,9 +9,9 @@ import com.business.user.deliverydriver.application.exception.DeliveryDriverErro
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.domain.entity.DriverType;
 import com.business.user.deliverydriver.domain.repository.DeliveryDriverRepository;
-import com.business.user.deliverydriver.infrastructure.client.DeliveryRouteClient;
+import com.business.user.deliverydriver.infrastructure.client.DeliveryClient;
 import com.business.user.deliverydriver.infrastructure.client.HubClient;
-import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryRouteClientResponseDto;
+import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryClientResponseDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +28,8 @@ public class DeliveryDriverService {
 
   private final DeliveryDriverRepository deliveryDriverRepository;
   private final HubClient hubClient;
-  private final DeliveryRouteClient deliveryRouteClient;
+  private final DeliveryClient deliveryClient;
 
-  /**
-   * 🚀 배송 담당자 생성
-   */
   public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request) {
 
     if (deliveryDriverRepository.existsById(request.getDeliveryDriverId())) {
@@ -76,16 +73,13 @@ public class DeliveryDriverService {
     return DeliveryDriverMapper.toDto(deliveryDriver);
   }
 
-  /**
-   * 특정 배송 ID에 대해 전체 배송 경로 조회 후, 배송 담당자 배정
-   */
   public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId) {
 
-    List<DeliveryRouteClientResponseDto> routes = deliveryRouteClient.getRoutesByDeliveryId(deliveryId);
+    List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId);
 
     List<AssignDeliveryDriverResponseDto> assignedDrivers = new ArrayList<>();
 
-    for (DeliveryRouteClientResponseDto route : routes) {
+    for (DeliveryClientResponseDto route : routes) {
       Long assignedDriverId;
 
       if (isLastDestination(route)) {
@@ -100,9 +94,6 @@ public class DeliveryDriverService {
     return assignedDrivers;
   }
 
-  /**
-   * 배정된 담당자를 배송 담당자 테이블에 저장하고 반환
-   */
   private DeliveryDriver saveAssignedDriver(Long deliveryDriverId, UUID deliveryRouteId, Long routeSequence) {
     DeliveryDriver driver = deliveryDriverRepository.findById(deliveryDriverId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));
@@ -112,9 +103,6 @@ public class DeliveryDriverService {
     return deliveryDriverRepository.save(driver);
   }
 
-  /**
-   * 허브 담당자 & 업체 담당자 배정 (순차적 로테이션)
-   */
   private Long assignNextDeliveryDriver(DriverType driverType, UUID hubId) {
     Optional<DeliveryDriver> lastAssignedDriver =
         driverType == DriverType.COMPANY
@@ -140,18 +128,12 @@ public class DeliveryDriverService {
         .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));
   }
 
-  /**
-   * 담당자 할당한 시간 업데이트
-   */
   private DeliveryDriver updateAssignedDriver(DeliveryDriver driver) {
     driver.updateAssignAt(LocalDateTime.now());
     return driver;
   }
 
-  /**
-   * 마지막 배송 경로인지 확인 (배송지면 업체 담당자 배정)
-   */
-  private boolean isLastDestination(DeliveryRouteClientResponseDto route) {
+  private boolean isLastDestination(DeliveryClientResponseDto route) {
     return route.getDeliveryAddress() != null;
   }
 }
