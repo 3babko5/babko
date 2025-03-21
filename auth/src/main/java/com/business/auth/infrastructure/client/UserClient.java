@@ -6,10 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.business.auth.application.dto.request.AuthUserSignupRequestDto;
-import com.business.auth.application.dto.response.AuthUserSigninResponseDto;
-import com.business.auth.application.dto.response.AuthSignupResponseDto;
-
 @FeignClient(name = "user-service", url = "http://user-service:8084/api/v1/users")
 public interface UserClient {
 

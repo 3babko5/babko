@@ -1,19 +1,18 @@
 package com.business.auth.application.dto.response;
 
-import com.business.auth.domain.entity.UserType;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+/**
+ * 회원가입 로그인 응답 DTO
+ */
 @Getter
 @Builder
-public class AuthSignupResponseDto {
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthLoginResponseDto {
 	private Long userId;
-	private String username;
-	private String email;
-	private String slackId;
-	private UserType role;
+	private String accessToken;
+	private String refreshToken;
 }
