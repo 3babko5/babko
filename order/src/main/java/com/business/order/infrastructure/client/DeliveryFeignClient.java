@@ -15,6 +15,6 @@ public interface DeliveryFeignClient {
     @PostMapping
     boolean createDelivery(@RequestBody OrderDeliveryRequestDto request);
 
-    @GetMapping("/{orderId}/deliveryStatus")
+    @GetMapping("/{orderId}/deliveryStatus")//url 확인 필요
     String getDeliveryStatus(@PathVariable("orderId")UUID orderId);
 }

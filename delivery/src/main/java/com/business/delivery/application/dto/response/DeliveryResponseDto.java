@@ -1,5 +1,6 @@
-package com.business.delivery.application.dto.request;
+package com.business.delivery.application.dto.response;
 
+import com.business.delivery.domain.entity.DeliveryStatus;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateDeliveryRouteRequestDto {
+public class DeliveryResponseDto {
 
   private UUID deliveryId;
-  private UUID startHubId;
-  private UUID endHubId;
+  private UUID orderId;
+  private DeliveryStatus deliveryStatus;
 }
