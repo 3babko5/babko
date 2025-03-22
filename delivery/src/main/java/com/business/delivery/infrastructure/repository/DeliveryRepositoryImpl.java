@@ -1,7 +1,9 @@
 package com.business.delivery.infrastructure.repository;
 
+import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.util.QueryDslUtil;
 import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.exception.DeliveryErrorCode;
 import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.QDelivery;
 import com.business.delivery.domain.repository.DeliveryRepository;
@@ -10,6 +12,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -89,5 +92,10 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
 
     return PageableExecutionUtils.getPage(deliveries, pageable, () -> total == null ? 0 : total);
     }
-}
 
+  @Override
+  public Delivery findByDeliveryId(UUID deliveryId) {
+    return deliveryJpaRepository.findById(deliveryId)
+        .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
+  }
+}
