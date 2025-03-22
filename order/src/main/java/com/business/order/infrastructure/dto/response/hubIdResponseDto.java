@@ -1,6 +1,6 @@
 package com.business.order.infrastructure.dto.response;
 
-import com.business.company.domain.entity.CompanyType;
+import com.business.order.domain.entity.CompanyType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
