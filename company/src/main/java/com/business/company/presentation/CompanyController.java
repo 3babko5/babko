@@ -25,7 +25,7 @@ public class CompanyController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<SearchCompanyResponseDto> searchCompanies(
             @RequestParam(required = false) String companyName,
             @RequestParam(required = false) CompanyType companyType,

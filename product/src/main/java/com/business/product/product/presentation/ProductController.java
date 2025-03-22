@@ -26,7 +26,7 @@ public class ProductController {
         return ResponseEntity.status(201).body(response);
     }
 
-    @GetMapping("/search")
+    @GetMapping
     public ResponseEntity<SearchProductResponseDto> searchProducts(
             @RequestParam(required = false) String productName,
             @RequestParam(required = false) UUID companyId,

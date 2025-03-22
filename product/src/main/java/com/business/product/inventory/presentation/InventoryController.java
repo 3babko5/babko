@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/inventories")
 public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @PutMapping("/update")
+    @PutMapping
     public ResponseEntity<InventoryResponseDto> updateInventory(@RequestBody UpdateInventoryRequestDto dto) {
         InventoryResponseDto response = inventoryService.updateInventory(dto);
         return ResponseEntity.ok(response);
