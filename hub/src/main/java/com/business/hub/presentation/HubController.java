@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,6 +84,13 @@ public class HubController {
     {
         HubPageResponse<HubResponse> hubResponse = hubService.getAllHubs(pageable);
         return ResponseEntity.ok(hubResponse);
+    }
+
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+
+        binder.initDirectFieldAccess();
     }
 
     // 허브 검색
