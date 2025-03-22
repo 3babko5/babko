@@ -81,9 +81,13 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
             .limit(pageable.getPageSize())
             .fetch();
 
-    long total = queryFactory.selectFrom(delivery).where(builder).fetchCount();
+    Long total = queryFactory
+        .select(delivery.count())
+        .from(delivery)
+        .where(builder)
+        .fetchOne();
 
-    return PageableExecutionUtils.getPage(deliveries, pageable, () -> total);
+    return PageableExecutionUtils.getPage(deliveries, pageable, () -> total == null ? 0 : total);
     }
 }
 
