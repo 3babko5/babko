@@ -55,22 +55,11 @@ public class OrderService {
         UUID supplierId = items.get(0).getSupplierId();//공급업체는 한 주문 당 하나
         UUID receiverId = request.getReceiverId();
 
-        //공급업체의 허브id 조회
         hubIdResponseDto supplierResponse = companyFeignClient.searchCompanies(CompanyType.SUPPLIER);
-        UUID originHubId = supplierResponse.getCompany().stream()
-                .filter(c -> c.getCompanyId().equals(supplierId))
-                .findFirst()
-                .map(hubIdResponseDto.CompanyData::getHubId)
-                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
+        UUID originHubId = extractHubIdFromCompanyResponse(supplierResponse, supplierId);
 
-        //수령업체의 허브id 조회
         hubIdResponseDto receiverResponse = companyFeignClient.searchCompanies(CompanyType.RECEIVER);
-        UUID destinationHubId = receiverResponse.getCompany().stream()
-                .filter(c -> c.getCompanyId().equals(receiverId))
-                .findFirst()
-                .map(hubIdResponseDto.CompanyData::getHubId)
-                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
-
+        UUID destinationHubId = extractHubIdFromCompanyResponse(receiverResponse, receiverId);
         Order order = request.createOrder(userId, originHubId, destinationHubId);
 
         List<OrderItem> orderItems = items.stream()
@@ -115,5 +104,13 @@ public class OrderService {
         orderRepository.save(order);
         log.info("3. Cancel order {}", orderId);
         return OrderMapper.toOrderStatusResponseDto(order);
+    }
+
+    private UUID extractHubIdFromCompanyResponse(hubIdResponseDto response, UUID targetCompanyId) {
+        return response.getCompany().stream()
+                .filter(c -> c.getCompanyId().equals(targetCompanyId))
+                .findFirst()
+                .map(hubIdResponseDto.CompanyData::getHubId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
 }
