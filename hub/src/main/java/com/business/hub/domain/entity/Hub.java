@@ -3,7 +3,6 @@ package com.business.hub.domain.entity;
 import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -52,7 +51,7 @@ public class Hub extends BaseDataEntity {
             BigDecimal hubLatitude,
             BigDecimal hubLongitude,
             Long hubManagerId) {
-        this.setCreatedBy(createdBy);
+        this.createdBy(createdBy);
         this.hubName = hubName;
         this.hubAddress = hubAddress;
         this.hubLatitude = hubLatitude;
@@ -73,7 +72,7 @@ public class Hub extends BaseDataEntity {
         this.hubLatitude = hubLatitude;
         this.hubLongitude = hubLongitude;
         this.hubManagerId = hubManagerId;
-        this.setUpdatedBy(updatedBy);
+        this.updatedBy(updatedBy);
     }
 
 }

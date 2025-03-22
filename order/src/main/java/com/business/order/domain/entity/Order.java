@@ -58,7 +58,7 @@ public class Order extends BaseDataEntity {
         this.originHubId = originHubId;
         this.destinationHubId = destinationHubId;
         this.totalPrice = totalPrice;
-        setCreatedBy(userId);
+        createdBy(userId);
     }
 
     public static Order create(Long userId, UUID receiverId, String deliveryAddress,
@@ -71,7 +71,7 @@ public class Order extends BaseDataEntity {
                 .destinationHubId(destinationHubId)
                 .totalPrice(totalPrice)
                 .build();
-        order.setCreatedBy(userId);
+        order.createdBy(userId);
         return order;
     }
 
@@ -81,6 +81,6 @@ public class Order extends BaseDataEntity {
 
     public void cancelOrder(Long userId) {
         this.orderStatus = OrderStatus.CANCELED;
-        setUpdatedBy(userId);
+        updatedBy(userId);
     }
 }
