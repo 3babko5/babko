@@ -106,5 +106,9 @@ public class Delivery extends BaseDataEntity {
       deliveryRoute.associateDelivery(this);
     }
   }
+
+  public void softDelete(Long userId) {
+    this.setDeletedBy(userId);
+  }
 }
 
