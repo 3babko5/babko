@@ -13,9 +13,8 @@ public enum OrderExceptionCode implements ExceptionCode {
     DELIVERY_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 상태를 찾을 수 없습니다."),
 
     PRODUCT_QUANTITY_EXCEEDED(HttpStatus.BAD_REQUEST, "해당상품이 품절되었습니다."),
-    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 없는 주문입니다");
-
-
+    ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 주문은 없는 주문입니다"),
+    ORDER_CANNOT_BE_CANCELED(HttpStatus.BAD_REQUEST, "배송이 시작되어 주문을 취소할 수 없습니다.");
 
     private final HttpStatus status;
     private final String message;
