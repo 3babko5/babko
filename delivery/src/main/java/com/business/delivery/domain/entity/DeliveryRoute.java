@@ -82,18 +82,6 @@ public class DeliveryRoute extends BaseDataEntity {
   @Comment("실제 시간")
   private Long actualTime;
 
-  @NotNull
-  @Column(nullable = false)
-  @JdbcTypeCode(SqlTypes.UUID)
-  @Comment("허브 배송 담당자 ID")
-  private UUID hubDriverId;
-
-  @NotNull
-  @Column(nullable = false)
-  @JdbcTypeCode(SqlTypes.UUID)
-  @Comment("업체 배송 담당자 ID")
-  private UUID companyDriverId;
-
   private DeliveryRoute(Delivery delivery, Long routeSequence, UUID originHubId, UUID destinationHubId,
       BigDecimal estimatedDistance, Long estimatedTime, DeliveryRouteStatus deliveryRouteStatus, String deliveryAddress) {
 
