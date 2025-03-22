@@ -1,13 +1,15 @@
-package com.business.product.product.application.dto.response;
+package com.business.product.inventory.application.dto.response;
 
-import lombok.Builder;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
+import lombok.Builder;
 
 import java.util.UUID;
 
 @Getter
 @Builder
-public class CreateProductResponseDto {
+public class InventoryResponseDto {
     private String message;
     private int stateCode;
     private ProductData product;
@@ -17,8 +19,7 @@ public class CreateProductResponseDto {
     public static class ProductData {
         private UUID productId;
         private String productName;
-        private Integer productPrice;
-        private Integer productQuantity;
+        private String productQuantity;
         private UUID companyId;
     }
 }
