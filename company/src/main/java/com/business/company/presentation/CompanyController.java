@@ -19,11 +19,6 @@ public class CompanyController {
 
     private final CompanyService companyService;
 
-    @GetMapping("/health-check")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Check OK");
-    }
-
     @PostMapping
     public ResponseEntity<CreateCompanyResponseDto> createCompany(@RequestBody CreateCompanyRequestDto createCompanyRequestDto) {
         CreateCompanyResponseDto response = companyService.createCompany(createCompanyRequestDto);

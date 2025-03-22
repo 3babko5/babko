@@ -20,11 +20,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/health-check")
-    ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Check OK");
-    }
-
     @PostMapping
     public ResponseEntity<CreateProductResponseDto> createProduct(@RequestBody CreateProductRequestDto createProductRequestDto) {
         CreateProductResponseDto response = productService.createProduct(createProductRequestDto);

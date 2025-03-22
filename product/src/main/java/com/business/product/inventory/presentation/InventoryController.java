@@ -14,10 +14,6 @@ public class InventoryController {
 
     private final InventoryService inventoryService;
 
-    @GetMapping("/health-check")
-    ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Check OK");
-    }
     @PutMapping("/update")
     public ResponseEntity<InventoryResponseDto> updateInventory(@RequestBody UpdateInventoryRequestDto dto) {
         InventoryResponseDto response = inventoryService.updateInventory(dto);
