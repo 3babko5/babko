@@ -1,78 +1,124 @@
 package com.business.auth.application.service;
 
+import com.business.auth.infrastructure.util.JwtTokenUtil;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.business.auth.application.dto.request.AuthLoginRequestDto;
-import com.business.auth.application.dto.request.AuthRefreshRequestDto;
-import com.business.auth.application.dto.request.AuthRegisterRequestDto;
-import com.business.auth.application.dto.response.AuthLoginResponseDto;
-import com.business.auth.application.dto.response.AuthTokenResponseDto;
-import com.business.auth.application.exception.AuthExceptionCode;
+import com.business.auth.domain.dto.JwtTokenDto;
+import com.business.auth.domain.dto.LoginRequestDto;
+import com.business.auth.domain.dto.SignupRequestDto;
+import com.business.auth.domain.dto.TokenRefreshRequestDto;
+import com.business.auth.domain.entity.Token;
+import com.business.auth.domain.repository.TokenRepository;
+import com.business.auth.infrastructure.client.UserClient;
+import com.business.auth.infrastructure.client.dto.CreateUserRequest;
+import com.business.auth.infrastructure.client.dto.UserResponse;
 
-import com.business.auth.infrastructure.client.UserServiceClient;
-import com.business.auth.infrastructure.config.JwtTokenProvider;
-import com.business.auth.infrastructure.dto.request.UserCreateRequestDto;
-import com.business.auth.infrastructure.dto.response.UserCreateResponseDto;
-import com.business.common.application.exception.BusinessLogicException;
+import lombok.RequiredArgsConstructor;
 
-
-// AuthService: 회원가입, 로그인, 토큰 재발급의 인증 로직을 처리
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-	private final UserServiceClient userServiceClient;
-	private final PasswordEncoder passwordEncoder;
-	private final JwtTokenProvider jwtTokenProvider;
 
-	public AuthService(UserServiceClient userServiceClient, PasswordEncoder passwordEncoder, JwtTokenProvider jwtTokenProvider) {
-		this.userServiceClient = userServiceClient;
-		this.passwordEncoder = passwordEncoder;
-		this.jwtTokenProvider = jwtTokenProvider;
-	}
+    private final UserClient userClient;
+    private final TokenRepository tokenRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtTokenUtil jwtTokenUtil;
 
-	// 회원가입: 비밀번호 해싱 후 User 서비스에 저장 요청, 성공 시 토큰과 userId 반환
-	public AuthLoginResponseDto register(AuthRegisterRequestDto requestDto) {
-		String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-		UserCreateRequestDto userCreateRequestDto = new UserCreateRequestDto(requestDto.getUsername(), hashedPassword, requestDto.getEmail(), requestDto.getSlackId(), requestDto.getRole());
-		UserCreateResponseDto userResponse = userServiceClient.createUser(userCreateRequestDto);
-		String accessToken = jwtTokenProvider.createAccessToken(userResponse.getUserId(), userResponse.getRole());
-		String refreshToken = jwtTokenProvider.createRefreshToken(userResponse.getUserId());
-		return AuthLoginResponseDto.builder()
-			.userId(userResponse.getUserId())
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.build();
-	}
+    @Transactional
+    public void signup(SignupRequestDto requestDto) {
+        // 비밀번호 해싱
+        String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
+        
+        // User 서비스에 회원 정보 저장 요청
+        CreateUserRequest createUserRequest = CreateUserRequest.builder()
+                .username(requestDto.getUsername())
+                .password(hashedPassword)
+                .email(requestDto.getEmail())
+                .slackId(requestDto.getSlackId())
+                .role("ROLE_COMPANY") // 기본 역할은 ROLE_COMPANY
+                .build();
+        
+        userClient.createUser(createUserRequest);
+    }
 
-	// 로그인: 사용자 정보 확인 후 실패 시 예외 발생, 성공 시 토큰과 userId 반환
-	public AuthLoginResponseDto login(AuthLoginRequestDto requestDto) {
-		UserCreateResponseDto user = userServiceClient.getUserByUsername(requestDto.getUsername());
-		if (user == null) {
-			throw new BusinessLogicException(AuthExceptionCode.USER_NOT_FOUND); // 사용자가 없으면 예외
-		}
-		if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
-			throw new BusinessLogicException(AuthExceptionCode.PASSWORD_MISMATCH); // 비밀번호 불일치 시 예외
-		}
-		String accessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getRole());
-		String refreshToken = jwtTokenProvider.createRefreshToken(user.getUserId());
-		return AuthLoginResponseDto.builder()
-			.userId(user.getUserId())
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.build();
-	}
+    @Transactional
+    public JwtTokenDto login(LoginRequestDto requestDto) {
+        // User 서비스에서 회원 정보 조회
+        ResponseEntity<UserResponse> response = userClient.getUserByUsername(requestDto.getUsername());
+        UserResponse user = response.getBody();
+        
+        if (user == null) {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+        
+        // 비밀번호 검증
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new RuntimeException("비밀번호가 일치하지 않습니다.");
+        }
+        
+        // JWT 토큰 생성
+        String accessToken = jwtTokenUtil.generateAccessToken(user.getUserId(), user.getRole());
+        String refreshToken = jwtTokenUtil.generateRefreshToken(user.getUserId());
+        
+        JwtTokenDto tokenDto = JwtTokenDto.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+        
+        // Refresh 토큰 저장 또는 업데이트
+        tokenRepository.findByUserId(user.getUserId())
+                .ifPresentOrElse(
+                        token -> token.updateRefreshToken(refreshToken),
+                        () -> {
+                            Token newToken = Token.create(user.getUserId(), refreshToken);
+                            // 시스템 사용자(ID: 0)로 감사 필드 설정
+                            newToken.setCreatedBy(0L);
+                            tokenRepository.save(newToken);
+                        }
+                );
+        
+        return tokenDto;
+    }
 
-	// 토큰 재발급: 리프레시 토큰 검증 후 실패 시 예외 발생, 성공 시 새 토큰 반환
-	public AuthTokenResponseDto refresh(AuthRefreshRequestDto requestDto) {
-		if (!jwtTokenProvider.validateToken(requestDto.getRefreshToken())) {
-			throw new BusinessLogicException(AuthExceptionCode.INVALID_TOKEN); // 유효하지 않은 토큰이면 예외
-		}
-		Long userId = jwtTokenProvider.getUserIdFromToken(requestDto.getRefreshToken());
-		UserCreateResponseDto user = userServiceClient.getUserById(userId);
-		if (user == null) {
-			throw new BusinessLogicException(AuthExceptionCode.USER_NOT_FOUND); // 사용자 없으면 예외
-		}
-		String newAccessToken = jwtTokenProvider.createAccessToken(user.getUserId(), user.getRole());
-		return new AuthTokenResponseDto(newAccessToken, requestDto.getRefreshToken());
-	}
-}
+    @Transactional
+    public JwtTokenDto refreshToken(TokenRefreshRequestDto requestDto) {
+        String refreshToken = requestDto.getRefreshToken();
+        
+        // 리프레시 토큰 검증
+        if (!jwtTokenUtil.validateToken(refreshToken)) {
+            throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
+        }
+        
+        // DB에서 리프레시 토큰 조회
+        Token token = tokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new RuntimeException("존재하지 않는 리프레시 토큰입니다."));
+        
+        // 토큰에서 사용자 ID 추출
+        Long userId = jwtTokenUtil.extractUserId(refreshToken);
+        
+        // 사용자 정보 조회 (역할 확인을 위해)
+        ResponseEntity<UserResponse> response = userClient.getUserById(userId);
+        UserResponse user = response.getBody();
+        
+        if (user == null) {
+            throw new RuntimeException("존재하지 않는 사용자입니다.");
+        }
+        
+        // 새로운 토큰 생성
+        String newAccessToken = jwtTokenUtil.generateAccessToken(userId, user.getRole());
+        String newRefreshToken = jwtTokenUtil.generateRefreshToken(userId);
+        
+        JwtTokenDto newTokenDto = JwtTokenDto.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .build();
+        
+        // 리프레시 토큰 업데이트
+        token.updateRefreshToken(newRefreshToken);
+        
+        return newTokenDto;
+    }
+} 

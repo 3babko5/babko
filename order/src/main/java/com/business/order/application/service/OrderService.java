@@ -3,6 +3,7 @@ package com.business.order.application.service;
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
+import com.business.order.application.dto.response.OrderStatusResponseDto;
 import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.dto.response.OrderGetResponseDto;
@@ -10,7 +11,9 @@ import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
 import com.business.order.domain.repository.OrderRepository;
+import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
+import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
 import com.business.order.infrastructure.dto.response.ProductDetailResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -27,7 +31,7 @@ import java.util.stream.Collectors;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-//    private final DeliveryFeignClient deliveryFeignClient;
+    private final DeliveryFeignClient deliveryFeignClient;
     private final ProductFeignClient productFeignClient;
 
     @Transactional
@@ -57,10 +61,10 @@ public class OrderService {
         order.addOrderItems(orderItems);
         Order savedOrder  = orderRepository.save(order);
 
-//        OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
-//        if(!deliveryFeignClient.createDelivery(deliveryRequest)){
-//            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
-//        }
+        OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
+        if(!deliveryFeignClient.createDelivery(deliveryRequest)){
+            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
+        }
 
         return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
     }
@@ -75,5 +79,22 @@ public class OrderService {
         }
 
         return OrderMapper.toOrderGetResponse(order);
+    }
+
+    @Transactional
+    public OrderStatusResponseDto cancelOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND));
+
+        String deliveryStatus = deliveryFeignClient.getDeliveryStatus(orderId);
+
+        if(!deliveryStatus.equals("WAITING_AT_HUB")){
+            throw new BusinessLogicException(OrderExceptionCode.ORDER_CANNOT_BE_CANCELED);
+        }
+
+        order.cancelOrder(order.getUserId());
+        orderRepository.save(order);
+        log.info("3. Cancel order {}", orderId);
+        return OrderMapper.toOrderStatusResponseDto(order);
     }
 }

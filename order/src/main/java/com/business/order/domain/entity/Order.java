@@ -42,6 +42,10 @@ public class Order extends BaseDataEntity {
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private OrderStatus orderStatus;
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -73,5 +77,10 @@ public class Order extends BaseDataEntity {
 
     public void addOrderItems(List<OrderItem> items) {
         this.orderItems.addAll(items);
+    }
+
+    public void cancelOrder(Long userId) {
+        this.orderStatus = OrderStatus.CANCELED;
+        setUpdatedBy(userId);
     }
 }

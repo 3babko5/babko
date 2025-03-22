@@ -3,6 +3,7 @@ package com.business.order.application.dto.mapper;
 import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.dto.response.OrderItemResponseDto;
+import com.business.order.application.dto.response.OrderStatusResponseDto;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
 
@@ -47,4 +48,12 @@ public class OrderMapper {
                 .orderItems(toOrderItemResponseList(order.getOrderItems()))
                 .build();
     }
+
+    public static OrderStatusResponseDto toOrderStatusResponseDto(Order order) {
+        return OrderStatusResponseDto.builder()
+                .orderId(order.getOrderId())
+                .orderStatus(order.getOrderStatus())
+                .build();
+    }
+
 }
