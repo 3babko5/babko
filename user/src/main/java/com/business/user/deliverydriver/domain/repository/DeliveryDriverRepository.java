@@ -1,9 +1,12 @@
 package com.business.user.deliverydriver.domain.repository;
 
+import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.domain.entity.DriverType;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface DeliveryDriverRepository {
 
@@ -19,4 +22,5 @@ public interface DeliveryDriverRepository {
   Optional<DeliveryDriver> findFirstAvailableDriver();
   Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(DriverType driverType, UUID hubId);
   Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(Long currentSequence, DriverType driverType, UUID hubId);
+  Page<DeliveryDriver> findDeliveryDrivers(DeliveryDriverSearchRequestDto request, Pageable pageable);
 }
