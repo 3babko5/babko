@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliveryPageWrapperResponseDto<T> {
+public class DeliveryPageListResponseDto<T> {
 
     private long totalElements;
     private int totalPages;
@@ -19,9 +19,9 @@ public class DeliveryPageWrapperResponseDto<T> {
     private int size;
     private List<T> data;
 
-    public static <T> DeliveryPageWrapperResponseDto<T> fromPage(Page<T> page) {
+    public static <T> DeliveryPageListResponseDto<T> fromPage(Page<T> page) {
 
-        return DeliveryPageWrapperResponseDto.<T>builder()
+        return DeliveryPageListResponseDto.<T>builder()
             .totalElements(page.getTotalElements())
             .totalPages(page.getTotalPages())
             .currentPage(page.getNumber() + 1)

@@ -4,7 +4,7 @@ import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
 import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
-import com.business.delivery.application.dto.response.DeliveryPageWrapperResponseDto;
+import com.business.delivery.application.dto.response.DeliveryPageListResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
 import com.business.delivery.application.service.DeliveryService;
 import jakarta.validation.Valid;
@@ -37,10 +37,10 @@ public class DeliveryController {
     }
 
     @GetMapping
-    public ResponseEntity<DeliveryPageWrapperResponseDto<DeliveryPageResponseDto>> getDeliveries(DeliverySearchRequestDto request) {
+    public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(DeliverySearchRequestDto request) {
 
         Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request);
-        return ResponseEntity.ok(DeliveryPageWrapperResponseDto.fromPage(deliveryPage));
+        return ResponseEntity.ok(DeliveryPageListResponseDto.fromPage(deliveryPage));
     }
 
     @GetMapping("/{deliveryId}")
