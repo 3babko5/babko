@@ -1,5 +1,6 @@
 package com.business.order.infrastructure.dto.response;
 
+import com.business.company.domain.entity.CompanyType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,7 +19,7 @@ public class hubIdResponseDto {
     @NoArgsConstructor
     public static class CompanyData {
         private UUID companyId;
-        private String companyType;
+        private CompanyType companyType;
         private UUID hubId;
     }
 }

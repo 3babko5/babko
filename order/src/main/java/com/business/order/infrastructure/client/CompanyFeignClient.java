@@ -1,6 +1,6 @@
 package com.business.order.infrastructure.client;
 
-import com.business.company.domain.entity.CompanyType;
+import com.business.order.domain.entity.CompanyType;
 import com.business.order.infrastructure.dto.response.hubIdResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,7 +11,7 @@ public interface CompanyFeignClient {
 
     @GetMapping("/search")
     hubIdResponseDto searchCompanies(
-            @RequestParam(required = false) CompanyType companyType
+            @RequestParam("companyType") CompanyType companyType
     );
 
 }

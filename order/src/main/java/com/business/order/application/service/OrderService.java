@@ -1,7 +1,6 @@
 package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
-import com.business.company.domain.entity.CompanyType;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
 import com.business.order.application.dto.response.OrderStatusResponseDto;
@@ -9,6 +8,7 @@ import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.exception.OrderExceptionCode;
+import com.business.order.domain.entity.CompanyType;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
 import com.business.order.domain.repository.OrderRepository;
