@@ -5,7 +5,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -32,16 +35,15 @@ public class DeliveryRoute extends BaseDataEntity {
   @Comment("배송 경로 기록 ID")
   private UUID deliveryRouteId;
 
-  @NotNull
-  @JdbcTypeCode(SqlTypes.UUID)
-  @Column(nullable = false)
-  @Comment("배송 ID")
-  private UUID deliveryId;
+  @JoinColumn(name = "delivery_id")
+  @ManyToOne(fetch = FetchType.LAZY)
+  @Comment("배송")
+  private Delivery delivery;
 
   @NotNull
   @Column(nullable = false, length = 20)
   @Enumerated(EnumType.STRING)
-  @Comment("배송 경로 기록 상태 (배송 취소, 허브 대기 중, 허브 이동 중, 목적지 허브 도착, 배송 중, 배송 완료)")
+  @Comment("배송 경로 기록 상태 (배송 취소, 허브 대기 중, 허브 이동 중, 목적지 허브 도착, 배송 중, 배송 완료, 준비 중)")
   private DeliveryRouteStatus deliveryRouteStatus;
 
   @NotNull
@@ -55,11 +57,13 @@ public class DeliveryRoute extends BaseDataEntity {
   @Comment("출발 허브 ID")
   private UUID originHubId;
 
-  @NotNull
-  @Column(nullable = false)
+  @Column
   @JdbcTypeCode(SqlTypes.UUID)
   @Comment("도착 허브 ID")
   private UUID destinationHubId;
+
+  @Comment("배송지 주소")
+  private String deliveryAddress;
 
   @NotNull
   @Column(nullable = false, precision = 10, scale = 2)
@@ -90,24 +94,27 @@ public class DeliveryRoute extends BaseDataEntity {
   @Comment("업체 배송 담당자 ID")
   private UUID companyDriverId;
 
-  private DeliveryRoute(UUID deliveryId, Long routeSequence, UUID originHubId,
-      UUID destinationHubId, BigDecimal estimatedDistance, Long estimatedTime,
-      DeliveryRouteStatus deliveryRouteStatus) {
+  private DeliveryRoute(Delivery delivery, Long routeSequence, UUID originHubId, UUID destinationHubId,
+      BigDecimal estimatedDistance, Long estimatedTime, DeliveryRouteStatus deliveryRouteStatus, String deliveryAddress) {
 
-    this.deliveryId = deliveryId;
+    this.delivery = delivery;
     this.routeSequence = routeSequence;
     this.originHubId = originHubId;
     this.destinationHubId = destinationHubId;
     this.estimatedDistance = estimatedDistance;
     this.estimatedTime = estimatedTime;
     this.deliveryRouteStatus = deliveryRouteStatus;
+    this.deliveryAddress = deliveryAddress;
   }
 
   @Builder(builderMethodName = "deliveryRouteCreateBuilder")
-  public static DeliveryRoute create(UUID deliveryId, Long routeSequence, UUID originHubId,
-      UUID destinationHubId, BigDecimal estimatedDistance, Long estimatedTime,
-      DeliveryRouteStatus deliveryRouteStatus) {
+  public static DeliveryRoute create(Delivery delivery, Long routeSequence, UUID originHubId, UUID destinationHubId,
+      BigDecimal estimatedDistance, Long estimatedTime, DeliveryRouteStatus deliveryRouteStatus, String deliveryAddress) {
 
-    return new DeliveryRoute(deliveryId, routeSequence, originHubId, destinationHubId, estimatedDistance, estimatedTime, deliveryRouteStatus);
+    return new DeliveryRoute(delivery, routeSequence, originHubId, destinationHubId, estimatedDistance, estimatedTime, deliveryRouteStatus, deliveryAddress);
+  }
+
+  public void associateDelivery(Delivery delivery) {
+      this.delivery = delivery;
   }
 }

@@ -47,3 +47,8 @@ Accept: application/json
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476&arrivalHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476
 Authorization: Bearer jwt_token_string
 Accept: application/json
+
+### 11. delivery 에서 경로 요청
+GET http://localhost:8086/api/v1/hub-movements/routes?departureHubId=13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd&arrivalHubId=9b40a62b-33c6-4e5d-8816-7cd9eb647159
+Authorization: Bearer jwt_token_string
+Accept: application/json
