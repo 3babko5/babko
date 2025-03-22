@@ -1,8 +1,19 @@
 package com.business.delivery.infrastructure.repository;
 
+import com.business.common.infrastructure.util.QueryDslUtil;
+import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
 import com.business.delivery.domain.entity.Delivery;
+import com.business.delivery.domain.entity.QDelivery;
 import com.business.delivery.domain.repository.DeliveryRepository;
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import jakarta.persistence.EntityManager;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -10,9 +21,69 @@ import org.springframework.stereotype.Repository;
 public class DeliveryRepositoryImpl implements DeliveryRepository {
 
   private final DeliveryJpaRepository deliveryJpaRepository;
+  private final EntityManager entityManager;
 
   @Override
   public Delivery save(Delivery delivery) {
     return deliveryJpaRepository.save(delivery);
   }
+
+  @Override
+  public Page<Delivery> findDeliveries(DeliverySearchRequestDto request, Pageable pageable) {
+
+    JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
+
+    QDelivery delivery = QDelivery.delivery;
+
+    BooleanBuilder builder = new BooleanBuilder();
+    if (request.getOrderId() != null) {
+      builder.and(delivery.orderId.eq(request.getOrderId()));
+    }
+    if (request.getStartHubId() != null) {
+      builder.and(delivery.startHubId.eq(request.getStartHubId()));
+    }
+    if (request.getEndHubId() != null) {
+      builder.and(delivery.endHubId.eq(request.getEndHubId()));
+    }
+    if (request.getDeliveryStatus() != null) {
+      builder.and(delivery.deliveryStatus.eq(request.getDeliveryStatus()));
+    }
+    if (request.getOriginHubId() != null) {
+      builder.and(
+          delivery.deliveryRoutes.any().originHubId.eq(request.getOriginHubId())
+      );
+    }
+    if (request.getDestinationHubId() != null) {
+      builder.and(
+          delivery.deliveryRoutes.any().destinationHubId.eq(request.getDestinationHubId())
+      );
+    }
+    if (request.getDeliveryRouteStatus() != null) {
+
+      builder.and(
+          delivery
+              .deliveryRoutes
+              .any()
+              .deliveryRouteStatus
+              .eq(request.getDeliveryRouteStatus()));
+    }
+
+    OrderSpecifier<?>[] orderSpecifiers = QueryDslUtil.getAllOrderSpecifierArr(pageable, delivery);
+
+    List<Delivery> deliveries =
+        queryFactory
+            .selectFrom(delivery)
+            .leftJoin(delivery.deliveryRoutes)
+            .fetchJoin()
+            .where(builder)
+            .orderBy(orderSpecifiers)
+            .offset(pageable.getOffset())
+            .limit(pageable.getPageSize())
+            .fetch();
+
+    long total = queryFactory.selectFrom(delivery).where(builder).fetchCount();
+
+    return PageableExecutionUtils.getPage(deliveries, pageable, () -> total);
+    }
 }
+
