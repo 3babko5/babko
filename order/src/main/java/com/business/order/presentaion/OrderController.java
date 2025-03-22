@@ -1,6 +1,7 @@
 package com.business.order.presentaion;
 
 import com.business.order.application.dto.request.OrderCreateRequestDto;
+import com.business.order.application.dto.response.OrderStatusResponseDto;
 import com.business.order.application.dto.response.OrderCreateResponseDto;
 import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.service.OrderService;
@@ -40,4 +41,13 @@ public class OrderController {
         OrderGetResponseDto response = orderService.getOrder(orderId);
         return ResponseEntity.ok(response);
     }
+
+    //주문 취소
+    @PatchMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderStatusResponseDto> cancelOrder(
+            @PathVariable UUID orderId) {
+        OrderStatusResponseDto response = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(response);
+    }
+
 }
