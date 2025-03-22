@@ -3,6 +3,7 @@ package com.business.delivery.application.dto.mapper;
 import com.business.common.infrastructure.util.CommonUtil;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto.DeliveryRouteDetailResponseDto;
+import com.business.delivery.application.dto.response.DeliveryPageListResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
 import com.business.delivery.domain.entity.Delivery;
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
 
 public class DeliveryResponseMapper {
 
@@ -107,6 +109,17 @@ public class DeliveryResponseMapper {
         .updatedAt(delivery.getUpdatedAt() != null ? CommonUtil.LDTToString(delivery.getUpdatedAt()) : null)
         .deliveryRoutes(routeDetail)
         .orderItems(orderItems)
+        .build();
+  }
+
+  public static <T> DeliveryPageListResponseDto<T> toPageListResponse(Page<T> page) {
+
+    return DeliveryPageListResponseDto.<T>builder()
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .currentPage(page.getNumber() + 1)
+        .size(page.getSize())
+        .data(page.getContent())
         .build();
   }
 }

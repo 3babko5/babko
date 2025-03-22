@@ -18,15 +18,4 @@ public class DeliveryPageListResponseDto<T> {
     private int currentPage;
     private int size;
     private List<T> data;
-
-    public static <T> DeliveryPageListResponseDto<T> fromPage(Page<T> page) {
-
-        return DeliveryPageListResponseDto.<T>builder()
-            .totalElements(page.getTotalElements())
-            .totalPages(page.getTotalPages())
-            .currentPage(page.getNumber() + 1)
-            .size(page.getSize())
-            .data(page.getContent())
-            .build();
-    }
 }

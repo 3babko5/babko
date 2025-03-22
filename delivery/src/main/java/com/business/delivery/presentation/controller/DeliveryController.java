@@ -1,5 +1,6 @@
 package com.business.delivery.presentation.controller;
 
+import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
 import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
@@ -40,7 +41,7 @@ public class DeliveryController {
     public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(DeliverySearchRequestDto request) {
 
         Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request);
-        return ResponseEntity.ok(DeliveryPageListResponseDto.fromPage(deliveryPage));
+        return ResponseEntity.ok(DeliveryResponseMapper.toPageListResponse(deliveryPage));
     }
 
     @GetMapping("/{deliveryId}")
