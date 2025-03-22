@@ -1,6 +1,7 @@
 package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
+import com.business.company.domain.entity.CompanyType;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
 import com.business.order.application.dto.response.OrderStatusResponseDto;
@@ -11,17 +12,18 @@ import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.Order;
 import com.business.order.domain.entity.OrderItem;
 import com.business.order.domain.repository.OrderRepository;
+import com.business.order.infrastructure.client.CompanyFeignClient;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
 import com.business.order.infrastructure.dto.response.ProductDetailResponseDto;
+import com.business.order.infrastructure.dto.response.hubIdResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -33,6 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final DeliveryFeignClient deliveryFeignClient;
     private final ProductFeignClient productFeignClient;
+    private final CompanyFeignClient companyFeignClient;
 
     @Transactional
     public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, Long userId){
@@ -49,8 +52,24 @@ public class OrderService {
             item.setOrderItemPrice(productDetail.getProductPrice()); //여기서 매핑
         }
 
-        UUID originHubId = UUID.fromString("00000000-0000-0000-0000-000000000001");
-        UUID destinationHubId = UUID.fromString("00000000-0000-0000-0000-000000000002");
+        UUID supplierId = items.get(0).getSupplierId();//공급업체는 한 주문 당 하나
+        UUID receiverId = request.getReceiverId();
+
+        //공급업체의 허브id 조회
+        hubIdResponseDto supplierResponse = companyFeignClient.searchCompanies(CompanyType.SUPPLIER);
+        UUID originHubId = supplierResponse.getCompany().stream()
+                .filter(c -> c.getCompanyId().equals(supplierId))
+                .findFirst()
+                .map(hubIdResponseDto.CompanyData::getHubId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
+
+        //수령업체의 허브id 조회
+        hubIdResponseDto receiverResponse = companyFeignClient.searchCompanies(CompanyType.RECEIVER);
+        UUID destinationHubId = receiverResponse.getCompany().stream()
+                .filter(c -> c.getCompanyId().equals(receiverId))
+                .findFirst()
+                .map(hubIdResponseDto.CompanyData::getHubId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
 
         Order order = request.createOrder(userId, originHubId, destinationHubId);
 
