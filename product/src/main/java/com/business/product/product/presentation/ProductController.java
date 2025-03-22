@@ -28,22 +28,10 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<SearchProductResponseDto> searchProducts(
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) UUID companyId,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "CREATED") String orderBy,
-            @RequestParam(defaultValue = "DESC") String sort
-    ) {
-        final SearchProductRequestDto request = new SearchProductRequestDto(
-                productName,
-                companyId,
-                page,
-                size,
-                orderBy,
-                sort
+            @ModelAttribute SearchProductRequestDto request) {
+        Pageable pageable = JpaUtil.getNormalPageable(
+                request.getPage(), request.getSize(), request.getOrderBy(), request.getSort()
         );
-        Pageable pageable = JpaUtil.getNormalPageable(page, size, orderBy, sort);
         final SearchProductResponseDto response = productService.searchProducts(request, pageable);
         return ResponseEntity.ok(response);
     }

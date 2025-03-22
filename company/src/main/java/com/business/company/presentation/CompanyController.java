@@ -27,22 +27,10 @@ public class CompanyController {
 
     @GetMapping
     public ResponseEntity<SearchCompanyResponseDto> searchCompanies(
-            @RequestParam(required = false) String companyName,
-            @RequestParam(required = false) CompanyType companyType,
-            @RequestParam(defaultValue = "1") Integer page,
-            @RequestParam(defaultValue = "10") Integer size,
-            @RequestParam(defaultValue = "CREATED") String orderBy,
-            @RequestParam(defaultValue = "DESC") String sort
-    ) {
-        final SearchCompanyRequestDto request = new SearchCompanyRequestDto(
-                companyName,
-                companyType,
-                page,
-                size,
-                orderBy,
-                sort
+            @ModelAttribute SearchCompanyRequestDto request) {
+        Pageable pageable = JpaUtil.getNormalPageable(
+                request.getPage(), request.getSize(), request.getOrderBy(), request.getSort()
         );
-        Pageable pageable = JpaUtil.getNormalPageable(page, size, orderBy, sort);
         final SearchCompanyResponseDto response = companyService.searchCompanies(request, pageable);
         return ResponseEntity.ok(response);
     }
