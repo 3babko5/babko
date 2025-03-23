@@ -48,7 +48,7 @@ public class Token extends BaseDataEntity {
             .build();
         
         // 기본적으로 Token 생성자를 userId로 설정
-        token.setCreatedBy(userId);
+        token.createdBy(userId);
         
         return token;
     }

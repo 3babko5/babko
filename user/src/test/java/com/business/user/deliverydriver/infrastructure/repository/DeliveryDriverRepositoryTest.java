@@ -41,7 +41,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(1L)
             .build();
-        driver1.setCreatedBy(1L); // BaseDataEntity 필수 필드 설정
+        driver1.createdBy(1L); // BaseDataEntity 필수 필드 설정
         driver1.assignToRoute(UUID.randomUUID(), 1L);  // assignAt이 설정됨.
         repository.save(driver1);
 
@@ -53,7 +53,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(2L)
             .build();
-        driver2.setCreatedBy(2L);
+        driver2.createdBy(2L);
         driver2.assignToRoute(UUID.randomUUID(), 2L);
         driver2.updateAssignAt(LocalDateTime.now().plusMinutes(10));
         repository.save(driver2);
@@ -82,7 +82,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(1L)
             .build();
-        driver1.setCreatedBy(1L);
+        driver1.createdBy(1L);
         repository.save(driver1);
 
         DeliveryDriver driver2 = DeliveryDriver.deliveryDriverCreateBuilder()
@@ -92,7 +92,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(3L)
             .build();
-        driver2.setCreatedBy(2L);
+        driver2.createdBy(2L);
         repository.save(driver2);
 
         DeliveryDriver driver3 = DeliveryDriver.deliveryDriverCreateBuilder()
@@ -102,7 +102,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(5L)
             .build();
-        driver3.setCreatedBy(3L);
+        driver3.createdBy(3L);
         repository.save(driver3);
 
         // currentSequence가 1이면, 다음 deliverySequence는 3인 driver2가 나와야 합니다.
@@ -128,7 +128,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(2L)
             .build();
-        driver1.setCreatedBy(1L);
+        driver1.createdBy(1L);
         repository.save(driver1);
 
         DeliveryDriver driver2 = DeliveryDriver.deliveryDriverCreateBuilder()
@@ -138,11 +138,11 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.HUB)
             .deliverySequence(4L)
             .build();
-        driver2.setCreatedBy(2L);
+        driver2.createdBy(2L);
         repository.save(driver2);
 
         // driver1을 삭제했다고 가정. BaseDataEntity의 setDeletedBy()를 이용합니다.
-        driver1.setDeletedBy(999L); // 임의의 사용자 ID로 삭제 처리
+        driver1.deletedBy(999L); // 임의의 사용자 ID로 삭제 처리
         repository.save(driver1);
 
         // 삭제되지 않은 드라이버 중 가장 낮은 deliverySequence는 driver2가 되어야 합니다.
@@ -171,7 +171,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.COMPANY)
             .deliverySequence(1L)
             .build();
-        driver1.setCreatedBy(1L);
+        driver1.createdBy(1L);
         driver1.assignToRoute(UUID.randomUUID(), 1L);
         repository.save(driver1);
 
@@ -183,7 +183,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.COMPANY)
             .deliverySequence(2L)
             .build();
-        driver2.setCreatedBy(2L);
+        driver2.createdBy(2L);
         driver2.assignToRoute(UUID.randomUUID(), 2L);
         driver2.updateAssignAt(LocalDateTime.now().plusMinutes(15));
         repository.save(driver2);
@@ -214,7 +214,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.COMPANY)
             .deliverySequence(10L)
             .build();
-        driver1.setCreatedBy(1L);
+        driver1.createdBy(1L);
         repository.save(driver1);
 
         DeliveryDriver driver2 = DeliveryDriver.deliveryDriverCreateBuilder()
@@ -224,7 +224,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.COMPANY)
             .deliverySequence(20L)
             .build();
-        driver2.setCreatedBy(2L);
+        driver2.createdBy(2L);
         repository.save(driver2);
 
         DeliveryDriver driver3 = DeliveryDriver.deliveryDriverCreateBuilder()
@@ -234,7 +234,7 @@ public class DeliveryDriverRepositoryTest {
             .driverType(DriverType.COMPANY)
             .deliverySequence(30L)
             .build();
-        driver3.setCreatedBy(3L);
+        driver3.createdBy(3L);
         repository.save(driver3);
 
         // currentSequence가 15이면, deliverySequence가 20인 driver2가 가장 작은 값이므로 반환되어야 합니다.

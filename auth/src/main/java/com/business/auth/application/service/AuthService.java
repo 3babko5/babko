@@ -74,7 +74,7 @@ public class AuthService {
                         () -> {
                             Token newToken = Token.create(user.getUserId(), refreshToken);
                             // 시스템 사용자(ID: 0)로 감사 필드 설정
-                            newToken.setCreatedBy(0L);
+                            newToken.createdBy(0L);
                             tokenRepository.save(newToken);
                         }
                 );

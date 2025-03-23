@@ -12,9 +12,10 @@ import lombok.Setter;
 @AllArgsConstructor
 public class SearchCompanyRequestDto {
 
-    private String companyName;
-    private CompanyType companyType;
-    private Integer page = 1;
-    private Integer size = 10;
-    private String orderBy = "CREATED";
-    private String sort = "desc";
+  private String companyName;
+  private CompanyType companyType;
+  private Integer page = 1;
+  private Integer size = 10;
+  private String orderBy = "CREATED";
+  private String sort = "desc";
+    }
