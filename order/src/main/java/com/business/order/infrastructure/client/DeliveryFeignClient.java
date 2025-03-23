@@ -20,4 +20,9 @@ public interface DeliveryFeignClient {
     @GetMapping("/deliveries")
     List<DeliveryIdResponseDto> getDeliveryInfo();
 
+    @DeleteMapping("/{deliveryId}")
+    void deleteByDeliveryId(
+            @PathVariable("deliveryId") UUID deliveryId,
+            @RequestParam("deletedBy") Long deletedBy
+    );
 }
