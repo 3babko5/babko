@@ -122,6 +122,11 @@ public class DeliveryService {
         Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId());
 
         return DeliveryResponseMapper.deliveryAndOrderToDetailResponse(delivery, orderResponse);
+    }
 
+    @Transactional
+    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
+
+        deliveryRepository.deleteByDeliveryId(deliveryId, deletedBy);
     }
 }
