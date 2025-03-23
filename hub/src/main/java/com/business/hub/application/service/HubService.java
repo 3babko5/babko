@@ -95,7 +95,7 @@ public class HubService {
         Hub existingHub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
-        existingHub.setDeletedBy(userId);
+        existingHub.deletedBy(userId);
         hubRepository.save(existingHub);
 
     }
