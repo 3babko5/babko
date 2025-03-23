@@ -71,13 +71,13 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
   }
 
   @Override
-  public boolean existsById(Long id) {
-    return deliveryDriverJpaRepository.existsById(id);
+  public boolean existsById(Long deliveryDriverId) {
+    return deliveryDriverJpaRepository.existsByDeliveryDriverIdAndDeletedAtIsNull(deliveryDriverId);
   }
 
   @Override
-  public Optional<DeliveryDriver> findById(Long id) {
-    return deliveryDriverJpaRepository.findById(id);
+  public Optional<DeliveryDriver> findById(Long deliveryDriverId) {
+    return deliveryDriverJpaRepository.findByDeliveryDriverIdAndDeletedAtIsNull(deliveryDriverId);
   }
 
   @Override
@@ -92,6 +92,9 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
     QDeliveryDriver driver = QDeliveryDriver.deliveryDriver;
 
     BooleanBuilder builder = new BooleanBuilder();
+
+    builder.and(driver.deletedAt.isNull());
+
     if (request.getDeliveryDriverId() != null) {
       builder.and(driver.deliveryDriverId.eq(request.getDeliveryDriverId()));
     }

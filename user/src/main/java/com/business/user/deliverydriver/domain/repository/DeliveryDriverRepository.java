@@ -10,13 +10,13 @@ import org.springframework.data.domain.Pageable;
 
 public interface DeliveryDriverRepository {
 
-  boolean existsById(Long id);
+  boolean existsById(Long deliveryDriverId);
   DeliveryDriver save(DeliveryDriver deliveryDriver);
   long countByDriverType(DriverType driverType);
   long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
   Optional<Long> findLastDeliverySequenceForHubDrivers();
   Optional<Long> findLastDeliverySequenceForCompanyDrivers(UUID hubId);
-  Optional<DeliveryDriver> findById(Long id);
+  Optional<DeliveryDriver> findById(Long deliveryDriverId);
   Optional<DeliveryDriver> findLastAssignedDriver();
   Optional<DeliveryDriver> findNextAvailableDriver(Long currentSequence);
   Optional<DeliveryDriver> findFirstAvailableDriver();

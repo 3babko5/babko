@@ -67,4 +67,8 @@ public interface DeliveryDriverJpaRepository extends JpaRepository<DeliveryDrive
   long countByDriverType(DriverType driverType);
 
   long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
+
+  boolean existsByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
+
+  Optional<DeliveryDriver> findByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
 }
