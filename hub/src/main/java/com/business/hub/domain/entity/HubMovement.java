@@ -59,6 +59,6 @@ public class HubMovement extends BaseDataEntity {
         this.arrivalHub = arrivalHub;
         this.distance = distance;
         this.durationTime = durationTime;
-        this.setUpdatedBy(updatedBy);
+        this.updatedBy(updatedBy);
     }
 }

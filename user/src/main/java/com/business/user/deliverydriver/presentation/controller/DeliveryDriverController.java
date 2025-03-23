@@ -1,12 +1,16 @@
 package com.business.user.deliverydriver.presentation.controller;
 
+import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverResponseMapper;
 import com.business.user.deliverydriver.application.dto.request.AssignDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
+import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.service.DeliveryDriverService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +37,12 @@ public class DeliveryDriverController {
         deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
 
     return ResponseEntity.ok(assignedDrivers);
+  }
+
+  @GetMapping
+  public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(DeliveryDriverSearchRequestDto request) {
+
+    Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request);
+    return ResponseEntity.ok(DeliveryDriverResponseMapper.toPageListResponse(driverPage));
   }
 }

@@ -5,7 +5,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -41,17 +40,17 @@ public abstract class BaseDataEntity {
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
-    public void setCreatedBy(Long userId) {
+    public void createdBy(Long userId) {
         this.createdBy = userId;
         this.createdAt = LocalDateTime.now();
     }
 
-    public void setUpdatedBy(Long userId) {
+    public void updatedBy(Long userId) {
         this.updatedBy = userId;
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void setDeletedBy(Long userId) {
+    public void deletedBy(Long userId) {
         this.deletedBy = userId;
         this.deletedAt = LocalDateTime.now();
     }

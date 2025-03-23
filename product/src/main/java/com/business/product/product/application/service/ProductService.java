@@ -22,7 +22,7 @@ public class ProductService {
     @Transactional
     public CreateProductResponseDto createProduct(CreateProductRequestDto dto) {
         Product product = ProductMapper.toEntity(dto);
-        product.setCreatedBy(1L); // 임시
+        product.createdBy(1L); // 임시
         Product saved = productRepository.save(product);
         return ProductMapper.toResponseDto(saved);
     }
