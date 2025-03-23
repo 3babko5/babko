@@ -15,8 +15,8 @@ public class SearchProductRequestDto {
 
     private String productName;
     private UUID companyId;
-    private Integer page;
-    private Integer size;
-    private String orderBy;
-    private String sort;
+    private Integer page = 1;
+    private Integer size = 10;
+    private String orderBy = "CREATED";
+    private String sort = "desc";
 }
