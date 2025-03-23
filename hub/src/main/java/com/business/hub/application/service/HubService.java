@@ -73,7 +73,7 @@ public class HubService {
             UUID hubId,
             HubUpdateRequest request
             ,Long userId) {
-        Hub existingHub = hubRepository.findById(hubId)
+        Hub existingHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
         existingHub.update(
@@ -93,7 +93,7 @@ public class HubService {
     public void deleteHub(
             UUID hubId,
             Long userId) {
-        Hub existingHub = hubRepository.findById(hubId)
+        Hub existingHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
         // 허브 간 이동 정보도 논리 삭제
@@ -105,6 +105,7 @@ public class HubService {
         }
 
         existingHub.setDeletedBy(userId);
+
         hubRepository.save(existingHub);
 
     }
