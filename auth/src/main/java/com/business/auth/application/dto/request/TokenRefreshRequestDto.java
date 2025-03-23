@@ -1,12 +1,10 @@
 package com.business.auth.application.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
-import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-@Builder
 public class TokenRefreshRequestDto {
-	@NotBlank
-	private String refreshToken;
-}
+    @NotBlank(message = "리프레시 토큰은 필수입니다.")
+    private String refreshToken;
+} 
