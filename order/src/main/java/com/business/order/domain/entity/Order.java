@@ -86,5 +86,6 @@ public class Order extends BaseDataEntity {
 
     public void updateDeliveryId(UUID deliveryId) {
         this.deliveryId = deliveryId;
+        deletedBy(userId);
     }
 }

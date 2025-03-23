@@ -115,7 +115,16 @@ public class OrderService {
 
         order.cancelOrder(order.getUserId());
         orderRepository.save(order);
-        log.info("3. Cancel order {}", orderId);
+
+        UUID deliveryId = order.getDeliveryId();
+        if (deliveryId != null) {
+            try {
+                deliveryFeignClient.deleteByDeliveryId(deliveryId, order.getUserId());
+            } catch (Exception e) {
+                // 예외처리 필요
+            }
+        }
+
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
