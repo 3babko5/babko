@@ -53,11 +53,12 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .orderBy(QueryDslUtil.getAllOrderSpecifierArr(pageable, product))
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(product)
+        Long total = queryFactory
+                .select(product.count())
+                .from(product)
                 .where(builder)
-                .fetchCount();
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(results, pageable, () -> total);
+        return PageableExecutionUtils.getPage(results, pageable, () -> total != null ? total : 0L);
     }
 }
