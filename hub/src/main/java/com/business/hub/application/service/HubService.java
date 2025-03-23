@@ -96,6 +96,7 @@ public class HubService {
         Hub existingHub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
+
         // 허브 간 이동 정보도 논리 삭제
         for (HubMovement movement : existingHub.getDepartureMovements()) {
             movement.setDeletedBy(userId);
@@ -104,7 +105,9 @@ public class HubService {
             movement.setDeletedBy(userId);
         }
 
-        existingHub.setDeletedBy(userId);
+
+        existingHub.deletedBy(userId);
+
         hubRepository.save(existingHub);
 
     }

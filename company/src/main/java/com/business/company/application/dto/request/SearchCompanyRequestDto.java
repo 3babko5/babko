@@ -3,15 +3,18 @@ package com.business.company.application.dto.request;
 import com.business.company.domain.entity.CompanyType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
+@Setter
+@NoArgsConstructor
 @AllArgsConstructor
 public class SearchCompanyRequestDto {
 
-    private final String companyName;
-    private final CompanyType companyType;
-    private final Integer page;
-    private final Integer size;
-    private final String orderBy;
-    private final String sort;
-}
+    private String companyName;
+    private CompanyType companyType;
+    private Integer page = 1;
+    private Integer size = 10;
+    private String orderBy = "CREATED";
+    private String sort = "desc";

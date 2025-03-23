@@ -51,7 +51,7 @@ public class Hub extends BaseDataEntity {
             BigDecimal hubLatitude,
             BigDecimal hubLongitude,
             Long hubManagerId) {
-        this.setCreatedBy(createdBy);
+        this.createdBy(createdBy);
         this.hubName = hubName;
         this.hubAddress = hubAddress;
         this.hubLatitude = hubLatitude;
@@ -72,7 +72,7 @@ public class Hub extends BaseDataEntity {
         this.hubLatitude = hubLatitude;
         this.hubLongitude = hubLongitude;
         this.hubManagerId = hubManagerId;
-        this.setUpdatedBy(updatedBy);
+        this.updatedBy(updatedBy);
     }
 
 }
