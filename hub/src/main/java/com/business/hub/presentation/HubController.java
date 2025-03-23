@@ -4,15 +4,19 @@ package com.business.hub.presentation;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubCreateRequest;
+import com.business.hub.application.dto.request.HubSearchRequest;
 import com.business.hub.application.dto.request.HubUpdateRequest;
 import com.business.hub.application.dto.response.HubPageResponse;
 import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.service.HubService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -83,5 +87,22 @@ public class HubController {
     }
 
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+
+        binder.initDirectFieldAccess();
+    }
+
+    // 허브 검색
+    @GetMapping("/search")
+    public ResponseEntity<Page<HubResponse>> getHubSearch(
+            @ModelAttribute HubSearchRequest request,
+            @PageableDefault(sort = "hubName", direction = Sort.Direction.ASC) Pageable pageable
+    ){
+
+        Page<HubResponse> hubResponses = hubService.getHubSearch(request, pageable);
+
+        return ResponseEntity.ok(hubResponses);
+    }
 
 }

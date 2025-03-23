@@ -71,6 +71,7 @@ public class DeliveryDriverService {
             case COMPANY -> deliveryDriverRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
         };
 
+
         DeliveryDriver deliveryDriver =
             DeliveryDriverRequestMapper.createRequestToEntity(request, newSequence);
 
@@ -78,6 +79,7 @@ public class DeliveryDriverService {
 
         return DeliveryDriverResponseMapper.driverToDriverResponseDto(deliveryDriver);
     }
+
 
     public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId) {
 
@@ -162,6 +164,7 @@ public class DeliveryDriverService {
         if (deliveryRouteId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_ROUTE_NOT_ASSIGNED);
         }
+
 
         List<DeliveryClientResponseDto> deliveryRoutes = safeGetRoutesByDeliveryId(deliveryRouteId);
         if (deliveryRoutes.isEmpty()) {

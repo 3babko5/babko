@@ -6,15 +6,7 @@ import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDr
 import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverDetailResponseDto;
-import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
-import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
-import com.business.user.deliverydriver.application.service.DeliveryDriverService;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/api/v1/delivery-drivers")
@@ -31,12 +23,9 @@ public class DeliveryDriverController {
     }
 
     @PostMapping("/assign")
-    public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(
-        @RequestBody AssignDeliveryDriverRequestDto request
-    ) {
-        List<AssignDeliveryDriverResponseDto> assignedDrivers =
-            deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
-
+    public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(@RequestBody AssignDeliveryDriverRequestDto request) {
+        
+        List<AssignDeliveryDriverResponseDto> assignedDrivers = deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
         return ResponseEntity.ok(assignedDrivers);
     }
 
@@ -54,3 +43,4 @@ public class DeliveryDriverController {
         return ResponseEntity.ok(response);
     }
 }
+

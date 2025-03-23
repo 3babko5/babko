@@ -1,6 +1,8 @@
 package com.business.hub.infrastructure.repository;
 
+import com.business.hub.application.dto.request.HubSearchRequest;
 import com.business.hub.domain.entity.Hub;
+import com.business.hub.domain.repository.HubQueryDslRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,4 +26,5 @@ public interface HubJpaRepository extends JpaRepository<Hub, UUID> {
     Optional<Hub> findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(UUID hubId);
 
     Page<Hub> findAllByDeletedAtIsNullAndDeletedByIsNull(Pageable pageable);
+
 }

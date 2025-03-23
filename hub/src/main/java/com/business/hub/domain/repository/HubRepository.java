@@ -1,5 +1,6 @@
 package com.business.hub.domain.repository;
 
+import com.business.hub.application.dto.request.HubSearchRequest;
 import com.business.hub.domain.entity.Hub;
 
 import java.util.List;
@@ -28,5 +29,6 @@ public interface HubRepository{
   Optional<Hub> findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(UUID hubId);
 
   Page<Hub> findAllByDeletedAtIsNullAndDeletedByIsNull(Pageable pageable);
+
 }
 

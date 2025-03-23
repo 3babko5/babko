@@ -5,12 +5,14 @@ package com.business.hub.application.service;
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.api.NaverApiService;
 import com.business.hub.application.dto.request.HubCreateRequest;
+import com.business.hub.application.dto.request.HubSearchRequest;
 import com.business.hub.application.dto.request.HubUpdateRequest;
 import com.business.hub.application.dto.response.HubPageResponse;
 import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.exception.HubExceptionCode;
 import com.business.hub.application.mapper.HubMapper;
 import com.business.hub.domain.entity.Hub;
+import com.business.hub.domain.repository.HubQueryDslRepository;
 import com.business.hub.domain.repository.HubRepository;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -29,6 +31,7 @@ public class HubService {
 
     private final HubRepository hubRepository;
     private final NaverApiService naverApiService;
+    private final HubQueryDslRepository hubQueryDslRepository;
 
 
     @Transactional
@@ -92,7 +95,7 @@ public class HubService {
         Hub existingHub = hubRepository.findById(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
-        existingHub.setDeletedBy(userId);
+        existingHub.deletedBy(userId);
         hubRepository.save(existingHub);
 
     }
@@ -110,5 +113,14 @@ public class HubService {
         Page<Hub> hubs = hubRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
 
         return HubPageResponse.of(hubs.map(HubMapper::toHubResponse));
+    }
+
+    public Page<HubResponse> getHubSearch(
+            HubSearchRequest request,
+            Pageable pageable) {
+
+        Page<Hub> hubSearch = hubQueryDslRepository.searchByRequest(request, pageable);
+
+        return HubMapper.toPageDto(hubSearch);
     }
 }
