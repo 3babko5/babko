@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import java.util.Date;
 
 @Component // Spring 빈으로 등록
-public class JwtUtil {
+public class JwtTokenUtil {
 
 	@Value("${jwt.secret}") // 설정 파일에서 비밀키 가져오기
 	private String secret;
@@ -59,4 +59,4 @@ public class JwtUtil {
 			return false;
 		}
 	}
-}
+} 

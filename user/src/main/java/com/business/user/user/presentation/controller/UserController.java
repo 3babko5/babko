@@ -1,6 +1,5 @@
 package com.business.user.user.presentation.controller;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -9,38 +8,37 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.business.user.user.application.dto.request.UserSignupRequestDto;
-import com.business.user.user.application.dto.response.UserSigninResponseDto;
-import com.business.user.user.application.dto.response.UserSignupResponseDto;
+import com.business.common.aop.RoleCheck;
 import com.business.user.user.application.service.UserService;
+import com.business.user.user.domain.dto.CreateUserRequestDto;
+import com.business.user.user.domain.dto.UserResponseDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
+@RequiredArgsConstructor
 public class UserController {
 
 	private final UserService userService;
 
-	/**
-	 * 회원가입
-	 * 201 Created
-	 */
-	@PostMapping("/register")
-	public ResponseEntity<UserSignupResponseDto> registerUser(@RequestBody @Valid UserSignupRequestDto request) {
-		UserSignupResponseDto response = userService.registerUser(request);
-		return ResponseEntity.status(HttpStatus.CREATED).body(response);
+	@PostMapping
+	public ResponseEntity<Void> createUser(@Valid @RequestBody CreateUserRequestDto requestDto) {
+		userService.createUser(requestDto);
+		return ResponseEntity.ok().build();
 	}
 
-	/**
-	 * 유저 정보 조회
-	 * 200 OK
-	 */
-	@GetMapping("/{username}")
-	public ResponseEntity<UserSigninResponseDto> getUser(@PathVariable String username) {
-		UserSigninResponseDto response = userService.getUserByUsername(username);
-		return ResponseEntity.ok(response);
+	@GetMapping("/{userId}")
+	@RoleCheck(roles = {"ROLE_MASTER", "ROLE_COMPANY"})
+	public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long userId) {
+		UserResponseDto responseDto = userService.getUserById(userId);
+		return ResponseEntity.ok(responseDto);
+	}
+
+	@GetMapping("/username/{username}")
+	public ResponseEntity<UserResponseDto> getUserByUsername(@PathVariable String username) {
+		UserResponseDto responseDto = userService.getUserByUsername(username);
+		return ResponseEntity.ok(responseDto);
 	}
 }

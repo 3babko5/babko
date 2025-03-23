@@ -1,21 +1,24 @@
 package com.business.auth.infrastructure.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.business.auth.application.dto.request.AuthUserSignupRequestDto;
-import com.business.auth.application.dto.response.AuthUserSigninResponseDto;
-import com.business.auth.application.dto.response.AuthSignupResponseDto;
+import com.business.auth.infrastructure.client.dto.CreateUserRequest;
+import com.business.auth.infrastructure.client.dto.UserResponse;
 
-@FeignClient(name = "user-service", url = "http://user-service:8084/api/v1/users")
+@FeignClient(name = "user-service")
 public interface UserClient {
 
-	@PostMapping("/register") // 회원가입 요청
-	void registerUser(@RequestBody AuthUserSignupRequestDto requestDto);
+	@PostMapping("/api/v1/users")
+	ResponseEntity<Void> createUser(@RequestBody CreateUserRequest request);
 
-	@GetMapping("/{user_id}") // 사용자 조회 요청
-	AuthUserSigninResponseDto getUserByUserId(@PathVariable("user_id") String userId);
+	@GetMapping("/api/v1/users/username/{username}")
+	ResponseEntity<UserResponse> getUserByUsername(@PathVariable("username") String username);
+	
+	@GetMapping("/api/v1/users/{userId}")
+	ResponseEntity<UserResponse> getUserById(@PathVariable("userId") Long userId);
 }

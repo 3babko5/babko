@@ -16,55 +16,21 @@ public interface DeliveryDriverJpaRepository extends JpaRepository<DeliveryDrive
   @Query("SELECT MAX(d.deliverySequence) FROM DeliveryDriver d WHERE d.hubId = :hubId AND d.driverType = 'COMPANY'")
   Optional<Long> findLastDeliverySequenceForCompanyDrivers(@Param("hubId") UUID hubId);
 
-  @Query("""
-        SELECT d FROM DeliveryDriver d
-        WHERE d.assignAt IS NOT NULL 
-        AND d.deletedAt IS NULL
-        ORDER BY d.assignAt DESC 
-        LIMIT 1
-    """)
-  Optional<DeliveryDriver> findLastAssignedDriver();
+  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedAtIsNullOrderByAssignAtDesc();
 
-  @Query("""
-        SELECT d FROM DeliveryDriver d
-        WHERE d.deliverySequence > :currentSequence 
-        AND d.deletedAt IS NULL
-        ORDER BY d.deliverySequence ASC 
-        LIMIT 1
-    """)
-  Optional<DeliveryDriver> findNextAvailableDriver(@Param("currentSequence") Long currentSequence);
+  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullOrderByDeliverySequenceAsc(Long currentSequence);
 
-  @Query("""
-        SELECT d FROM DeliveryDriver d
-        WHERE d.deletedAt IS NULL
-        ORDER BY d.deliverySequence ASC 
-        LIMIT 1
-    """)
-  Optional<DeliveryDriver> findFirstAvailableDriver();
+  Optional<DeliveryDriver> findFirstByDeletedAtIsNullOrderByDeliverySequenceAsc();
 
-  @Query("""
-      SELECT d FROM DeliveryDriver d
-      WHERE d.assignAt IS NOT NULL 
-      AND d.deletedAt IS NULL
-      AND d.driverType = :driverType
-      AND (:hubId IS NULL OR d.hubId = :hubId)
-      ORDER BY d.assignAt DESC 
-      LIMIT 1
-  """)
-  Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(@Param("driverType") DriverType driverType, @Param("hubId") UUID hubId);
+  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(DriverType driverType, UUID hubId);
 
-  @Query("""
-      SELECT d FROM DeliveryDriver d
-      WHERE d.deliverySequence > :currentSequence 
-      AND d.deletedAt IS NULL
-      AND d.driverType = :driverType
-      AND (:hubId IS NULL OR d.hubId = :hubId)
-      ORDER BY d.deliverySequence ASC 
-      LIMIT 1
-  """)
-  Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(@Param("currentSequence") Long currentSequence, @Param("driverType") DriverType driverType, @Param("hubId") UUID hubId);
+  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(Long currentSequence, DriverType driverType, UUID hubId);
 
   long countByDriverType(DriverType driverType);
 
   long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
+
+  boolean existsByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
+
+  Optional<DeliveryDriver> findByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
 }

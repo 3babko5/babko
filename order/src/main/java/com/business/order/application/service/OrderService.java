@@ -42,7 +42,15 @@ public class OrderService {
         List<OrderItemRequestDto> items = request.getItems();
 
         for (OrderItemRequestDto item : items) {
-            ProductDetailResponseDto productDetail = productFeignClient.getProductDetail(item.getProductId());
+
+            ProductDetailResponseDto queryDto = new ProductDetailResponseDto(
+                    item.getProductId(),
+                    null, // 가격은 요청에는 필요 없음
+                    null, // 재고도 필요 없음
+                    null  // 공급자도 필요 없음
+            );
+
+            ProductDetailResponseDto productDetail = productFeignClient.getProductDetail(queryDto);
 
             if(item.getOrderItemAmount() > productDetail.getProductQuantity()){
                 throw new BusinessLogicException(OrderExceptionCode.PRODUCT_QUANTITY_EXCEEDED);
@@ -52,7 +60,7 @@ public class OrderService {
             item.setOrderItemPrice(productDetail.getProductPrice()); //여기서 매핑
         }
 
-        UUID supplierId = items.get(0).getSupplierId();//공급업체는 한 주문 당 하나
+        UUID supplierId = items.get(0).getSupplierId();//첫번째 주문 아이템을 꺼내서 공급id 변수에 저장
         UUID receiverId = request.getReceiverId();
 
         hubIdResponseDto supplierResponse = companyFeignClient.searchCompanies(CompanyType.SUPPLIER);
