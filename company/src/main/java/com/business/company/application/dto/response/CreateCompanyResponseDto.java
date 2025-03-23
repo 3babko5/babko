@@ -23,6 +23,6 @@ public class CreateCompanyResponseDto {
         private String companyName;
         private CompanyType companyType;
         private UUID hubId;
-        private UUID companyManagerId;
+        private Long companyManagerId;
     }
 }

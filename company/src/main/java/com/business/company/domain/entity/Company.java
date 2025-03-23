@@ -30,10 +30,10 @@ public class Company extends BaseDataEntity {
     private UUID hubId;
 
     @Column(nullable = false)
-    private UUID companyManagerId;
+    private Long companyManagerId;
 
     @Builder
-    public Company(String companyName, String companyAddress, CompanyType companyType, UUID hubId, UUID companyManagerId) {
+    public Company(String companyName, String companyAddress, CompanyType companyType, UUID hubId, Long companyManagerId) {
         this.companyName = companyName;
         this.companyAddress = companyAddress;
         this.companyType = companyType;
