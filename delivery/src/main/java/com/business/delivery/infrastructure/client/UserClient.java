@@ -4,7 +4,7 @@ import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
-@FeignClient(name = "user-service", url = "${user.service.url")
+@FeignClient(name = "user-service", url = "${user.service.url}")
 public interface UserClient {
 
   @PostMapping("/api/v1/delivery-drivers/assign")
