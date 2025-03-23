@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.business.auth.application.service.AuthService;
-import com.business.auth.domain.dto.JwtTokenDto;
-import com.business.auth.domain.dto.LoginRequestDto;
-import com.business.auth.domain.dto.SignupRequestDto;
-import com.business.auth.domain.dto.TokenRefreshRequestDto;
+import com.business.auth.application.dto.response.JwtTokenResponseDto;
+import com.business.auth.application.dto.request.LoginRequestDto;
+import com.business.auth.application.dto.request.SignupRequestDto;
+import com.business.auth.application.dto.request.TokenRefreshRequestDto;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<JwtTokenDto> login(@Valid @RequestBody LoginRequestDto requestDto) {
-        JwtTokenDto tokenDto = authService.login(requestDto);
+    public ResponseEntity<JwtTokenResponseDto> login(@Valid @RequestBody LoginRequestDto requestDto) {
+        JwtTokenResponseDto tokenDto = authService.login(requestDto);
         return ResponseEntity.ok(tokenDto);
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<JwtTokenDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto requestDto) {
-        JwtTokenDto tokenDto = authService.refreshToken(requestDto);
+    public ResponseEntity<JwtTokenResponseDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto requestDto) {
+        JwtTokenResponseDto tokenDto = authService.refreshToken(requestDto);
         return ResponseEntity.ok(tokenDto);
     }
 } 

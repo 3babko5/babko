@@ -1,4 +1,4 @@
-package com.business.auth.domain.dto;
+package com.business.auth.application.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

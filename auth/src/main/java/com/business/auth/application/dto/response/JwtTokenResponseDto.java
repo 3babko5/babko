@@ -1,11 +1,11 @@
-package com.business.auth.domain.dto;
+package com.business.auth.application.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Builder
-public class JwtTokenDto {
+public class JwtTokenResponseDto {
     private String accessToken;
     private String refreshToken;
 } 

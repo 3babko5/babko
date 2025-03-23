@@ -6,10 +6,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.business.auth.domain.dto.JwtTokenDto;
-import com.business.auth.domain.dto.LoginRequestDto;
-import com.business.auth.domain.dto.SignupRequestDto;
-import com.business.auth.domain.dto.TokenRefreshRequestDto;
+import com.business.auth.application.dto.response.JwtTokenResponseDto;
+import com.business.auth.application.dto.request.LoginRequestDto;
+import com.business.auth.application.dto.request.SignupRequestDto;
+import com.business.auth.application.dto.request.TokenRefreshRequestDto;
 import com.business.auth.domain.entity.Token;
 import com.business.auth.domain.repository.TokenRepository;
 import com.business.auth.infrastructure.client.UserClient;
@@ -45,7 +45,7 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokenDto login(LoginRequestDto requestDto) {
+    public JwtTokenResponseDto login(LoginRequestDto requestDto) {
         // User 서비스에서 회원 정보 조회
         ResponseEntity<UserResponse> response = userClient.getUserByUsername(requestDto.getUsername());
         UserResponse user = response.getBody();
@@ -63,7 +63,7 @@ public class AuthService {
         String accessToken = jwtTokenUtil.generateAccessToken(user.getUserId(), user.getRole());
         String refreshToken = jwtTokenUtil.generateRefreshToken(user.getUserId());
         
-        JwtTokenDto tokenDto = JwtTokenDto.builder()
+        JwtTokenResponseDto tokenDto = JwtTokenResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -84,7 +84,7 @@ public class AuthService {
     }
 
     @Transactional
-    public JwtTokenDto refreshToken(TokenRefreshRequestDto requestDto) {
+    public JwtTokenResponseDto refreshToken(TokenRefreshRequestDto requestDto) {
         String refreshToken = requestDto.getRefreshToken();
         
         // 리프레시 토큰 검증
@@ -111,7 +111,7 @@ public class AuthService {
         String newAccessToken = jwtTokenUtil.generateAccessToken(userId, user.getRole());
         String newRefreshToken = jwtTokenUtil.generateRefreshToken(userId);
         
-        JwtTokenDto newTokenDto = JwtTokenDto.builder()
+        JwtTokenResponseDto newTokenDto = JwtTokenResponseDto.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(newRefreshToken)
                 .build();
