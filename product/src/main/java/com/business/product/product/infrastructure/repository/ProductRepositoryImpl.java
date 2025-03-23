@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,11 +29,16 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Page<Product> search(String companyName, UUID companyId, Pageable pageable) {
+    public Optional<Product> findById(UUID productId) {
+        return productJpaRepository.findById(productId);
+    }
+
+    @Override
+    public Page<Product> search(String productName, UUID companyId, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (companyName != null && !companyName.isBlank()) {
-            builder.and(product.productName.containsIgnoreCase(companyName));
+        if (productName != null && !productName.isBlank()) {
+            builder.and(product.productName.containsIgnoreCase(productName));
         }
 
         if (companyId != null) {
@@ -47,11 +53,12 @@ public class ProductRepositoryImpl implements ProductRepository {
                 .orderBy(QueryDslUtil.getAllOrderSpecifierArr(pageable, product))
                 .fetch();
 
-        long total = queryFactory
-                .selectFrom(product)
+        Long total = queryFactory
+                .select(product.count())
+                .from(product)
                 .where(builder)
-                .fetchCount();
+                .fetchOne();
 
-        return PageableExecutionUtils.getPage(results, pageable, () -> total);
+        return PageableExecutionUtils.getPage(results, pageable, () -> total != null ? total : 0L);
     }
 }

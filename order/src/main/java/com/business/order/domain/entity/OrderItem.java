@@ -43,7 +43,7 @@ public class OrderItem extends BaseDataEntity {
         this.supplierId = supplierId;
         this.orderItemAmount = orderItemAmount;
         this.orderItemPrice = orderItemPrice;
-        setCreatedBy(order.getUserId());
+        createdBy(order.getUserId());
     }
 
     public static OrderItem create(Order order, UUID productId, UUID supplierId,

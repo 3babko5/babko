@@ -67,11 +67,6 @@ public class Delivery extends BaseDataEntity {
 
   @NotNull
   @Column(nullable = false)
-  @Comment("배송 담당자 ID")
-  private Long deliveryDriverId;
-
-  @NotNull
-  @Column(nullable = false)
   @JdbcTypeCode(SqlTypes.UUID)
   @Comment("수령인 ID")
   private UUID recipientId;
@@ -89,7 +84,7 @@ public class Delivery extends BaseDataEntity {
   private List<DeliveryRoute> deliveryRoutes = new ArrayList<>();
 
   public Delivery(UUID orderId, UUID startHubId, UUID endHubId,
-      String deliveryAddress, UUID recipientId, UUID recipientSlackId, Long deliveryDriverId, DeliveryStatus deliveryStatus) {
+      String deliveryAddress, UUID recipientId, UUID recipientSlackId, DeliveryStatus deliveryStatus) {
 
     this.orderId = orderId;
     this.startHubId = startHubId;
@@ -97,13 +92,12 @@ public class Delivery extends BaseDataEntity {
     this.deliveryAddress = deliveryAddress;
     this.recipientId = recipientId;
     this.recipientSlackId = recipientSlackId;
-    this.deliveryDriverId = deliveryDriverId;
     this.deliveryStatus = deliveryStatus;
   }
 
   @Builder(builderMethodName = "deliveryCreateBuilder")
   public static Delivery create(UUID orderId, UUID startHubId, UUID endHubId, String deliveryAddress, UUID recipientId) {
-    return new Delivery(orderId, startHubId, endHubId, deliveryAddress, recipientId, null, null, DeliveryStatus.WAITING_AT_HUB);
+    return new Delivery(orderId, startHubId, endHubId, deliveryAddress, recipientId, null, DeliveryStatus.WAITING_AT_HUB);
   }
 
   public void addDeliveryRoute(List<DeliveryRoute> deliveryRoutes) {
@@ -111,6 +105,10 @@ public class Delivery extends BaseDataEntity {
       this.deliveryRoutes.add(deliveryRoute);
       deliveryRoute.associateDelivery(this);
     }
+  }
+
+  public void softDelete(Long userId) {
+    this.setDeletedBy(userId);
   }
 }
 

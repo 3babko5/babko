@@ -104,7 +104,8 @@ public class HubService {
             movement.setDeletedBy(userId);
         }
 
-        existingHub.setDeletedBy(userId);
+
+        existingHub.deletedBy(userId);
 
         hubRepository.save(existingHub);
 

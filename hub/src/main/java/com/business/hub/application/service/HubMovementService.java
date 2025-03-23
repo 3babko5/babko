@@ -188,7 +188,7 @@ public class HubMovementService {
                 .findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubMovementId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
 
-        hubMovement.setDeletedBy(userId);
+        hubMovement.deletedBy(userId);
         hubMovementRepository.save(hubMovement);
     }
 
