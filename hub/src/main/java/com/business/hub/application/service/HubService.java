@@ -98,10 +98,10 @@ public class HubService {
 
         // 허브 간 이동 정보도 논리 삭제
         for (HubMovement movement : existingHub.getDepartureMovements()) {
-            movement.setDeletedBy(userId);
+            movement.deletedBy(userId);
         }
         for (HubMovement movement : existingHub.getArrivalMovements()) {
-            movement.setDeletedBy(userId);
+            movement.deletedBy(userId);
         }
 
 

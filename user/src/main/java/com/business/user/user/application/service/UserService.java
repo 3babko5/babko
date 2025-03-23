@@ -45,7 +45,7 @@ public class UserService {
 			role
 		);
 		// 시스템 사용자(ID: 0)로 감사 필드 설정
-		user.setCreatedBy(0L);
+		user.createdBy(0L);
 		
 		userRepository.save(user);
 	}
