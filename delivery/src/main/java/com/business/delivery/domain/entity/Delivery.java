@@ -108,7 +108,7 @@ public class Delivery extends BaseDataEntity {
   }
 
   public void softDelete(Long userId) {
-    this.setDeletedBy(userId);
+    this.deletedBy(userId);
   }
 }
 
