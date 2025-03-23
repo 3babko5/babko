@@ -29,11 +29,16 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Page<Product> search(String companyName, UUID companyId, Pageable pageable) {
+    public Optional<Product> findById(UUID productId) {
+        return productJpaRepository.findById(productId);
+    }
+
+    @Override
+    public Page<Product> search(String productName, UUID companyId, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
-        if (companyName != null && !companyName.isBlank()) {
-            builder.and(product.productName.containsIgnoreCase(companyName));
+        if (productName != null && !productName.isBlank()) {
+            builder.and(product.productName.containsIgnoreCase(productName));
         }
 
         if (companyId != null) {
