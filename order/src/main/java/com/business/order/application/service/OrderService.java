@@ -16,7 +16,6 @@ import com.business.order.infrastructure.client.CompanyFeignClient;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
-import com.business.order.infrastructure.dto.response.DeliveryIdResponseDto;
 import com.business.order.infrastructure.dto.response.ProductDetailResponseDto;
 import com.business.order.infrastructure.dto.response.hubIdResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +42,15 @@ public class OrderService {
         List<OrderItemRequestDto> items = request.getItems();
 
         for (OrderItemRequestDto item : items) {
-            ProductDetailResponseDto productDetail = productFeignClient.getProductDetail(item.getProductId());
+
+            ProductDetailResponseDto queryDto = new ProductDetailResponseDto(
+                    item.getProductId(),
+                    null, // 가격은 요청에는 필요 없음
+                    null, // 재고도 필요 없음
+                    null  // 공급자도 필요 없음
+            );
+
+            ProductDetailResponseDto productDetail = productFeignClient.getProductDetail(queryDto);
 
             if(item.getOrderItemAmount() > productDetail.getProductQuantity()){
                 throw new BusinessLogicException(OrderExceptionCode.PRODUCT_QUANTITY_EXCEEDED);
@@ -53,7 +60,7 @@ public class OrderService {
             item.setOrderItemPrice(productDetail.getProductPrice()); //여기서 매핑
         }
 
-        UUID supplierId = items.get(0).getSupplierId();//공급업체는 한 주문 당 하나
+        UUID supplierId = items.get(0).getSupplierId();//첫번째 주문 아이템을 꺼내서 공급id 변수에 저장
         UUID receiverId = request.getReceiverId();
 
         hubIdResponseDto supplierResponse = companyFeignClient.searchCompanies(CompanyType.SUPPLIER);
@@ -61,7 +68,6 @@ public class OrderService {
 
         hubIdResponseDto receiverResponse = companyFeignClient.searchCompanies(CompanyType.RECEIVER);
         UUID destinationHubId = extractHubIdFromCompanyResponse(receiverResponse, receiverId);
-
         Order order = request.createOrder(userId, originHubId, destinationHubId);
 
         List<OrderItem> orderItems = items.stream()
@@ -69,23 +75,12 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         order.addOrderItems(orderItems);
-        Order savedOrder  = orderRepository.saveAndFlush(order);
+        Order savedOrder  = orderRepository.save(order);
 
         OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
         if(!deliveryFeignClient.createDelivery(deliveryRequest)){
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
         }
-
-        List<DeliveryIdResponseDto> deliveries = deliveryFeignClient.getDeliveryInfo();
-
-        UUID deliveryId = deliveries.stream()
-                .filter(d -> d.getOrderId().equals(savedOrder.getOrderId()))
-                .findFirst()
-                .map(DeliveryIdResponseDto::getDeliveryId)
-                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.DELIVERY_ID_NOT_FOUND));
-
-        savedOrder.updateDeliveryId(deliveryId);
-        orderRepository.save(savedOrder);
 
         return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
     }
@@ -115,16 +110,7 @@ public class OrderService {
 
         order.cancelOrder(order.getUserId());
         orderRepository.save(order);
-
-        UUID deliveryId = order.getDeliveryId();
-        if (deliveryId != null) {
-            try {
-                deliveryFeignClient.deleteByDeliveryId(deliveryId, order.getUserId());
-            } catch (Exception e) {
-                // 예외처리 필요
-            }
-        }
-
+        log.info("3. Cancel order {}", orderId);
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
