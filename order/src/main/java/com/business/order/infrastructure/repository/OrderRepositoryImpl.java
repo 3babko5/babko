@@ -15,6 +15,11 @@ public class OrderRepositoryImpl implements OrderRepository {
     private final OrderJpaRepository orderJpaRepository;
 
     @Override
+    public Order saveAndFlush(Order order) {
+        return orderJpaRepository.saveAndFlush(order);
+    }
+
+    @Override
     public Order save(Order order) {
         return orderJpaRepository.save(order);
     }

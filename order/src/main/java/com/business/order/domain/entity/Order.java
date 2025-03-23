@@ -83,4 +83,9 @@ public class Order extends BaseDataEntity {
         this.orderStatus = OrderStatus.CANCELED;
         updatedBy(userId);
     }
+
+    public void updateDeliveryId(UUID deliveryId) {
+        this.deliveryId = deliveryId;
+        deletedBy(userId);
+    }
 }

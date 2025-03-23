@@ -16,6 +16,7 @@ import com.business.order.infrastructure.client.CompanyFeignClient;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
+import com.business.order.infrastructure.dto.response.DeliveryIdResponseDto;
 import com.business.order.infrastructure.dto.response.ProductDetailResponseDto;
 import com.business.order.infrastructure.dto.response.hubIdResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -60,6 +61,7 @@ public class OrderService {
 
         hubIdResponseDto receiverResponse = companyFeignClient.searchCompanies(CompanyType.RECEIVER);
         UUID destinationHubId = extractHubIdFromCompanyResponse(receiverResponse, receiverId);
+
         Order order = request.createOrder(userId, originHubId, destinationHubId);
 
         List<OrderItem> orderItems = items.stream()
@@ -67,12 +69,23 @@ public class OrderService {
                 .collect(Collectors.toList());
 
         order.addOrderItems(orderItems);
-        Order savedOrder  = orderRepository.save(order);
+        Order savedOrder  = orderRepository.saveAndFlush(order);
 
         OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
         if(!deliveryFeignClient.createDelivery(deliveryRequest)){
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
         }
+
+        List<DeliveryIdResponseDto> deliveries = deliveryFeignClient.getDeliveryInfo();
+
+        UUID deliveryId = deliveries.stream()
+                .filter(d -> d.getOrderId().equals(savedOrder.getOrderId()))
+                .findFirst()
+                .map(DeliveryIdResponseDto::getDeliveryId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.DELIVERY_ID_NOT_FOUND));
+
+        savedOrder.updateDeliveryId(deliveryId);
+        orderRepository.save(savedOrder);
 
         return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
     }
@@ -102,7 +115,16 @@ public class OrderService {
 
         order.cancelOrder(order.getUserId());
         orderRepository.save(order);
-        log.info("3. Cancel order {}", orderId);
+
+        UUID deliveryId = order.getDeliveryId();
+        if (deliveryId != null) {
+            try {
+                deliveryFeignClient.deleteByDeliveryId(deliveryId, order.getUserId());
+            } catch (Exception e) {
+                // 예외처리 필요
+            }
+        }
+
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
