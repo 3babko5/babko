@@ -76,7 +76,7 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
     }
 
     @Override
-    public Optional<DeliveryDriver> findBydeliveryDriverId(Long deliveryDriverId) {
+    public Optional<DeliveryDriver> findByDeliveryDriverId(Long deliveryDriverId) {
         return deliveryDriverJpaRepository.findByDeliveryDriverIdAndDeletedAtIsNull(deliveryDriverId);
     }
 

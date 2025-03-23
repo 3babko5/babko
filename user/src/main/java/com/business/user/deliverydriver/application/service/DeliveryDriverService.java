@@ -101,7 +101,7 @@ public class DeliveryDriverService {
     }
 
     private DeliveryDriver saveAssignedDriver(Long deliveryDriverId, UUID deliveryRouteId, Long routeSequence) {
-        DeliveryDriver driver = deliveryDriverRepository.findBydeliveryDriverId(deliveryDriverId)
+        DeliveryDriver driver = deliveryDriverRepository.findByDeliveryDriverId(deliveryDriverId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));
 
         driver.assignToRoute(deliveryRouteId, routeSequence);
@@ -155,7 +155,7 @@ public class DeliveryDriverService {
     @Transactional(readOnly = true)
     public DeliveryDriverDetailResponseDto getDriverByDriverId(Long deliveryDriverId) {
 
-        DeliveryDriver deliveryDriver = deliveryDriverRepository.findBydeliveryDriverId(deliveryDriverId)
+        DeliveryDriver deliveryDriver = deliveryDriverRepository.findByDeliveryDriverId(deliveryDriverId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND));
 
         UUID deliveryRouteId = deliveryDriver.getDeliveryRouteId();

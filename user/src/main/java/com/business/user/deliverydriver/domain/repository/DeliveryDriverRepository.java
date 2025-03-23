@@ -16,7 +16,7 @@ public interface DeliveryDriverRepository {
     long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
     Optional<Long> findLastDeliverySequenceForHubDrivers();
     Optional<Long> findLastDeliverySequenceForCompanyDrivers(UUID hubId);
-    Optional<DeliveryDriver> findBydeliveryDriverId(Long deliveryDriverId);
+    Optional<DeliveryDriver> findByDeliveryDriverId(Long deliveryDriverId);
     Optional<DeliveryDriver> findLastAssignedDriver();
     Optional<DeliveryDriver> findNextAvailableDriver(Long currentSequence);
     Optional<DeliveryDriver> findFirstAvailableDriver();
