@@ -31,19 +31,18 @@ public class AuthService {
     public void signup(SignupRequestDto requestDto) {
         // 비밀번호 해싱
         String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
-        
+
         // User 서비스에 회원 정보 저장 요청
         CreateUserRequest createUserRequest = CreateUserRequest.builder()
-                .username(requestDto.getUsername())
-                .password(hashedPassword)
-                .email(requestDto.getEmail())
-                .slackId(requestDto.getSlackId())
-                .role("ROLE_COMPANY") // 기본 역할은 ROLE_COMPANY
-                .build();
-        
+            .username(requestDto.getUsername())
+            .password(hashedPassword)
+            .email(requestDto.getEmail())
+            .slackId(requestDto.getSlackId())
+            .role("ROLE_COMPANY") // 기본 역할은 ROLE_COMPANY
+            .build();
+
         userClient.createUser(createUserRequest);
     }
-
     @Transactional
     public JwtTokenResponseDto login(LoginRequestDto requestDto) {
         // User 서비스에서 회원 정보 조회

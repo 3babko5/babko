@@ -1,7 +1,10 @@
 package com.business.user.user.domain.dto;
 
+import com.business.user.user.domain.entity.UserType;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 

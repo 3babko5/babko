@@ -32,19 +32,18 @@ public class UserService {
 		if (userRepository.existsBySlackId(requestDto.getSlackId())) {
 			throw new BusinessLogicException(UserExceptionCode.SLACKID_ALREADY_EXISTS);
 		}
-		
+
 		// UserType 변환
 		UserType role = UserType.valueOf(requestDto.getRole());
-		
+
 		// 사용자 생성 및 저장
 		User user = User.create(
-				requestDto.getUsername(),
-				requestDto.getPassword(),
-				requestDto.getEmail(),
-				requestDto.getSlackId(),
-				role
+			requestDto.getUsername(),
+			requestDto.getPassword(),
+			requestDto.getEmail(),
+			requestDto.getSlackId(),
+			role
 		);
-		
 		// 시스템 사용자(ID: 0)로 감사 필드 설정
 		user.setCreatedBy(0L);
 		

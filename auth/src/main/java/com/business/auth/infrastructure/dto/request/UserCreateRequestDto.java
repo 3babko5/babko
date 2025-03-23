@@ -1,6 +1,6 @@
 package com.business.auth.infrastructure.dto.request;
 
-import com.business.auth.domain.entity.UserType;
+import org.hibernate.usertype.UserType;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

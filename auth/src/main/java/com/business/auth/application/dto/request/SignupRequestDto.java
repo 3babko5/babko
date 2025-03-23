@@ -2,6 +2,7 @@ package com.business.auth.application.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 
 @Getter
@@ -18,4 +19,5 @@ public class SignupRequestDto {
     
     @NotBlank(message = "슬랙 ID는 필수입니다.")
     private String slackId;
+
 } 
