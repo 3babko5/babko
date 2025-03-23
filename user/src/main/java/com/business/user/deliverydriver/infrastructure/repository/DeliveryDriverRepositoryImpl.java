@@ -47,27 +47,27 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
 
     @Override
     public Optional<DeliveryDriver> findLastAssignedDriver() {
-        return deliveryDriverJpaRepository.findLastAssignedDriver();
+        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullOrderByAssignAtDesc();
     }
 
     @Override
     public Optional<DeliveryDriver> findNextAvailableDriver(Long currentSequence) {
-        return deliveryDriverJpaRepository.findNextAvailableDriver(currentSequence);
+        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullOrderByDeliverySequenceAsc(currentSequence);
     }
 
     @Override
     public Optional<DeliveryDriver> findFirstAvailableDriver() {
-        return deliveryDriverJpaRepository.findFirstAvailableDriver();
+        return deliveryDriverJpaRepository.findFirstByDeletedAtIsNullOrderByDeliverySequenceAsc();
     }
 
     @Override
     public Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(DriverType driverType, UUID hubId) {
-        return deliveryDriverJpaRepository.findLastAssignedDriverByTypeAndHub(driverType, hubId);
+        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(driverType, hubId);
     }
 
     @Override
     public Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(Long currentSequence, DriverType driverType, UUID hubId) {
-        return deliveryDriverJpaRepository.findNextAvailableDriverByTypeAndHub(currentSequence, driverType, hubId);
+        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(currentSequence, driverType, hubId);
     }
 
     @Override
