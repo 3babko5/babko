@@ -33,6 +33,7 @@ public class ProductService {
                 request.getProductName(),
                 request.getCompanyId(),
                 request.getProductId(),
+                request.getProductQuantity(),
                 pageable
         );
         return ProductMapper.toSearchResponseDto(productPage);

@@ -41,6 +41,7 @@ public class ProductMapper {
                         .productId(product.getProductId())
                         .productName(product.getProductName())
                         .productPrice(product.getProductPrice())
+                        .productQuantity(product.getProductQuantity())
                         .companyId(product.getCompanyId())
                         .build())
                 .collect(Collectors.toList());

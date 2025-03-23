@@ -34,7 +34,7 @@ public class ProductRepositoryImpl implements ProductRepository {
     }
 
     @Override
-    public Page<Product> search(String productName, UUID companyId, UUID productId, Pageable pageable) {
+    public Page<Product> search(String productName, UUID companyId, UUID productId, Integer productQuantity, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (productName != null && !productName.isBlank()) {
@@ -46,6 +46,10 @@ public class ProductRepositoryImpl implements ProductRepository {
         }
 
         if (productId != null) {
+            builder.and(product.productId.eq(productId));
+        }
+
+        if (productQuantity != null) {
             builder.and(product.productId.eq(productId));
         }
 
