@@ -11,6 +11,7 @@ import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.mapper.DeliveryRequestMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
 import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
 import com.business.delivery.application.exception.DeliveryErrorCode;
@@ -18,12 +19,14 @@ import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.DeliveryRoute;
 import com.business.delivery.domain.repository.DeliveryRepository;
 import com.business.delivery.infrastructure.client.HubClient;
+import com.business.delivery.infrastructure.client.OrderClient;
 import com.business.delivery.infrastructure.client.UserClient;
 import com.business.delivery.infrastructure.dto.mapper.HubMapper;
 import com.business.delivery.infrastructure.dto.response.HubIdResponseDto;
 import com.business.delivery.infrastructure.dto.response.HubRoutesResponseDto;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
@@ -42,6 +45,7 @@ public class DeliveryService {
     private final HubClient hubClient;
     private final NaverApiService naverApiService;
     private final UserClient userClient;
+    private final OrderClient orderClient;
 
     public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request) {
 
@@ -109,5 +113,20 @@ public class DeliveryService {
         Page<DeliveryPageResponseDto> responsePage = deliveryPage.map(DeliveryResponseMapper::deliveryToPageResponseDto);
 
         return responsePage;
+    }
+
+    public DeliveryDetailResponseDto getDeliveryByDeliveryId(UUID deliveryId) {
+
+        Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
+        Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId());
+
+        return DeliveryResponseMapper.deliveryAndOrderToDetailResponse(delivery, orderResponse);
+    }
+
+    @Transactional
+    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
+
+        deliveryRepository.deleteByDeliveryId(deliveryId, deletedBy);
     }
 }

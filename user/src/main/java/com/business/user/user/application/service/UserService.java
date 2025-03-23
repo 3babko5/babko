@@ -37,7 +37,7 @@ public class UserService {
 			.slackId(requestDto.getSlackId())
 			.role(requestDto.getRole())
 			.build();
-			user.setCreatedBy(100L); //userId를 전달하여 createdBy
+			user.createdBy(100L); //userId를 전달하여 createdBy
 
 		/**
 		 * common --> BaseDataEntity 객체를 생성할 때 만든 유저아이디가 없어서 오류
