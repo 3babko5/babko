@@ -1,8 +1,10 @@
 package com.business.user.deliverydriver.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
-import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverMapper;
+import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverResponseMapper;
+import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverRequestMapper;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
+import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.exception.DeliveryDriverErrorCode;
@@ -18,6 +20,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,11 +70,11 @@ public class DeliveryDriverService {
     };
 
     DeliveryDriver deliveryDriver =
-        DeliveryDriverMapper.createRequestToEntity(request, newSequence);
+        DeliveryDriverRequestMapper.createRequestToEntity(request, newSequence);
 
     deliveryDriverRepository.save(deliveryDriver);
 
-    return DeliveryDriverMapper.toDto(deliveryDriver);
+    return DeliveryDriverResponseMapper.driverToDriverResponseDto(deliveryDriver);
   }
 
   public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId) {
@@ -89,7 +93,7 @@ public class DeliveryDriverService {
       }
 
       DeliveryDriver assignedDriver = saveAssignedDriver(assignedDriverId, route.getDeliveryRouteId(), route.getRouteSequence());
-      assignedDrivers.add(DeliveryDriverMapper.toAssignedDto(assignedDriver));
+      assignedDrivers.add(DeliveryDriverResponseMapper.driverToAssignedDto(assignedDriver));
     }
     return assignedDrivers;
   }
@@ -135,6 +139,15 @@ public class DeliveryDriverService {
 
   private boolean isLastDestination(DeliveryClientResponseDto route) {
     return route.getDeliveryAddress() != null;
+  }
+
+  @Transactional(readOnly = true)
+  public Page<DeliveryDriverResponseDto> getDrivers(DeliveryDriverSearchRequestDto request) {
+
+    Pageable pageable = DeliveryDriverRequestMapper.SearchRequestDtoToPageable(request);
+
+    Page<DeliveryDriver> driverPage = deliveryDriverRepository.findDeliveryDrivers(request, pageable);
+    return driverPage.map(DeliveryDriverResponseMapper::driverToDriverResponseDto);
   }
 }
 

@@ -1,24 +1,14 @@
 package com.business.user.deliverydriver.application.dto.mapper;
 
-import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
+import org.springframework.data.domain.Page;
 
-public class DeliveryDriverMapper {
+public class DeliveryDriverResponseMapper {
 
-  public static DeliveryDriver createRequestToEntity(CreateDeliveryDriverRequestDto request, Long newSequence) {
-
-    return DeliveryDriver.deliveryDriverCreateBuilder()
-        .deliveryDriverId(request.getDeliveryDriverId())
-        .hubId(request.getHubId())
-        .slackId(request.getSlackId())
-        .driverType(request.getDriverType())
-        .deliverySequence(newSequence)
-        .build();
-  }
-
-  public static DeliveryDriverResponseDto toDto(DeliveryDriver deliveryDriver) {
+  public static DeliveryDriverResponseDto driverToDriverResponseDto(DeliveryDriver deliveryDriver) {
     return DeliveryDriverResponseDto.builder()
         .deliveryDriverId(deliveryDriver.getDeliveryDriverId())
         .hubId(deliveryDriver.getHubId())
@@ -28,7 +18,7 @@ public class DeliveryDriverMapper {
         .build();
   }
 
-  public static AssignDeliveryDriverResponseDto toAssignedDto(DeliveryDriver deliveryDriver) {
+  public static AssignDeliveryDriverResponseDto driverToAssignedDto(DeliveryDriver deliveryDriver) {
     return AssignDeliveryDriverResponseDto.builder()
         .deliveryDriverId(deliveryDriver.getDeliveryDriverId())
         .driverType(deliveryDriver.getDriverType())
@@ -36,6 +26,16 @@ public class DeliveryDriverMapper {
         .deliveryRouteId(deliveryDriver.getDeliveryRouteId())
         .routeSequence(deliveryDriver.getRouteSequence())
         .assignAt(deliveryDriver.getAssignAt())
+        .build();
+  }
+
+  public static <T> DeliveryDriverListResponseDto<T> toPageListResponse(Page<T> page) {
+    return DeliveryDriverListResponseDto.<T>builder()
+        .totalElements(page.getTotalElements())
+        .totalPages(page.getTotalPages())
+        .currentPage(page.getNumber() + 1)
+        .size(page.getSize())
+        .data(page.getContent())
         .build();
   }
 }
