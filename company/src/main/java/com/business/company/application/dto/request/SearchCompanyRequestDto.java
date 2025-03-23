@@ -18,3 +18,4 @@ public class SearchCompanyRequestDto {
     private Integer size = 10;
     private String orderBy = "CREATED";
     private String sort = "desc";
+}
