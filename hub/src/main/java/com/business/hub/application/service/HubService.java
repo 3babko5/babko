@@ -12,6 +12,7 @@ import com.business.hub.application.dto.response.HubResponse;
 import com.business.hub.application.exception.HubExceptionCode;
 import com.business.hub.application.mapper.HubMapper;
 import com.business.hub.domain.entity.Hub;
+import com.business.hub.domain.entity.HubMovement;
 import com.business.hub.domain.repository.HubQueryDslRepository;
 import com.business.hub.domain.repository.HubRepository;
 import jakarta.transaction.Transactional;
@@ -40,7 +41,7 @@ public class HubService {
         double[] coordinates = naverApiService.getCoordinates(requestDto.getHubAddress());
 
         if (requestDto.getHubName() == null || requestDto.getHubName().trim().isEmpty()) {
-            throw new BusinessLogicException(HubExceptionCode.DUPLICATE_HUB_NAME);
+            throw new BusinessLogicException(HubExceptionCode.INVALID_HUB_NAME);
         }
 
         if (requestDto.getHubAddress() == null || requestDto.getHubAddress().trim().isEmpty()) {
@@ -72,7 +73,7 @@ public class HubService {
             UUID hubId,
             HubUpdateRequest request
             ,Long userId) {
-        Hub existingHub = hubRepository.findById(hubId)
+        Hub existingHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
         existingHub.update(
@@ -92,10 +93,20 @@ public class HubService {
     public void deleteHub(
             UUID hubId,
             Long userId) {
-        Hub existingHub = hubRepository.findById(hubId)
+        Hub existingHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
+        // 허브 간 이동 정보도 논리 삭제
+        for (HubMovement movement : existingHub.getDepartureMovements()) {
+            movement.setDeletedBy(userId);
+        }
+        for (HubMovement movement : existingHub.getArrivalMovements()) {
+            movement.setDeletedBy(userId);
+        }
+
+
         existingHub.deletedBy(userId);
+
         hubRepository.save(existingHub);
 
     }
