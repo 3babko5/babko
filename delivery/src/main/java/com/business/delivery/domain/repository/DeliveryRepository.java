@@ -13,4 +13,6 @@ public interface DeliveryRepository {
   Page<Delivery> findDeliveries(DeliverySearchRequestDto request, Pageable pageable);
 
   Delivery findByDeliveryId(UUID deliveryId);
+
+  void deleteByDeliveryId(UUID deliveryId, Long deletedBy);
 }

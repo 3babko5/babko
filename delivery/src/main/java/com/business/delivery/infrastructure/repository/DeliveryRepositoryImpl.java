@@ -95,7 +95,17 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
 
   @Override
   public Delivery findByDeliveryId(UUID deliveryId) {
+
     return deliveryJpaRepository.findById(deliveryId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
+  }
+
+  @Override
+  public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
+
+    Delivery delivery = deliveryJpaRepository.findByDeliveryIdAndDeletedAtIsNull(deliveryId)
+        .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ALREADY_DELETED));
+
+    delivery.softDelete(deletedBy);
   }
 }
