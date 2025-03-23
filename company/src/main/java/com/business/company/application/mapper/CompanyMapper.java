@@ -19,6 +19,7 @@ public class CompanyMapper {
                 .companyType(dto.getCompanyType())
                 .hubId(dto.getHubId())
                 .companyManagerId(dto.getCompanyManagerId())
+                .createdBy(1L)
                 .build();
     }
 

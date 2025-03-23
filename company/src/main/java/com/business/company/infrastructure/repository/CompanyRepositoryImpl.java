@@ -14,6 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     }
 
     @Override
-    public Page<Company> search(String companyName, CompanyType companyType, Pageable pageable) {
+    public Page<Company> search(String companyName, CompanyType companyType, UUID companyId, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
         if (companyName != null && !companyName.isBlank()) {
@@ -37,6 +38,10 @@ public class CompanyRepositoryImpl implements CompanyRepository {
 
         if (companyType != null) {
             builder.and(company.companyType.eq(companyType));
+        }
+
+        if (companyId != null) {
+            builder.and(company.companyId.eq(companyId));
         }
 
         List<Company> results = queryFactory

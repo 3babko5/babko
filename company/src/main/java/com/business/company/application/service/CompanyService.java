@@ -31,6 +31,7 @@ public class CompanyService {
         Page<Company> companyPage = companyRepository.search(
                 request.getCompanyName(),
                 request.getCompanyType(),
+                request.getCompanyId(),
                 pageable
         );
         return CompanyMapper.toSearchResponseDto(companyPage);
