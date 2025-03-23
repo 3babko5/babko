@@ -5,6 +5,7 @@ import com.business.user.deliverydriver.application.dto.request.AssignDeliveryDr
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DeliveryDriverDetailResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.service.DeliveryDriverService;
@@ -20,29 +21,36 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class DeliveryDriverController {
 
-  private final DeliveryDriverService deliveryDriverService;
+    private final DeliveryDriverService deliveryDriverService;
 
-  @PostMapping
-  public ResponseEntity<DeliveryDriverResponseDto> createDeliveryDriver(@RequestBody CreateDeliveryDriverRequestDto request) {
+    @PostMapping
+    public ResponseEntity<DeliveryDriverResponseDto> createDeliveryDriver(@RequestBody CreateDeliveryDriverRequestDto request) {
 
-    DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request);
-    return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
-  }
+        DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
+    }
 
-  @PostMapping("/assign")
-  public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(
-      @RequestBody AssignDeliveryDriverRequestDto request
-  ) {
-    List<AssignDeliveryDriverResponseDto> assignedDrivers =
-        deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
+    @PostMapping("/assign")
+    public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(
+        @RequestBody AssignDeliveryDriverRequestDto request
+    ) {
+        List<AssignDeliveryDriverResponseDto> assignedDrivers =
+            deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
 
-    return ResponseEntity.ok(assignedDrivers);
-  }
+        return ResponseEntity.ok(assignedDrivers);
+    }
 
-  @GetMapping
-  public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(DeliveryDriverSearchRequestDto request) {
+    @GetMapping
+    public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(DeliveryDriverSearchRequestDto request) {
 
-    Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request);
-    return ResponseEntity.ok(DeliveryDriverResponseMapper.toPageListResponse(driverPage));
-  }
+        Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request);
+        return ResponseEntity.ok(DeliveryDriverResponseMapper.toPageListResponse(driverPage));
+    }
+
+    @GetMapping("/{deliveryDriverId}")
+    public ResponseEntity<DeliveryDriverDetailResponseDto> getDeliveryDriverDetail(@PathVariable Long deliveryDriverId) {
+
+        DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId);
+        return ResponseEntity.ok(response);
+    }
 }
