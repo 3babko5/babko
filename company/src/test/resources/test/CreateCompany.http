@@ -1,0 +1,13 @@
+### 1. 업체 생성
+POST http://localhost:8087/api/v1/companies
+Authorization: Bearer jwt_token_string
+Content-Type: application/json
+Accept: application/json
+
+{
+  "companyName": "먹태깡 제조회사",
+  "companyAddress": "서울",
+  "companyType": "RECEIVER",
+  "hubId": "11111111-0d12-45ab-bbd2-9f1baf001234",
+  "companyManagerId": 1
+}
