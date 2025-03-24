@@ -5,9 +5,9 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "companyName": "먹태깡 제조회사",
-  "companyAddress": "서울",
-  "companyType": "RECEIVER",
-  "hubId": "11111111-0d12-45ab-bbd2-9f1baf001234",
-  "companyManagerId": 1
+  "companyName": "새우깡 제조회사",
+  "companyAddress": "청주",
+  "companyType": "SUPPLIER",
+  "hubId": "22222222-0d12-45ab-bbd2-9f1baf001234",
+  "companyManagerId": 419
 }

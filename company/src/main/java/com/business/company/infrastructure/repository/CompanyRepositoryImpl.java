@@ -14,6 +14,7 @@ import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -58,5 +59,10 @@ public class CompanyRepositoryImpl implements CompanyRepository {
                 .fetchCount();
 
         return PageableExecutionUtils.getPage(results, pageable, () -> total);
+    }
+
+    @Override
+    public Optional<Company> findActiveCompanyById(UUID companyId) {
+        return companyJpaRepository.findActiveCompanyById(companyId);
     }
 }
