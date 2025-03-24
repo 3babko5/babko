@@ -2,11 +2,11 @@ package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.order.application.dto.mapper.DeliveryMapper;
+import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.dto.mapper.RequestMapper;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
 import com.business.order.application.dto.response.*;
-import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.CompanyType;
 import com.business.order.domain.entity.Order;
@@ -18,7 +18,9 @@ import com.business.order.infrastructure.client.ProductFeignClient;
 import com.business.order.infrastructure.dto.queryDto.SearchCompanyQueryDto;
 import com.business.order.infrastructure.dto.queryDto.SearchProductQueryDto;
 import com.business.order.infrastructure.dto.request.CreateDeliveryRequestDto;
+import com.business.order.infrastructure.dto.request.DeliverySearchForOrderRequestDto;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
+import com.business.order.infrastructure.dto.response.DeliveryListForOrderResponseDto;
 import com.business.order.infrastructure.dto.response.GetCompanyInfoResponseDto;
 import com.business.order.infrastructure.dto.response.GetProductInfoResponseDto;
 import feign.FeignException;
@@ -128,19 +130,31 @@ public class OrderService {
         return OrderMapper.toOrderGetResponse(order);
     }
 
+    //주문 취소
     @Transactional
     public OrderStatusResponseDto cancelOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND));
 
-        String deliveryStatus = deliveryFeignClient.getDeliveryStatus(orderId);
+        DeliverySearchForOrderRequestDto request = DeliverySearchForOrderRequestDto.fromOrderId(orderId);
+        log.info("배송 상태 조회 요청 DTO 생성: {}", request);
 
-        if(!deliveryStatus.equals("WAITING_AT_HUB")){
+        DeliveryListForOrderResponseDto<DeliveryStatusForOrderDto> response =
+                deliveryFeignClient.getDeliveries(request);
+        log.info("배송 서비스 응답 수신: {}", response);
+
+        if (response.getData().isEmpty()) {
+            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_ID_NOT_FOUND);
+        }
+
+        String deliveryStatus = response.getData().get(0).getDeliveryStatus();
+
+        if (!"WAITING_AT_HUB".equals(deliveryStatus)) {
             throw new BusinessLogicException(OrderExceptionCode.ORDER_CANNOT_BE_CANCELED);
         }
 
+        // 6. 주문 취소 처리
         order.cancelOrder(order.getUserId());
-        orderRepository.save(order);
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
@@ -173,6 +187,7 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
 
+    //주문 완료
     @Transactional
     public void completeOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
