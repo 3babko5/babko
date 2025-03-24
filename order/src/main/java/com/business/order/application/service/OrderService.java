@@ -6,6 +6,7 @@ import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.dto.mapper.RequestMapper;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
+import com.business.order.application.dto.request.SearchOrderRequestDto;
 import com.business.order.application.dto.response.*;
 import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.CompanyType;
@@ -26,6 +27,8 @@ import com.business.order.infrastructure.dto.response.GetProductInfoResponseDto;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -130,6 +133,16 @@ public class OrderService {
         return OrderMapper.toOrderGetResponse(order);
     }
 
+    @Transactional(readOnly = true)
+    public SearchOrderResponseDto searchOrders(SearchOrderRequestDto request, Pageable pageable) {
+        Page<Order> orderPage = orderRepository.search(
+                request.getOrderId(),
+                request.getOrderStatus(),
+                pageable
+        );
+        return OrderMapper.toSearchOrderResponseDto(orderPage);
+    }
+
     //주문 취소
     @Transactional
     public OrderStatusResponseDto cancelOrder(UUID orderId) {
@@ -194,8 +207,8 @@ public class OrderService {
                 .map(hubIdResponseDto.CompanyData::getHubId)
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
-
     //주문 완료
+
     @Transactional
     public void completeOrder(UUID orderId) {
         Order order = orderRepository.findById(orderId)
@@ -203,5 +216,4 @@ public class OrderService {
 
         order.completeOrder();
     }
-
 }
