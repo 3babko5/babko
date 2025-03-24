@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -61,7 +62,7 @@ public class DeliveryDriverController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{deliveryRouteId}/status")
+    @PatchMapping("/{deliveryRouteId}/status")
     public ResponseEntity<DriverStatusUpdateResponseDto> updateDriverStatus(
         @PathVariable("deliveryRouteId") UUID deliveryRouteId,
         @RequestBody StatusUpdateRequestDto request) {
@@ -70,7 +71,7 @@ public class DeliveryDriverController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{deliveryRouteId}/cancel")
+    @PatchMapping("/{deliveryRouteId}/cancel")
     public ResponseEntity<Void> cancelDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId) {
 
         deliveryDriverService.cancelDriverStatus(deliveryRouteId);
