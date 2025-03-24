@@ -1,12 +1,11 @@
 package com.business.order.infrastructure.client;
 
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
+import com.business.order.infrastructure.dto.response.DeliveryIdResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @FeignClient(name = "delivery-service", url = "http://delivery-service/api/v1/deliveries")
@@ -17,4 +16,13 @@ public interface DeliveryFeignClient {
 
     @GetMapping("/{orderId}/deliveryStatus")//url 확인 필요
     String getDeliveryStatus(@PathVariable("orderId") UUID orderId);
+
+    @GetMapping("/deliveries")
+    List<DeliveryIdResponseDto> getDeliveryInfo();
+
+    @DeleteMapping("/{deliveryId}")
+    void deleteByDeliveryId(
+            @PathVariable("deliveryId") UUID deliveryId,
+            @RequestParam("deletedBy") Long deletedBy
+    );
 }

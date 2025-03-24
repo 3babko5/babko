@@ -39,6 +39,9 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
     QDelivery delivery = QDelivery.delivery;
 
     BooleanBuilder builder = new BooleanBuilder();
+
+    builder.and(delivery.deletedAt.isNull());
+
     if (request.getOrderId() != null) {
       builder.and(delivery.orderId.eq(request.getOrderId()));
     }
@@ -96,7 +99,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
   @Override
   public Delivery findByDeliveryId(UUID deliveryId) {
 
-    return deliveryJpaRepository.findById(deliveryId)
+    return deliveryJpaRepository.findByDeliveryIdAndDeletedAtIsNull(deliveryId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
   }
 
