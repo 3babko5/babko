@@ -1,13 +1,10 @@
-package com.business.user.user.domain.dto;
-
-import com.business.user.user.domain.entity.UserType;
+package com.business.user.user.application.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
-
+// User 서비스 자체 컨트롤러에서 회원가입 요청 받을 때 사용
 @Getter
 public class CreateUserRequestDto {
     @NotBlank(message = "사용자명은 필수입니다.")
