@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeliverySearchRequestDto {
+public class SearchRequestDto {
 
     @Builder.Default
     private Integer page = 1;
