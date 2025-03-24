@@ -147,14 +147,22 @@ public class OrderService {
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_ID_NOT_FOUND);
         }
 
-        String deliveryStatus = response.getData().get(0).getDeliveryStatus();
+        DeliveryStatusForOrderDto deliveryInfo = response.getData().get(0);
+        String deliveryStatus = deliveryInfo.getDeliveryStatus();
 
         if (!"WAITING_AT_HUB".equals(deliveryStatus)) {
             throw new BusinessLogicException(OrderExceptionCode.ORDER_CANNOT_BE_CANCELED);
         }
 
-        // 6. 주문 취소 처리
         order.cancelOrder(order.getUserId());
+
+        // 배송 상태도 취소로 변경 요청
+        try {
+            deliveryFeignClient.cancelDelivery(deliveryInfo.getDeliveryId());
+        } catch (FeignException e) {
+            throw new BusinessLogicException(OrderExceptionCode.DELIVERY_STATUS_NOT_FOUND);
+        }
+
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 

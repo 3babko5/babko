@@ -24,6 +24,10 @@ public interface DeliveryFeignClient {
     DeliveryListForOrderResponseDto<DeliveryStatusForOrderDto> getDeliveries(
             @SpringQueryMap DeliverySearchForOrderRequestDto request);
 
+    //주문 취소 시 배송 취소 요청
+    @PatchMapping("/api/v1/deliveries/{deliveryId}/cancel")
+    void cancelDelivery(@PathVariable("deliveryId") UUID deliveryId);
+
     @GetMapping("/deliveries")
     List<DeliveryIdResponseDto> getDeliveryInfo();
 
