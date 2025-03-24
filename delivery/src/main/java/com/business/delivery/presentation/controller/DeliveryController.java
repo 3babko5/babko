@@ -2,11 +2,13 @@ package com.business.delivery.presentation.controller;
 
 import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
-import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.dto.request.SearchRequestDto;
+import com.business.delivery.application.dto.request.StatusUpdateRequestDto;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageListResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
+import com.business.delivery.application.dto.response.DeliveryStatusUpdateResponseDto;
 import com.business.delivery.application.service.DeliveryService;
 import jakarta.validation.Valid;
 import java.util.UUID;
@@ -41,7 +43,8 @@ public class DeliveryController {
     }
 
     @GetMapping
-    public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(DeliverySearchRequestDto request) {
+    public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(
+        SearchRequestDto request) {
 
         Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request);
         return ResponseEntity.ok(DeliveryResponseMapper.toPageListResponse(deliveryPage));
@@ -54,12 +57,14 @@ public class DeliveryController {
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/{deliveryId}")
-    public ResponseEntity<Void> deleteByDeliveryId(@PathVariable("deliveryId") UUID deliveryId,
-        @RequestParam Long deletedBy) {
+    @PutMapping("/{deliveryId}/status")
+    public ResponseEntity<DeliveryStatusUpdateResponseDto> updateDeliveryStatus(
+        @PathVariable("deliveryId") UUID deliveryId,
+        @Valid @RequestBody StatusUpdateRequestDto request) {
 
-        deliveryService.deleteByDeliveryId(deliveryId, deletedBy);
-        return ResponseEntity.noContent().build();
+        DeliveryStatusUpdateResponseDto response = deliveryService.updateDeliveryStatus(deliveryId,
+            request);
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{deliveryId}/cancel")
@@ -67,5 +72,13 @@ public class DeliveryController {
 
         deliveryService.cancelDelivery(deliveryId);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{deliveryId}")
+    public ResponseEntity<Void> deleteByDeliveryId(@PathVariable("deliveryId") UUID deliveryId,
+        @RequestParam Long deletedBy) {
+
+        deliveryService.deleteByDeliveryId(deliveryId, deletedBy);
+        return ResponseEntity.noContent().build();
     }
 }
