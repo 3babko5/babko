@@ -75,13 +75,13 @@ class DeliveryServiceCancelTest {
 
   @Test
   void cancelDelivery_Success() throws Exception {
+    Long testUserId = 1L;
 
     when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
 
-    deliveryService.cancelDelivery(deliveryId);
+    deliveryService.cancelDelivery(deliveryId, testUserId);
 
     assertEquals(DeliveryStatus.CANCELED, getDeliveryStatus(delivery));
-
     assertEquals(DeliveryRouteStatus.CANCELED, deliveryRoute.getDeliveryRouteStatus());
 
     verify(mockUserClient, times(1)).cancelDriverStatus(routeId);
@@ -89,12 +89,13 @@ class DeliveryServiceCancelTest {
 
   @Test
   void cancelDelivery_WhenNoAssignedRoute_ThrowsException() throws Exception {
+    Long testUserId = 1L;
 
     setDeliveryRoutes(delivery, Collections.emptyList());
     when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
 
     BusinessLogicException ex = assertThrows(BusinessLogicException.class,
-        () -> deliveryService.cancelDelivery(deliveryId)
+        () -> deliveryService.cancelDelivery(deliveryId, testUserId)
     );
   }
 
