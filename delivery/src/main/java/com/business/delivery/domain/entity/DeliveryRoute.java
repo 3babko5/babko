@@ -105,4 +105,9 @@ public class DeliveryRoute extends BaseDataEntity {
   public void associateDelivery(Delivery delivery) {
       this.delivery = delivery;
   }
+
+  public void updateCancelStatus() {
+
+    this.deliveryRouteStatus = DeliveryRouteStatus.CANCELED;
+  }
 }

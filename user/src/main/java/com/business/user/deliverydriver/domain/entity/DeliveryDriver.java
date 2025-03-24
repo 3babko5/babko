@@ -58,18 +58,26 @@ public class DeliveryDriver extends BaseDataEntity {
   @Comment("배정된 배송 경로 순서")
   private Long routeSequence;
 
-  private DeliveryDriver(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
+  @NotNull
+  @Column(nullable = false, length = 10)
+  @Enumerated(EnumType.STRING)
+  @Comment("배송 담당자 상태")
+  private DriverStatus driverStatus;
+
+  private DeliveryDriver(Long userId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence, DriverStatus driverStatus) {
 
     this.deliveryDriverId = userId;
     this.hubId = hubId;
     this.slackId = slackId;
     this.driverType = driverType;
     this.deliverySequence = deliverySequence;
+    this.driverStatus = driverStatus;
   }
 
   @Builder(builderMethodName = "deliveryDriverCreateBuilder")
-  public static DeliveryDriver create(Long deliveryDriverId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence) {
-    return new DeliveryDriver(deliveryDriverId, hubId, slackId, driverType, deliverySequence);
+  public static DeliveryDriver create(Long deliveryDriverId, UUID hubId, UUID slackId, DriverType driverType, Long deliverySequence, DriverStatus driverStatus) {
+
+    return new DeliveryDriver(deliveryDriverId, hubId, slackId, driverType, deliverySequence, driverStatus);
   }
 
   public void assignToRoute(UUID deliveryRouteId, Long routeSequence) {
@@ -81,6 +89,10 @@ public class DeliveryDriver extends BaseDataEntity {
 
   public void updateAssignAt(LocalDateTime assignAt) {
     this.assignAt = assignAt;
+  }
+
+  public void updateCancelStatus() {
+    this.driverStatus = DriverStatus.CANCELED;
   }
 }
 
