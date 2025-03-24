@@ -25,6 +25,12 @@ public enum DeliveryRouteStatus {
   }
 
   public void validateTransition(DeliveryRouteStatus newStatus) {
+    if (newStatus == DELIVERED || newStatus == CANCELED) {
+      if (this.isTerminal()) {
+        throw new BusinessLogicException(DeliveryErrorCode.INVALID_STATUS_LASTCHANGE);
+      }
+      return;
+    }
 
     if (!newStatus.canTransitionFrom(this)) {
       throw new BusinessLogicException(DeliveryErrorCode.INVALID_ROUTE_STATUS_TRANSITION);
