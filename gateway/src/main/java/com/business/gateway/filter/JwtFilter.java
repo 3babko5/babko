@@ -14,58 +14,65 @@ import org.springframework.web.server.ServerWebExchange;
 import com.business.gateway.jwt.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
 
     private final JwtUtil jwtUtil;
-    
+
     private final List<String> excludedUrls = List.of(
-            "/api/v1/auth/signup",
-            "/api/v1/auth/login",
-            "/api/v1/auth/refresh"
+        "/api/v1/auth/signup",
+        "/api/v1/auth/login",
+        "/api/v1/auth/refresh"
     );
 
-    public JwtFilter() {
-        super(Config.class);
-        this.jwtUtil = null;
-    }
+    // public JwtFilter() {
+    //     super(Config.class);
+    //     this.jwtUtil = null;
+    // }
 
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
-            
-            // 인증이 필요 없는 URL인 경우 바로 통과
-            if (isExcludedUrl(request.getPath().toString())) {
+            String path = request.getPath().toString();
+
+            // 인증이 필요 없는 URL이면 필터 패스
+            if (isExcludedUrl(path)) {
+                log.debug("[JwtFilter] Excluded URL: {}", path);
                 return chain.filter(exchange);
             }
-            
+
             // Authorization 헤더 확인
-            if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+            String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
                 return onError(exchange, "Authorization 헤더가 없습니다.", HttpStatus.UNAUTHORIZED);
             }
-            
-            String authorizationHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
-            String token = authorizationHeader.replace("Bearer ", "");
-            
-            // 토큰 유효성 검사
+
+            String token = authHeader.replace("Bearer ", "");
+
+            // JWT 검증
             if (!jwtUtil.validateToken(token)) {
                 return onError(exchange, "유효하지 않은 토큰입니다.", HttpStatus.UNAUTHORIZED);
             }
-            
-            // userId와 role 추출하여 헤더에 추가
+
+            // userId, role 추출 (userId는 subject에서)
             Long userId = jwtUtil.getUserId(token);
             String role = jwtUtil.getRole(token);
-            
-            // 헤더 추가
-            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
-                    .header("X-client-userId", String.valueOf(userId))
-                    .header("X-client-role", role)
-                    .build();
-            
+
+            // 로그 출력
+            log.info("[JwtFilter] userId: {}, role: {}", userId, role);
+
+            // 헤더에 사용자 정보 추가
+            ServerHttpRequest modifiedRequest = request.mutate()
+                .header("X-client-userId", String.valueOf(userId))
+                .header("X-client-role", role)
+                .build();
+
             return chain.filter(exchange.mutate().request(modifiedRequest).build());
         });
     }
@@ -75,12 +82,13 @@ public class JwtFilter extends AbstractGatewayFilterFactory<JwtFilter.Config> {
     }
 
     private Mono<Void> onError(ServerWebExchange exchange, String errorMessage, HttpStatus httpStatus) {
+        log.warn("[JwtFilter] Error: {}", errorMessage);
         ServerHttpResponse response = exchange.getResponse();
         response.setStatusCode(httpStatus);
         return response.setComplete();
     }
 
     public static class Config {
-        // 필요한 설정 정보가 있으면 여기에 추가
+        // 설정이 필요하면 여기에 추가
     }
-} 
+}
