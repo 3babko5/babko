@@ -2,6 +2,7 @@ package com.business.hub.presentation;
 
 
 
+import com.business.common.aop.RoleCheck;
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.hub.application.dto.request.HubCreateRequest;
 import com.business.hub.application.dto.request.HubSearchRequest;
@@ -29,30 +30,26 @@ public class HubController {
 
     private final HubService hubService;
 
-    @GetMapping("/health-check")
-    public ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Check OK");
-    }
-
-
-
     @PostMapping
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<HubResponse> createHub(
             @RequestBody @Valid HubCreateRequest hubCreateRequest
-            , Long userId
+            ,@RequestHeader("X-client-userId") Long userId
     ) throws BusinessLogicException {
-        userId = 12324L; // 테스트 용 ID
+
         HubResponse hubResponse = hubService.registerHub(hubCreateRequest, userId);
         return ResponseEntity.ok(hubResponse);
     }
 
+
     @PatchMapping("/{hubId}")
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<HubResponse> updateHub(
             @RequestBody @Valid HubUpdateRequest request,
-            @PathVariable UUID hubId
-            ,Long userId
+            @PathVariable UUID hubId,
+            @RequestHeader("X-client-userId") Long userId
             ){
-        userId =111L;
+
         HubResponse hubResponse = hubService.updateHub(hubId, request, userId);
 
         return ResponseEntity.ok(hubResponse);
@@ -60,17 +57,19 @@ public class HubController {
     }
 
     @DeleteMapping("/{hubId}")
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<HubResponse> deleteHub(
             @PathVariable UUID hubId,
-            Long userId
+            @RequestHeader("X-client-userId") Long userId
     ){
-        userId =111L;
+
         hubService.deleteHub(hubId, userId);
         return ResponseEntity.noContent().build();
     }
 
     //허브 단일 조회
     @GetMapping("/{hubId}")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<HubResponse> getHub(@PathVariable UUID hubId)
     {
         HubResponse hubResponse = hubService.getHub(hubId);
@@ -79,6 +78,7 @@ public class HubController {
 
     //허브 전체 조회
     @GetMapping
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<HubPageResponse<HubResponse>> getAllHubs(
             @PageableDefault(size = 10)Pageable pageable)
     {
@@ -89,12 +89,12 @@ public class HubController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-
         binder.initDirectFieldAccess();
     }
 
     // 허브 검색
     @GetMapping("/search")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<Page<HubResponse>> getHubSearch(
             @ModelAttribute HubSearchRequest request,
             @PageableDefault(sort = "hubName", direction = Sort.Direction.ASC) Pageable pageable
