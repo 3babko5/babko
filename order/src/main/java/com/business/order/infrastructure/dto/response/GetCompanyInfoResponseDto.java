@@ -22,7 +22,7 @@ public class GetCompanyInfoResponseDto {
         private final String companyName;
         private final CompanyType companyType;
         private final UUID hubId;
-        private final UUID companyManagerId;
+        private final Long companyManagerId;
     }
 
     @Getter
