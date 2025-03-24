@@ -5,11 +5,14 @@ import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverRes
 import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverRequestMapper;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
+import com.business.user.deliverydriver.application.dto.request.StatusUpdateRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverDetailResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DriverStatusUpdateResponseDto;
 import com.business.user.deliverydriver.application.exception.DeliveryDriverErrorCode;
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
+import com.business.user.deliverydriver.domain.entity.DriverStatus;
 import com.business.user.deliverydriver.domain.entity.DriverType;
 import com.business.user.deliverydriver.domain.repository.DeliveryDriverRepository;
 import com.business.user.deliverydriver.infrastructure.client.DeliveryClient;
@@ -186,6 +189,20 @@ public class DeliveryDriverService {
         } catch (Exception e) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_DELIVERY_ROUTE_NOT_FOUND);
         }
+    }
+
+    @Transactional
+    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request) {
+
+        DeliveryDriver driver = deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId)
+            .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND));
+
+        DriverStatus driverStatus = request.getDriverStatus();
+        driver.updateStatus(driverStatus);
+
+        DeliveryDriver updatedDriver = deliveryDriverRepository.save(driver);
+
+        return DeliveryDriverResponseMapper.toStatusUpdateResponse(updatedDriver);
     }
 
     @Transactional

@@ -4,10 +4,12 @@ import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverRes
 import com.business.user.deliverydriver.application.dto.request.AssignDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
+import com.business.user.deliverydriver.application.dto.request.StatusUpdateRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverDetailResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DriverStatusUpdateResponseDto;
 import com.business.user.deliverydriver.application.service.DeliveryDriverService;
 import java.util.List;
 import java.util.UUID;
@@ -16,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -59,7 +62,16 @@ public class DeliveryDriverController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{deliveryRouteId}/cancel")
+    @PatchMapping("/{deliveryRouteId}/status")
+    public ResponseEntity<DriverStatusUpdateResponseDto> updateDriverStatus(
+        @PathVariable("deliveryRouteId") UUID deliveryRouteId,
+        @RequestBody StatusUpdateRequestDto request) {
+
+        DriverStatusUpdateResponseDto response = deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @PatchMapping("/{deliveryRouteId}/cancel")
     public ResponseEntity<Void> cancelDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId) {
 
         deliveryDriverService.cancelDriverStatus(deliveryRouteId);

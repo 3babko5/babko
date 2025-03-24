@@ -6,6 +6,7 @@ import com.business.delivery.application.dto.response.DeliveryDetailResponseDto.
 import com.business.delivery.application.dto.response.DeliveryPageListResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
+import com.business.delivery.application.dto.response.DeliveryStatusUpdateResponseDto;
 import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.DeliveryRoute;
 import com.business.delivery.infrastructure.dto.response.OrderInfoResponseDto;
@@ -120,6 +121,14 @@ public class DeliveryResponseMapper {
         .currentPage(page.getNumber() + 1)
         .size(page.getSize())
         .data(page.getContent())
+        .build();
+  }
+
+  public static DeliveryStatusUpdateResponseDto toStatusUpdateResponse(Delivery delivery, DeliveryRoute deliveryRoute) {
+
+    return DeliveryStatusUpdateResponseDto.builder()
+        .deliveryStatus(delivery.getDeliveryStatus())
+        .deliveryRouteStatus(deliveryRoute.getDeliveryRouteStatus())
         .build();
   }
 }

@@ -23,6 +23,8 @@ public enum DeliveryDriverErrorCode implements ExceptionCode {
   NO_AVAILABLE_DRIVER(HttpStatus.NOT_FOUND, "배정할 담당자가 없습니다."),
   DELIVERY_DRIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 배송 담당자입니다."),
   DRIVER_CANCEL_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "배송 담당자 취소 상태 업데이트에 실패했습니다."),
+  INVALID_DRIVER_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 담당자 상태 전환입니다."),
+  INVALID_STATUS_LASTCHANGE(HttpStatus.BAD_REQUEST, "최종 상태에서는 상태를 변경할 수 없습니다"),
 
   // 외부 API
   EXTERNAL_DELIVERY_NOT_FOUND(HttpStatus.NOT_FOUND, "외부 배송 정보를 찾을 수 없습니다."),
