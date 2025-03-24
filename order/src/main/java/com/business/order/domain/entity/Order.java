@@ -44,7 +44,7 @@ public class Order extends BaseDataEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderStatus orderStatus;
+    private OrderStatus orderStatus= OrderStatus.CREATED;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.PERSIST)
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -84,8 +84,14 @@ public class Order extends BaseDataEntity {
         updatedBy(userId);
     }
 
-    public void updateDeliveryId(UUID deliveryId) {
-        this.deliveryId = deliveryId;
-        deletedBy(userId);
+    public void completeOrder() {
+        if (this.orderStatus == OrderStatus.CANCELED) {
+            throw new IllegalStateException("취소된 주문은 완료로 변경할 수 없습니다.");
+        }
+        this.orderStatus = OrderStatus.COMPLETED;
     }
+
+
+
+
 }
