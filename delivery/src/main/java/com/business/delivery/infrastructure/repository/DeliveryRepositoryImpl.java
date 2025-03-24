@@ -2,7 +2,7 @@ package com.business.delivery.infrastructure.repository;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.util.QueryDslUtil;
-import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.dto.request.SearchRequestDto;
 import com.business.delivery.application.exception.DeliveryErrorCode;
 import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.QDelivery;
@@ -32,7 +32,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
   }
 
   @Override
-  public Page<Delivery> findDeliveries(DeliverySearchRequestDto request, Pageable pageable) {
+  public Page<Delivery> findDeliveries(SearchRequestDto request, Pageable pageable) {
 
     JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
 
