@@ -22,13 +22,12 @@ public enum DeliveryDriverErrorCode implements ExceptionCode {
   DELIVERY_ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 담당자에게 할당된 배송 경로 정보를 찾을 수 없습니다."),
   NO_AVAILABLE_DRIVER(HttpStatus.NOT_FOUND, "배정할 담당자가 없습니다."),
   DELIVERY_DRIVER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 배송 담당자입니다."),
+  DRIVER_CANCEL_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "배송 담당자 취소 상태 업데이트에 실패했습니다."),
 
   // 외부 API
   EXTERNAL_DELIVERY_NOT_FOUND(HttpStatus.NOT_FOUND, "외부 배송 정보를 찾을 수 없습니다."),
   EXTERNAL_DELIVERY_ROUTE_NOT_FOUND(HttpStatus.NOT_FOUND, "외부 배송 경로 정보를 찾을 수 없습니다."),
   EXTERNAL_HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "외부 허브 정보를 찾을 수 없습니다.");
-
-
 
   private final HttpStatus status;
   private final String message;
