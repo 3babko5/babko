@@ -11,6 +11,7 @@ import com.business.delivery.domain.entity.DeliveryRoute;
 import com.business.delivery.domain.entity.DeliveryRouteStatus;
 import com.business.delivery.domain.entity.DeliveryStatus;
 import com.business.delivery.domain.repository.DeliveryRepository;
+import com.business.delivery.infrastructure.client.OrderClient;
 import com.business.delivery.infrastructure.client.UserClient;
 import java.math.BigDecimal;
 import java.util.List;
@@ -30,6 +31,9 @@ class DeliveryServiceStatusTest {
 
     @Mock
     private UserClient mockUserClient;
+
+    @Mock
+    private OrderClient mockOrderClient;
 
     @InjectMocks
     private DeliveryService deliveryService;
@@ -208,4 +212,44 @@ class DeliveryServiceStatusTest {
         verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
     }
 
+    @Test
+    void testUpdateDeliveryStatus_WhenLastRouteDelivered_CallCompleteOrder() {
+
+        StatusUpdateRequestDto request = StatusUpdateRequestDto.builder()
+            .deliveryStatus(DeliveryStatus.OUT_FOR_DELIVERY)
+            .deliveryRouteStatus(DeliveryRouteStatus.DELIVERED)
+            .build();
+
+        when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
+        when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request);
+
+        assertEquals(DeliveryStatus.DELIVERED, responseDto.getDeliveryStatus());
+
+        assertEquals(DeliveryRouteStatus.DELIVERED, responseDto.getDeliveryRouteStatus());
+
+        verify(mockOrderClient, times(1)).completeOrder(any(UUID.class));
+
+        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
+    }
+
+    @Test
+    void testUpdateDeliveryStatus_LastRouteNotDelivered_NoCompleteOrderCall() {
+
+        StatusUpdateRequestDto requestDto = StatusUpdateRequestDto.builder()
+            .deliveryStatus(DeliveryStatus.OUT_FOR_DELIVERY)
+            .deliveryRouteStatus(DeliveryRouteStatus.ARRIVED_AT_HUB)
+            .build();
+
+        when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
+        when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        DeliveryStatusUpdateResponseDto responseDto =
+            deliveryService.updateDeliveryStatus(deliveryId, requestDto);
+
+        assertEquals(DeliveryStatus.OUT_FOR_DELIVERY, responseDto.getDeliveryStatus());
+
+        verify(mockOrderClient, never()).completeOrder(any(UUID.class));
+    }
 }
