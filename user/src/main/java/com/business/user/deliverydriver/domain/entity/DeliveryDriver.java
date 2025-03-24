@@ -1,6 +1,8 @@
 package com.business.user.deliverydriver.domain.entity;
 
+import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.domain.entity.BaseDataEntity;
+import com.business.user.deliverydriver.application.exception.DeliveryDriverErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -88,10 +90,23 @@ public class DeliveryDriver extends BaseDataEntity {
   }
 
   public void updateAssignAt(LocalDateTime assignAt) {
+
     this.assignAt = assignAt;
   }
 
+  public void updateStatus(DriverStatus newStatus) {
+
+    if (this.driverStatus.isTerminal()) {
+      throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_STATUS_LASTCHANGE);
+    }
+
+    this.driverStatus.validateTransition(newStatus);
+
+    this.driverStatus = newStatus;
+  }
+
   public void updateCancelStatus() {
+
     this.driverStatus = DriverStatus.CANCELED;
   }
 }
