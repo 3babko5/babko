@@ -28,6 +28,7 @@ class DeliveryDriverServiceCancelTest {
 
     private UUID deliveryRouteId;
     private DeliveryDriver deliveryDriver;
+    private final Long userId = 1L;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -49,11 +50,10 @@ class DeliveryDriverServiceCancelTest {
 
     @Test
     void cancelDriverStatus_Success() {
-
         when(deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId))
             .thenReturn(Optional.of(deliveryDriver));
 
-        deliveryDriverService.cancelDriverStatus(deliveryRouteId);
+        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId);
 
         assertEquals(DriverStatus.CANCELED, deliveryDriver.getDriverStatus());
         verify(deliveryDriverRepository, times(1)).save(deliveryDriver);
@@ -61,12 +61,10 @@ class DeliveryDriverServiceCancelTest {
 
     @Test
     void cancelDriverStatus_WhenDriverNotFound_ThrowsException() {
-
         when(deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId))
             .thenReturn(Optional.empty());
 
-
         assertThrows(BusinessLogicException.class,
-            () -> deliveryDriverService.cancelDriverStatus(deliveryRouteId));
+            () -> deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId));
     }
 }

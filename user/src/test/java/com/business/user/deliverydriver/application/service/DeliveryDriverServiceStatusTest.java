@@ -31,6 +31,7 @@ class DeliveryDriverServiceStatusTest {
 
     private UUID deliveryRouteId;
     private DeliveryDriver driver;
+    private final Long userId = 1L;
 
     @BeforeEach
     void setUp() {
@@ -59,7 +60,7 @@ class DeliveryDriverServiceStatusTest {
         when(deliveryDriverRepository.save(any(DeliveryDriver.class)))
             .thenAnswer(invocation -> invocation.getArgument(0));
 
-        DriverStatusUpdateResponseDto responseDto = deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
+        DriverStatusUpdateResponseDto responseDto = deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId);
 
         assertEquals(DriverStatus.IN_TRANSIT_TO_HUB, responseDto.getDriverStatus());
         assertEquals(driver.getDeliveryDriverId(), responseDto.getDeliveryDriverId());
@@ -67,7 +68,6 @@ class DeliveryDriverServiceStatusTest {
 
     @Test
     void testUpdateDriverStatus_InvalidTransition() {
-
         driver = DeliveryDriver.deliveryDriverCreateBuilder()
             .deliveryDriverId(1L)
             .hubId(UUID.randomUUID())
@@ -86,7 +86,7 @@ class DeliveryDriverServiceStatusTest {
             .thenReturn(Optional.of(driver));
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
+            deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId);
         });
     }
 
@@ -100,7 +100,7 @@ class DeliveryDriverServiceStatusTest {
             .thenReturn(Optional.empty());
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
+            deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId);
         });
     }
 }
