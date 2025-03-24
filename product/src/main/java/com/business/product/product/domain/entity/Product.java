@@ -2,6 +2,7 @@ package com.business.product.product.domain.entity;
 
 import com.business.common.domain.entity.BaseDataEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,9 +23,11 @@ public class Product extends BaseDataEntity {
     @Column(nullable = false)
     private String productName;
 
+    @Min(0)
     @Column(nullable = false)
     private Integer productPrice;
 
+    @Min(0)
     @Column(nullable = false)
     private Integer productQuantity;
 

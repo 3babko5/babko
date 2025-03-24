@@ -2,21 +2,20 @@ package com.business.delivery.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.api.NaverApiService;
-import com.business.common.infrastructure.config.QueryDSLConfig;
-import com.business.common.infrastructure.util.CommonUtil;
-import com.business.common.infrastructure.util.JpaUtil;
-import com.business.common.infrastructure.util.QueryDslUtil;
-import com.business.delivery.DeliveryApplication;
 import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.mapper.DeliveryRequestMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
-import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.dto.request.SearchRequestDto;
+import com.business.delivery.application.dto.request.StatusUpdateRequestDto;
 import com.business.delivery.application.dto.response.DeliveryDetailResponseDto;
 import com.business.delivery.application.dto.response.DeliveryPageResponseDto;
 import com.business.delivery.application.dto.response.DeliveryResponseDto;
+import com.business.delivery.application.dto.response.DeliveryStatusUpdateResponseDto;
 import com.business.delivery.application.exception.DeliveryErrorCode;
 import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.DeliveryRoute;
+import com.business.delivery.domain.entity.DeliveryRouteStatus;
+import com.business.delivery.domain.entity.DeliveryStatus;
 import com.business.delivery.domain.repository.DeliveryRepository;
 import com.business.delivery.infrastructure.client.HubClient;
 import com.business.delivery.infrastructure.client.OrderClient;
@@ -25,6 +24,7 @@ import com.business.delivery.infrastructure.dto.mapper.HubMapper;
 import com.business.delivery.infrastructure.dto.response.HubIdResponseDto;
 import com.business.delivery.infrastructure.dto.response.HubRoutesResponseDto;
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -104,7 +104,7 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<DeliveryPageResponseDto> getDeliveries(DeliverySearchRequestDto request) {
+    public Page<DeliveryPageResponseDto> getDeliveries(SearchRequestDto request) {
 
         Pageable pageable = DeliveryRequestMapper.deliverySearchRequestDtoToPageable(request);
 
@@ -122,6 +122,63 @@ public class DeliveryService {
         Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId());
 
         return DeliveryResponseMapper.deliveryAndOrderToDetailResponse(delivery, orderResponse);
+    }
+
+    @Transactional
+    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request) {
+
+        Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+        if (delivery == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND);
+        }
+
+        DeliveryRoute deliveryRoute = delivery.getDeliveryRoutes().stream()
+            .filter(route -> route.getDeliveryRouteStatus() != DeliveryRouteStatus.DELIVERED
+                && route.getDeliveryRouteStatus() != DeliveryRouteStatus.CANCELED)
+            .findFirst()
+            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+
+        DeliveryRoute lastRoute = delivery.getDeliveryRoutes().stream()
+            .max(Comparator.comparing(DeliveryRoute::getRouteSequence))
+            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+
+        delivery.updateStatus(request.getDeliveryStatus());
+        deliveryRoute.updateStatus(request.getDeliveryRouteStatus());
+
+        Delivery updatedDelivery = deliveryRepository.save(delivery);
+
+        if (lastRoute != null && lastRoute.getDeliveryRouteStatus() == DeliveryRouteStatus.DELIVERED) {
+            updatedDelivery.updateStatus(DeliveryStatus.DELIVERED);
+            updatedDelivery = deliveryRepository.save(updatedDelivery);
+
+            orderClient.completeOrder(updatedDelivery.getOrderId());
+        }
+
+        userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId());
+
+        return DeliveryResponseMapper.toStatusUpdateResponse(updatedDelivery, deliveryRoute);
+    }
+
+    @Transactional
+    public void cancelDelivery(UUID deliveryId) {
+
+        Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
+        delivery.updateCancelStatus();
+
+        deliveryRepository.save(delivery);
+
+        UUID deliveryRouteId = delivery.getDeliveryRoutes().stream()
+            .filter(route -> route.getDeliveryRouteId() != null)
+            .findFirst()
+            .map(DeliveryRoute::getDeliveryRouteId)
+            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+
+        try {
+            userClient.cancelDriverStatus(deliveryRouteId);
+        } catch (Exception e) {
+            throw new BusinessLogicException(DeliveryErrorCode.DRIVER_CANCEL_ERROR);
+        }
     }
 
     @Transactional

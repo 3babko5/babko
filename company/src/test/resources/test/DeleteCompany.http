@@ -1,0 +1,4 @@
+### 1. 업체 단건 삭제
+DELETE http://localhost:8087/api/v1/companies/{companyId}
+Authorization: Bearer jwt_token_string
+Accept: application/json

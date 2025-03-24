@@ -34,10 +34,13 @@ public class HubMovementService {
 
     @Transactional
     public List<HubMovementResponse> registerHubMovement(@Valid HubMovementCreateRequest request, Long userId) {
+      
         Hub departureHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getDepartureHubId())
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+      
         Hub arrivalHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getArrivalHubId())
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+
 
         List<Hub> hubs = hubRepository.findAll();
         Map<UUID, Hub> hubMap = new HashMap<>();

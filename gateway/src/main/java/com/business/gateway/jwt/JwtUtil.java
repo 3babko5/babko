@@ -1,6 +1,7 @@
 package com.business.gateway.jwt;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -21,19 +22,20 @@ public class JwtUtil {
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.key = Keys.hmacShaKeyFor(Base64.getDecoder().decode(secretKey));
     }
 
     public Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
     }
 
     public Long getUserId(String token) {
-        return extractAllClaims(token).get("userId", Long.class);
+        // 🟡 subject에서 userId 가져옴
+        return Long.parseLong(extractAllClaims(token).getSubject());
     }
 
     public String getRole(String token) {
@@ -56,4 +58,4 @@ public class JwtUtil {
             return false;
         }
     }
-} 
+}

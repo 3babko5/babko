@@ -20,4 +20,10 @@ public class SignupRequestDto {
     @NotBlank(message = "슬랙 ID는 필수입니다.")
     private String slackId;
 
+    @Pattern(
+        regexp = "ROLE_MASTER|ROLE_COMPANY|ROLE_HUB|ROLE_DELIVERY",
+        message = "역할 값이 잘못되었습니다."
+    )
+    private String role;
+
 } 

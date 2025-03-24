@@ -1,6 +1,8 @@
 package com.business.delivery.domain.entity;
 
+import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.domain.entity.BaseDataEntity;
+import com.business.delivery.application.exception.DeliveryErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -107,7 +109,29 @@ public class Delivery extends BaseDataEntity {
     }
   }
 
+  public void updateStatus(DeliveryStatus newStatus) {
+
+    if (this.deliveryStatus.isTerminal()) {
+      throw new BusinessLogicException(DeliveryErrorCode.INVALID_STATUS_LASTCHANGE);
+    }
+
+    if (this.deliveryStatus == newStatus) {
+      return;
+    }
+
+    this.deliveryStatus = newStatus;
+  }
+
+  public void updateCancelStatus() {
+
+    this.deliveryStatus = DeliveryStatus.CANCELED;
+    for (DeliveryRoute route : deliveryRoutes) {
+      route.updateCancelStatus();
+    }
+  }
+
   public void softDelete(Long userId) {
+
     this.deletedBy(userId);
   }
 }

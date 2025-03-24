@@ -9,4 +9,11 @@ public interface UserClient {
 
   @PostMapping("/api/v1/delivery-drivers/assign")
   Long assignDeliveryDriver(@RequestParam("delivery_id") UUID deliveryId);
+
+  @PutMapping("/drivers/{deliveryRouteId}/status")
+  void updateDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId);
+
+  @PutMapping("/api/v1/delivery-drivers/{deliveryRouteId}/cancel")
+  void cancelDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId);
+
 }

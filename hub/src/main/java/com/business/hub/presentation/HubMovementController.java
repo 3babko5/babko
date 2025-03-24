@@ -38,6 +38,7 @@ public class HubMovementController {
 
     @GetMapping("/{hubMovementId}")
     @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
+
     public ResponseEntity<HubMovementResponse> getHubMovement(
             @PathVariable UUID hubMovementId) {
         HubMovementResponse response = hubMovementService.getHubMovement(hubMovementId);

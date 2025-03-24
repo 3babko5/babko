@@ -2,6 +2,7 @@ package com.business.common.infrastructure.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.*;
@@ -10,6 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Service
 @ConditionalOnProperty(name = "naver.api.client-id", matchIfMissing = false)
 public class NaverApiService {
@@ -65,7 +67,9 @@ public class NaverApiService {
     }
 
     /** 최적 경로 조회 */
+
     public String getOptimalRoute(double startLat, double startLon, double goalLat, double goalLon) {
+        log.info("start: {}, {}, goal: {}, {}", startLat, startLon, goalLat, goalLon);
         String url = baseUrl + directionApi + "?start=" + startLon + "," + startLat + "&goal=" + goalLon + "," + goalLat;
         return sendRequest(url);
     }
@@ -79,6 +83,13 @@ public class NaverApiService {
     }
 
     public BigDecimal extractDistanceFromJson(String jsonResponse) {
+        JsonNode root = parseJsonResponse(jsonResponse);
+        JsonNode traoptimalArray = root.path("route").path("traoptimal");
+
+        if (!traoptimalArray.isArray() || traoptimalArray.isEmpty()) {
+            throw new RuntimeException("경로 데이터를 찾을 수 없습니다.");
+        }
+
         JsonNode summaryNode = parseJsonResponse(jsonResponse)
                 .path("route").path("traoptimal").get(0).path("summary");
 
@@ -86,6 +97,13 @@ public class NaverApiService {
     }
 
     public int extractDurationFromJson(String jsonResponse) {
+        JsonNode root = parseJsonResponse(jsonResponse);
+        JsonNode traoptimalArray = root.path("route").path("traoptimal");
+
+        if (!traoptimalArray.isArray() || traoptimalArray.isEmpty()) {
+            throw new RuntimeException("경로 데이터를 찾을 수 없습니다.");
+        }
+
         JsonNode summaryNode = parseJsonResponse(jsonResponse)
                 .path("route").path("traoptimal").get(0).path("summary");
 

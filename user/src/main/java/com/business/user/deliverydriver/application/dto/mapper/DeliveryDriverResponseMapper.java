@@ -6,6 +6,7 @@ import com.business.user.deliverydriver.application.dto.response.DeliveryDriverD
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverRouteResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DriverStatusUpdateResponseDto;
 import com.business.user.deliverydriver.domain.entity.DeliveryDriver;
 import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryClientResponseDto;
 
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 public class DeliveryDriverResponseMapper {
 
     public static DeliveryDriverResponseDto driverToDriverResponseDto(DeliveryDriver deliveryDriver) {
+
         return DeliveryDriverResponseDto.builder()
             .deliveryDriverId(deliveryDriver.getDeliveryDriverId())
             .hubId(deliveryDriver.getHubId())
@@ -24,6 +26,7 @@ public class DeliveryDriverResponseMapper {
     }
 
     public static AssignDeliveryDriverResponseDto driverToAssignedDto(DeliveryDriver deliveryDriver) {
+
         return AssignDeliveryDriverResponseDto.builder()
             .deliveryDriverId(deliveryDriver.getDeliveryDriverId())
             .driverType(deliveryDriver.getDriverType())
@@ -35,6 +38,7 @@ public class DeliveryDriverResponseMapper {
     }
 
     public static <T> DeliveryDriverListResponseDto<T> toPageListResponse(Page<T> page) {
+
         return DeliveryDriverListResponseDto.<T>builder()
             .totalElements(page.getTotalElements())
             .totalPages(page.getTotalPages())
@@ -63,6 +67,7 @@ public class DeliveryDriverResponseMapper {
     }
 
     public static DeliveryDriverRouteResponseDto deliveryClientTodriverRouteDto(DeliveryClientResponseDto deliveryRoute) {
+
         return DeliveryDriverRouteResponseDto.builder()
             .originHubId(deliveryRoute.getOriginHubId())
             .destinationHubId(deliveryRoute.getDestinationHubId())
@@ -73,6 +78,14 @@ public class DeliveryDriverResponseMapper {
             .estimatedTime(deliveryRoute.getEstimatedTime())
             .actualDistance(deliveryRoute.getActualDistance())
             .actualTime(deliveryRoute.getActualTime())
+            .build();
+    }
+
+    public static DriverStatusUpdateResponseDto toStatusUpdateResponse(DeliveryDriver driver) {
+
+        return DriverStatusUpdateResponseDto.builder()
+            .driverStatus(driver.getDriverStatus())
+            .deliveryDriverId(driver.getDeliveryDriverId())
             .build();
     }
 }

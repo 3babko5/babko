@@ -1,5 +1,7 @@
 package com.business.user.user.domain.entity;
 
+import java.time.LocalDateTime;
+
 import org.hibernate.annotations.Comment;
 
 import com.business.common.domain.entity.BaseDataEntity;
@@ -69,5 +71,11 @@ public class User extends BaseDataEntity {
 			.role(role)
 			.build();
 	}
+	public void updateInfo(String email, String slackId, UserType role) {
+		this.email = email;
+		this.slackId = slackId;
+		this.role = role;
+	}
+
 }
 

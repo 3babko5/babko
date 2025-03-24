@@ -1,7 +1,7 @@
 package com.business.delivery.application.dto.mapper;
 
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
-import com.business.delivery.application.dto.request.DeliverySearchRequestDto;
+import com.business.delivery.application.dto.request.SearchRequestDto;
 import com.business.common.infrastructure.util.JpaUtil;
 import com.business.delivery.domain.entity.Delivery;
 import com.business.delivery.domain.entity.DeliveryRoute;
@@ -50,7 +50,7 @@ public class DeliveryRequestMapper {
         return allRoutes;
     }
 
-    public static Pageable deliverySearchRequestDtoToPageable(DeliverySearchRequestDto requestDto) {
+    public static Pageable deliverySearchRequestDtoToPageable(SearchRequestDto requestDto) {
 
         return JpaUtil.getNormalPageable(
             requestDto.getPage(),

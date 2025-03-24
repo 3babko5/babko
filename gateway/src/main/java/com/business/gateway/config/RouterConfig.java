@@ -36,7 +36,17 @@ public class RouterConfig {
                 .route("order-service", r -> r.path("/api/v1/orders/**")
                         .filters(f -> f.filter(jwtFilter.apply(new JwtFilter.Config())))
                         .uri("lb://order-service"))
-                
+
+                // Hub 서비스로 라우팅 (JWT 필터 적용)
+                .route("hub-service", r -> r.path("/api/v1/hubs/**")
+                        .filters(f -> f.filter(jwtFilter.apply(new JwtFilter.Config())))
+                        .uri("lb://hub-service"))
+
+                // Delivery 서비스로 라우팅 (JWT 필터 적용)
+                .route("delivery-service", r -> r.path("/api/v1/deliveries/**")
+                        .filters(f -> f.filter(jwtFilter.apply(new JwtFilter.Config())))
+                        .uri("lb://delivery-service"))
+
                 .build();
     }
 } 

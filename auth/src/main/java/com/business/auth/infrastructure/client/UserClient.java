@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.business.auth.infrastructure.client.dto.CreateUserRequest;
-import com.business.auth.infrastructure.client.dto.UserResponse;
+import com.business.auth.infrastructure.dto.request.CreateUserRequest;
+import com.business.auth.infrastructure.dto.UserResponse;
 
 @FeignClient(name = "user-service")
 public interface UserClient {
