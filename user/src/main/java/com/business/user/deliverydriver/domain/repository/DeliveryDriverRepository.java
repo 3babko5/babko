@@ -23,4 +23,6 @@ public interface DeliveryDriverRepository {
     Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(DriverType driverType, UUID hubId);
     Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(Long currentSequence, DriverType driverType, UUID hubId);
     Page<DeliveryDriver> findDeliveryDrivers(DeliveryDriverSearchRequestDto request, Pageable pageable);
+    Optional<DeliveryDriver> findByDeliveryRouteId(UUID deliveryRouteId);
+
 }

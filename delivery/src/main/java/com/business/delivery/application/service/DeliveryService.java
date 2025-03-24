@@ -2,11 +2,6 @@ package com.business.delivery.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
 import com.business.common.infrastructure.api.NaverApiService;
-import com.business.common.infrastructure.config.QueryDSLConfig;
-import com.business.common.infrastructure.util.CommonUtil;
-import com.business.common.infrastructure.util.JpaUtil;
-import com.business.common.infrastructure.util.QueryDslUtil;
-import com.business.delivery.DeliveryApplication;
 import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.mapper.DeliveryRequestMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
@@ -128,5 +123,27 @@ public class DeliveryService {
     public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
 
         deliveryRepository.deleteByDeliveryId(deliveryId, deletedBy);
+    }
+
+    @Transactional
+    public void cancelDelivery(UUID deliveryId) {
+
+        Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
+        delivery.updateCancelStatus();
+
+        deliveryRepository.save(delivery);
+
+        UUID deliveryRouteId = delivery.getDeliveryRoutes().stream()
+            .filter(route -> route.getDeliveryRouteId() != null)
+            .findFirst()
+            .map(DeliveryRoute::getDeliveryRouteId)
+            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+
+        try {
+            userClient.cancelDriverStatus(deliveryRouteId);
+        } catch (Exception e) {
+            throw new BusinessLogicException(DeliveryErrorCode.DRIVER_CANCEL_ERROR);
+        }
     }
 }

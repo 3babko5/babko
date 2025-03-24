@@ -11,5 +11,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface DeliveryClient {
 
   @GetMapping("/api/v1/deliveries/{deliveryId}")
-  List<DeliveryClientResponseDto> getRoutesByDeliveryId(@PathVariable UUID deliveryId);
+  List<DeliveryClientResponseDto> getRoutesByDeliveryId(@PathVariable("deliveryId") UUID deliveryId);
 }

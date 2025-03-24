@@ -110,5 +110,13 @@ public class Delivery extends BaseDataEntity {
   public void softDelete(Long userId) {
     this.deletedBy(userId);
   }
+
+  public void updateCancelStatus() {
+
+    this.deliveryStatus = DeliveryStatus.CANCELED;
+    for (DeliveryRoute route : deliveryRoutes) {
+      route.updateCancelStatus();
+      }
+  }
 }
 

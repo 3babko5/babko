@@ -10,6 +10,7 @@ import com.business.user.deliverydriver.application.dto.response.DeliveryDriverL
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.service.DeliveryDriverService;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,6 +57,13 @@ public class DeliveryDriverController {
 
         DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryRouteId}/cancel")
+    public ResponseEntity<Void> cancelDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId) {
+
+        deliveryDriverService.cancelDriverStatus(deliveryRouteId);
+        return ResponseEntity.ok().build();
     }
 }
 

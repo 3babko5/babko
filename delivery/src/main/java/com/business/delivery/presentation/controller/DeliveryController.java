@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -47,17 +48,24 @@ public class DeliveryController {
     }
 
     @GetMapping("/{deliveryId}")
-    public ResponseEntity<DeliveryDetailResponseDto> getDeliveryDetail(@PathVariable UUID deliveryId) {
+    public ResponseEntity<DeliveryDetailResponseDto> getDeliveryDetail(@PathVariable("deliveryId") UUID deliveryId) {
 
         DeliveryDetailResponseDto response = deliveryService.getDeliveryByDeliveryId(deliveryId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{deliveryId}")
-    public ResponseEntity<Void> deleteByDeliveryId(@PathVariable UUID deliveryId,
+    public ResponseEntity<Void> deleteByDeliveryId(@PathVariable("deliveryId") UUID deliveryId,
         @RequestParam Long deletedBy) {
 
         deliveryService.deleteByDeliveryId(deliveryId, deletedBy);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{deliveryId}/cancel")
+    public ResponseEntity<Void> cancelDelivery(@PathVariable("deliveryId") UUID deliveryId) {
+
+        deliveryService.cancelDelivery(deliveryId);
+        return ResponseEntity.ok().build();
     }
 }

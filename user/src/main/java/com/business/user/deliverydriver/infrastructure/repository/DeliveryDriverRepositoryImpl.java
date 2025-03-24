@@ -131,4 +131,9 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
 
         return PageableExecutionUtils.getPage(content, pageable, () -> total == null ? 0 : total);
     }
+
+    @Override
+    public Optional<DeliveryDriver> findByDeliveryRouteId(UUID deliveryRouteId) {
+        return deliveryDriverJpaRepository.findByDeliveryRouteIdAndDeletedAtIsNull(deliveryRouteId);
+    }
 }
