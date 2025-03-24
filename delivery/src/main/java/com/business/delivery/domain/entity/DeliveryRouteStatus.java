@@ -1,5 +1,7 @@
 package com.business.delivery.domain.entity;
 
+import com.business.common.application.exception.BusinessLogicException;
+import com.business.delivery.application.exception.DeliveryErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -12,20 +14,29 @@ public enum DeliveryRouteStatus {
   ARRIVED_AT_HUB(20, "허브 도착"),
   OUT_FOR_DELIVERY(30, "최종 목적지로 이동 중"),
   DELIVERED(40, "해당 구간 배송 완료"),
-  CANCELED(-1, "취소됨");
+  CANCELED(-1, "배송 취소");
 
   private final int step;
   private final String description;
 
-  public boolean isProgressableFrom(DeliveryRouteStatus currentStatus) {
+  public boolean isTerminal() {
+
+    return this == DELIVERED || this == CANCELED;
+  }
+
+  public void validateTransition(DeliveryRouteStatus newStatus) {
+
+    if (!newStatus.canTransitionFrom(this)) {
+      throw new BusinessLogicException(DeliveryErrorCode.INVALID_ROUTE_STATUS_TRANSITION);
+    }
+  }
+
+  public boolean canTransitionFrom(DeliveryRouteStatus currentStatus) {
+
     if (this == CANCELED || this == DELIVERED) {
       return false;
     }
     return this.step > currentStatus.step;
-  }
-
-  public boolean isTerminal() {
-    return this == DELIVERED || this == CANCELED;
   }
 }
 
