@@ -1,0 +1,6 @@
+### 1. 주문 취소입니다.
+PATCH http://localhost:8082/api/v1/orders/fda1dc7e-b766-442c-9e34-12ec4f5d2168/cancel
+
+### 2. 주문 완료 상태 변경
+PATCH http://localhost:8082/api/v1/orders/628eab57-f17f-4eb5-911f-bdea255b51a7/completed
+Content-Type: application/json

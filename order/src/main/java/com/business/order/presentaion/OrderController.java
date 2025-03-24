@@ -19,11 +19,6 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @GetMapping("/health-check")
-    ResponseEntity<String> healthCheck() {
-        return ResponseEntity.ok("Health Check OK");
-    }
-
     @PostMapping
     public ResponseEntity<OrderCreateResponseDto> createOrder(
             @Valid @RequestBody OrderCreateRequestDto request,
@@ -34,7 +29,7 @@ public class OrderController {
         return ResponseEntity.ok(response);
     }
 
-    //관리자 권한 - 모든 조회 가능
+    //주문 단일조회
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderGetResponseDto> getOrder(
             @PathVariable UUID orderId) {
@@ -48,6 +43,12 @@ public class OrderController {
             @PathVariable UUID orderId) {
         OrderStatusResponseDto response = orderService.cancelOrder(orderId);
         return ResponseEntity.ok(response);
+    }
+
+    //주문 완료
+    @PatchMapping("{orderId}/completed")
+    public void completeOrder(@PathVariable("orderId") UUID orderId) {
+        orderService.completeOrder(orderId);
     }
 
 }
