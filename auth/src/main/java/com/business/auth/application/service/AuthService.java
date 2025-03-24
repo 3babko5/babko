@@ -1,21 +1,23 @@
 package com.business.auth.application.service;
 
-import com.business.auth.application.dto.request.ChangeUserRoleRequest;
+import com.business.auth.application.dto.request.AuthChangeUserRoleRequestDto;
+import com.business.auth.application.dto.response.AuthLoginResponseDto;
+import com.business.auth.application.dto.response.AuthSignupResponseDto;
 import com.business.auth.application.exception.AuthExceptionCode;
 import com.business.auth.infrastructure.util.JwtTokenUtil;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.business.auth.application.dto.response.JwtTokenResponseDto;
-import com.business.auth.application.dto.request.LoginRequestDto;
-import com.business.auth.application.dto.request.SignupRequestDto;
+import com.business.auth.application.dto.request.AuthLoginRequestDto;
+import com.business.auth.application.dto.request.AuthSignupRequestDto;
 import com.business.auth.domain.entity.Token;
 import com.business.auth.domain.repository.TokenRepository;
 import com.business.auth.infrastructure.client.UserClient;
-import com.business.auth.infrastructure.dto.request.CreateUserRequest;
-import com.business.auth.infrastructure.dto.response.UserResponse;
+import com.business.auth.infrastructure.dto.request.AuthCreateUserRequestDto;
+import com.business.auth.infrastructure.dto.response.UserResponseDto;
 import com.business.common.application.exception.BusinessLogicException;
 
 import lombok.RequiredArgsConstructor;
@@ -36,13 +38,13 @@ public class AuthService {
      * - 회원가입 후 JWT 토큰을 생성하여 반환합니다.
      */
     @Transactional
-    public JwtTokenResponseDto signup(SignupRequestDto requestDto) {
+    public AuthSignupResponseDto signup(AuthSignupRequestDto requestDto) {
         try {
             // 1. 비밀번호 암호화 (plain text 비밀번호를 암호화하여 저장)
             String hashedPassword = passwordEncoder.encode(requestDto.getPassword());
 
             // 2. 유저 생성 요청 DTO 구성 (회원가입 요청 정보)
-            CreateUserRequest createUserRequest = CreateUserRequest.builder()
+            AuthCreateUserRequestDto createUserRequest = AuthCreateUserRequestDto.builder()
                 .username(requestDto.getUsername()) // 사용자 이름
                 .password(hashedPassword) // 암호화된 비밀번호
                 .email(requestDto.getEmail()) // 이메일
@@ -54,8 +56,8 @@ public class AuthService {
             userClient.createUser(createUserRequest);
 
             // 4. 회원가입 후, 로그인 정보 조회 (회원가입 후 생성된 사용자 정보 조회)
-            ResponseEntity<UserResponse> response = userClient.getUserByUsername(requestDto.getUsername());
-            UserResponse user = response.getBody();
+            ResponseEntity<UserResponseDto> response = userClient.getUserByUsername(requestDto.getUsername());
+            UserResponseDto user = response.getBody();
 
             // 5. 유저 정보가 없으면 예외 처리
             if (user == null) {
@@ -78,7 +80,7 @@ public class AuthService {
                 );
 
             // 8. JWT 토큰을 응답으로 반환
-            return JwtTokenResponseDto.builder()
+            return AuthSignupResponseDto.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .userId(user.getUserId()) // 사용자 ID 포함
@@ -97,11 +99,11 @@ public class AuthService {
      * - 비밀번호를 검증하고, 유효한 사용자일 경우 토큰을 반환합니다.
      */
     @Transactional
-    public JwtTokenResponseDto login(LoginRequestDto requestDto) {
+    public AuthLoginResponseDto login(AuthLoginRequestDto requestDto) {
 
         // 1. 유저 정보 조회 (사용자 이름으로 유저 조회)
-        ResponseEntity<UserResponse> response = userClient.getUserByUsername(requestDto.getUsername());
-        UserResponse user = response.getBody();
+        ResponseEntity<UserResponseDto> response = userClient.getUserByUsername(requestDto.getUsername());
+        UserResponseDto user = response.getBody();
 
         // 2. 유저가 없으면 예외 처리
         if (user == null) {
@@ -129,60 +131,14 @@ public class AuthService {
             );
 
         // 6. 토큰 응답 반환
-        return JwtTokenResponseDto.builder()
+        return AuthLoginResponseDto.builder()
             .accessToken(accessToken)
             .refreshToken(refreshToken)
             .userId(user.getUserId()) // 사용자 ID 포함
             .build();
     }
-    public void changeUserRole(ChangeUserRoleRequest request) {
+    // 역할 변경 (마스터 가능)
+    public void changeUserRole(AuthChangeUserRoleRequestDto request) {
         userClient.changeUserRole(request.getUserId(), request);
     }
-}
-
-
-
-
-
-    // @Transactional
-    // public JwtTokenResponseDto refreshToken(TokenRefreshRequestDto requestDto) {
-    //     String refreshToken = requestDto.getRefreshToken();
-    //
-    //     // 리프레시 토큰 검증
-    //     if (!jwtTokenUtil.validateToken(refreshToken)) {
-    //         throw new RuntimeException("유효하지 않은 리프레시 토큰입니다.");
-    //     }
-    //
-    //     // DB에서 리프레시 토큰 조회
-    //     Token token = tokenRepository.findByRefreshToken(refreshToken)
-    //         .orElseThrow(() -> new RuntimeException("존재하지 않는 리프레시 토큰입니다."));
-    //
-    //     // 토큰에서 사용자 ID 추출
-    //     Long userId = jwtTokenUtil.extractUserId(refreshToken);
-    //
-    //     // 사용자 정보 조회 (역할 확인을 위해)
-    //     ResponseEntity<UserResponse> response = userClient.getUserById(userId);
-    //     UserResponse user = response.getBody();
-    //
-    //     if (user == null) {
-    //         throw new RuntimeException("존재하지 않는 사용자입니다.");
-    //     }
-    //
-    //     // 새로운 토큰 생성
-    //     String newAccessToken = jwtTokenUtil.generateAccessToken(userId, user.getRole());
-    //     String newRefreshToken = jwtTokenUtil.generateRefreshToken(userId);
-    //
-    //     JwtTokenResponseDto newTokenDto = JwtTokenResponseDto.builder()
-    //         .accessToken(newAccessToken)
-    //         .refreshToken(newRefreshToken)
-    //         .build();
-    //
-    //     // 리프레시 토큰 업데이트
-    //     token.updateRefreshToken(newRefreshToken);
-    //
-    //     return newTokenDto;
-    // }
-
-
-
-
+   }

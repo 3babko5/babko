@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChangeUserRoleRequest {
+public class AuthChangeUserRoleRequestDto {
 	private Long userId;
 	private String  newRole;
 }

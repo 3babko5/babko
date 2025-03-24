@@ -5,6 +5,6 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class ChangeUserRoleRequest {
+public class UserChangeRoleRequest {
 	private String newRole; // 문자열로 받음
 }

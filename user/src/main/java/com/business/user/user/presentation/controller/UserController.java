@@ -5,7 +5,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,13 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.business.common.aop.RoleCheck;
-import com.business.user.user.application.dto.request.ChangeUserRoleRequest;
+import com.business.user.user.application.dto.request.UserChangeRoleRequest;
 import com.business.user.user.application.dto.request.UserSearchRequestDto;
 import com.business.user.user.application.dto.request.UserUpdateRequestDto;
 import com.business.user.user.application.dto.response.UserDetailResponseDto;
 import com.business.user.user.application.dto.response.UserPageResponseDto;
 import com.business.user.user.application.service.UserService;
-import com.business.user.user.application.dto.request.CreateUserRequestDto;
+import com.business.user.user.application.dto.request.UserCreateRequestDto;
 import com.business.user.user.application.dto.response.UserResponseDto;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +38,7 @@ public class UserController {
 	 * 누구나 접근 가능 (권한 체크 없음)
 	 */
 	@PostMapping
-	public ResponseEntity<Void> createUser(@Valid @RequestBody CreateUserRequestDto requestDto) {
+	public ResponseEntity<Void> createUser(@Valid @RequestBody UserCreateRequestDto requestDto) {
 		userService.createUser(requestDto);
 		return ResponseEntity.ok().build();
 	}
@@ -114,7 +113,7 @@ public class UserController {
 	@PutMapping("/{userId}/role")
 	public ResponseEntity<Void> changeUserRole(
 		@PathVariable Long userId,
-		@RequestBody ChangeUserRoleRequest request
+		@RequestBody UserChangeRoleRequest request
 	) {
 		userService.changeUserRole(userId, request.getNewRole());
 		return ResponseEntity.ok().build();

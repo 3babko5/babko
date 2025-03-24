@@ -1,7 +1,6 @@
 package com.business.user.user.application.service;
 
 import static com.business.user.user.application.mapper.UserMapper.*;
-import static com.business.user.user.domain.entity.QUser.*;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.business.common.application.exception.BusinessLogicException;
-import com.business.user.user.application.dto.request.CreateUserRequestDto;
+import com.business.user.user.application.dto.request.UserCreateRequestDto;
 import com.business.user.user.application.dto.request.UserSearchRequestDto;
 import com.business.user.user.application.dto.request.UserUpdateRequestDto;
 import com.business.user.user.application.dto.response.UserDetailResponseDto;
@@ -34,7 +33,7 @@ public class UserService {
 	 * 회원 생성 (auth-service에서 사용)
 	 */
 	@Transactional
-	public void createUser(CreateUserRequestDto requestDto) {
+	public void createUser(UserCreateRequestDto requestDto) {
 		if (userRepository.existsByUsername(requestDto.getUsername())) {
 			throw new BusinessLogicException(UserExceptionCode.USERNAME_ALREADY_EXISTS);
 		}
