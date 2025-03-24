@@ -33,4 +33,6 @@ public interface DeliveryDriverJpaRepository extends JpaRepository<DeliveryDrive
   boolean existsByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
 
   Optional<DeliveryDriver> findByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
+
+  Optional<DeliveryDriver> findByDeliveryRouteIdAndDeletedAtIsNull(UUID deliveryRouteId);
 }
