@@ -91,7 +91,7 @@ public class DeliveryService {
 
         delivery.addDeliveryRoute(allRoutes);
 
-        Delivery savedDelivery = deliveryRepository.save(delivery);
+        Delivery savedDelivery = deliveryRepository.saveAndFlush(delivery);
 
         assignDeliveryDriver(savedDelivery.getDeliveryId());
 

@@ -32,6 +32,11 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
   }
 
   @Override
+  public Delivery saveAndFlush(Delivery delivery) {
+    return deliveryJpaRepository.saveAndFlush(delivery);
+  }
+
+  @Override
   public Page<Delivery> findDeliveries(SearchRequestDto request, Pageable pageable) {
 
     JPAQueryFactory queryFactory = new JPAQueryFactory(entityManager);
