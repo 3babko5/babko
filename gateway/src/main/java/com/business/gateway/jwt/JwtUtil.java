@@ -34,7 +34,7 @@ public class JwtUtil {
     }
 
     public Long getUserId(String token) {
-        // 🟡 subject에서 userId 가져옴
+        // subject에서 userId 가져옴
         return Long.parseLong(extractAllClaims(token).getSubject());
     }
 

@@ -27,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
-    private final UserClient userClient;
 
     /**
      * 회원가입
@@ -46,7 +45,9 @@ public class AuthController {
         JwtTokenResponseDto tokenDto = authService.login(requestDto);
         return ResponseEntity.ok(tokenDto); // 200 OK
     }
-
+    /**
+     * 역할 변경 - 마스터 전용
+     */
     @PutMapping("/users/role")
     @RoleCheck(roles = {"ROLE_MASTER"}) // 마스터만 역할 변경 가능
     public ResponseEntity<Void> changeUserRole(@RequestBody ChangeUserRoleRequest request) {
