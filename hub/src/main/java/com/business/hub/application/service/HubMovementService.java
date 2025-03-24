@@ -30,14 +30,14 @@ public class HubMovementService {
 
     private final HubMovementRepository hubMovementRepository;
     private final HubRepository hubRepository;
-    private final RouteNaverService routeNaverService;  // API 호출 및 캐싱
+    private final RouteNaverService routeNaverService;
 
     @Transactional
     public List<HubMovementResponse> registerHubMovement(@Valid HubMovementCreateRequest request, Long userId) {
-        Hub departureHub = hubRepository.findById(request.getDepartureHubId())
-                .orElseThrow(() -> new IllegalArgumentException("출발 허브가 존재하지 않습니다."));
-        Hub arrivalHub = hubRepository.findById(request.getArrivalHubId())
-                .orElseThrow(() -> new IllegalArgumentException("도착 허브가 존재하지 않습니다."));
+        Hub departureHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getDepartureHubId())
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
+        Hub arrivalHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getArrivalHubId())
+                .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
         List<Hub> hubs = hubRepository.findAll();
         Map<UUID, Hub> hubMap = new HashMap<>();
@@ -107,6 +107,7 @@ public class HubMovementService {
         return path;
     }
 
+    @Transactional
     public HubMovementResponse getHubMovement(UUID hubmovementId) {
         HubMovement hubMoveMent = hubMovementRepository.findByHubMovementIdAndDeletedAtIsNullAndDeletedByIsNull(hubmovementId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.Hub_MOVEMENT_NOT_FOUND));
@@ -114,14 +115,14 @@ public class HubMovementService {
         return HubMovementMapper.toHubMovementResponse(hubMoveMent);
     }
 
-
+    @Transactional
     public HubMovementPageResponse<HubMovementResponse> getAllHubMovements(Pageable pageable) {
         Page<HubMovement> hubMovement = hubMovementRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
 
         return HubMovementPageResponse.of(hubMovement.map(HubMovementMapper::toHubMovementResponse));
     }
 
-
+    @Transactional
     public List<HubMovementResponse> getMovementsByDepartureHub(UUID depatureHubId) {
         List<HubMovement> departureHubMovement = hubMovementRepository
                 .findByDepartureHub_HubIdAndDeletedByIsNullAndDeletedAtIsNull(depatureHubId);
@@ -133,6 +134,7 @@ public class HubMovementService {
         return departureHubMovement.stream().map(HubMovementMapper::toHubMovementResponse).toList();
     }
 
+    @Transactional
     public List<HubMovementResponse> getMovementsByArrivalHub(UUID arrivalHubId) {
         List<HubMovement> arrivalHubMovement = hubMovementRepository
                 .findByArrivalHub_HubIdAndDeletedByIsNullAndDeletedAtIsNull(arrivalHubId);
@@ -145,7 +147,7 @@ public class HubMovementService {
 
     }
 
-
+    @Transactional
     public HubMovementResponse getMovementsByHubs(
             UUID depatureHubId,
             UUID arrivalHubId) {
