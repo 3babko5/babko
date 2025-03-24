@@ -33,6 +33,9 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     public Page<Company> search(String companyName, CompanyType companyType, UUID companyId, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
+        //  삭제한 업체 제외 조회하는 조건
+        builder.and(company.isDeleted.eq(false));
+
         if (companyName != null && !companyName.isBlank()) {
             builder.and(company.companyName.containsIgnoreCase(companyName));
         }
