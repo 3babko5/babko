@@ -1,11 +1,13 @@
 package com.business.order.infrastructure.client;
 
+import com.business.order.application.dto.response.DeliveryStatusForOrderDto;
 import com.business.order.infrastructure.dto.request.CreateDeliveryRequestDto;
-import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
+import com.business.order.infrastructure.dto.request.DeliverySearchForOrderRequestDto;
 import com.business.order.infrastructure.dto.response.DeliveryIdResponseDto;
+import com.business.order.infrastructure.dto.response.DeliveryListForOrderResponseDto;
 import com.business.order.infrastructure.dto.response.GetDeliveryCreateResponseDto;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,8 +19,10 @@ public interface DeliveryFeignClient {
     @PostMapping("/api/v1/deliveries")
     GetDeliveryCreateResponseDto createDelivery(@RequestBody CreateDeliveryRequestDto request);
 
-    @GetMapping("/{orderId}/deliveryStatus")//url 확인 필요
-    String getDeliveryStatus(@PathVariable("orderId") UUID orderId);
+    //주문 취소 시 배송 상태 확인 요청
+    @GetMapping("/api/v1/deliveries")
+    DeliveryListForOrderResponseDto<DeliveryStatusForOrderDto> getDeliveries(
+            @SpringQueryMap DeliverySearchForOrderRequestDto request);
 
     @GetMapping("/deliveries")
     List<DeliveryIdResponseDto> getDeliveryInfo();
