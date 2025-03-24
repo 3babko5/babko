@@ -23,6 +23,7 @@ public class RoleCheckAspect {
 
     @Around("@annotation(com.business.common.aop.RoleCheck)")
     public Object checkRole(ProceedingJoinPoint joinPoint) throws Throwable {
+        // 메서드에서 RoleCheck 어노테이션 가져오기
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         RoleCheck roleCheck = signature.getMethod().getAnnotation(RoleCheck.class);
 
@@ -31,27 +32,16 @@ public class RoleCheckAspect {
 
         // 현재 요청에서 X-client-role 헤더 가져오기
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
-        String clientRoleHeader = request.getHeader("X-client-role");
+        String clientRole = request.getHeader("X-client-role");
 
-        if (clientRoleHeader == null || clientRoleHeader.isBlank()) {
+        log.info("Required roles: {}, Client role: {}", Arrays.toString(requiredRoles), clientRole);
+
+        // 역할 검증
+        if (clientRole == null || !Arrays.asList(requiredRoles).contains(clientRole)) {
             throw new BusinessLogicException(GlobalExceptionCode.FORBIDDEN);
         }
 
-        // 헤더에서 콤마로 구분된 권한 분리
-        String[] clientRoles = Arrays.stream(clientRoleHeader.split(","))
-            .map(String::trim) // 공백 제거
-            .toArray(String[]::new);
-
-        log.info("Required roles: {}, Client roles: {}", Arrays.toString(requiredRoles), Arrays.toString(clientRoles));
-
-        // 하나라도 포함되어 있으면 통과
-        boolean hasRole = Arrays.stream(requiredRoles)
-            .anyMatch(required -> Arrays.asList(clientRoles).contains(required));
-
-        if (!hasRole) {
-            throw new BusinessLogicException(GlobalExceptionCode.FORBIDDEN);
-        }
-
+        // 권한 검증 통과, 메서드 실행
         return joinPoint.proceed();
     }
 }
