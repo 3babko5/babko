@@ -19,7 +19,6 @@ public class OrderMapper {
                 .deliveryAddress(order.getDeliveryAddress())
                 .totalPrice(order.getTotalPrice())
                 .orderItems(toOrderItemResponseList(orderItems))
-//                .deliveryId(order.getDeliveryId())
                 .build();
     }
 
