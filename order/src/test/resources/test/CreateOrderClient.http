@@ -5,15 +5,15 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "receiverId": "22222222-2222-2222-2222-222222222222",
-  "deliveryAddress": "서울특별시 강남구 삼성동",
+  "receiverId": "0d47686e-c73c-4d70-80ae-ef51ea4bfed3",
+  "deliveryAddress": "경남",
   "items": [
     {
-      "productId": "44444444-4444-4444-4444-444444444444",
+      "productId": "7d64ac7f-fd24-4335-8797-10b283a862bd",
       "orderItemAmount": 2
     },
     {
-      "productId": "55555555-5555-5555-5555-555555555555",
+      "productId": "b7618a0e-7997-42d1-8332-60ce83501170",
       "orderItemAmount": 1
     }
   ]
