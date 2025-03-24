@@ -10,12 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.business.auth.application.dto.response.JwtTokenResponseDto;
 import com.business.auth.application.dto.request.LoginRequestDto;
 import com.business.auth.application.dto.request.SignupRequestDto;
-import com.business.auth.application.dto.request.TokenRefreshRequestDto;
 import com.business.auth.domain.entity.Token;
 import com.business.auth.domain.repository.TokenRepository;
 import com.business.auth.infrastructure.client.UserClient;
-import com.business.auth.infrastructure.client.dto.CreateUserRequest;
-import com.business.auth.infrastructure.client.dto.UserResponse;
+import com.business.auth.infrastructure.dto.request.CreateUserRequest;
+import com.business.auth.infrastructure.dto.UserResponse;
 import com.business.common.application.exception.BusinessLogicException;
 
 import lombok.RequiredArgsConstructor;
@@ -129,8 +128,6 @@ public class AuthService {
             .userId(user.getUserId())
             .build();
     }
-}
-
     // @Transactional
     // public JwtTokenResponseDto refreshToken(TokenRefreshRequestDto requestDto) {
     //     String refreshToken = requestDto.getRefreshToken();
@@ -142,7 +139,7 @@ public class AuthService {
     //
     //     // DB에서 리프레시 토큰 조회
     //     Token token = tokenRepository.findByRefreshToken(refreshToken)
-    //             .orElseThrow(() -> new RuntimeException("존재하지 않는 리프레시 토큰입니다."));
+    //         .orElseThrow(() -> new RuntimeException("존재하지 않는 리프레시 토큰입니다."));
     //
     //     // 토큰에서 사용자 ID 추출
     //     Long userId = jwtTokenUtil.extractUserId(refreshToken);
@@ -160,13 +157,16 @@ public class AuthService {
     //     String newRefreshToken = jwtTokenUtil.generateRefreshToken(userId);
     //
     //     JwtTokenResponseDto newTokenDto = JwtTokenResponseDto.builder()
-    //             .accessToken(newAccessToken)
-    //             .refreshToken(newRefreshToken)
-    //             .build();
+    //         .accessToken(newAccessToken)
+    //         .refreshToken(newRefreshToken)
+    //         .build();
     //
     //     // 리프레시 토큰 업데이트
     //     token.updateRefreshToken(newRefreshToken);
     //
     //     return newTokenDto;
     // }
+}
+
+
 

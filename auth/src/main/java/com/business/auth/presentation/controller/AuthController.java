@@ -12,6 +12,7 @@ import com.business.auth.application.dto.response.JwtTokenResponseDto;
 import com.business.auth.application.dto.request.LoginRequestDto;
 import com.business.auth.application.dto.request.SignupRequestDto;
 import com.business.auth.application.dto.request.TokenRefreshRequestDto;
+import com.business.common.aop.RoleCheck;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,11 +42,12 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto); // 200 OK
     }
 
-
-}
-    // 토큰 재발급 부분 수정
+    // // 토큰 재발급 부분 수정
     // @PostMapping("/refresh")
+    // @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     // public ResponseEntity<JwtTokenResponseDto> refreshToken(@Valid @RequestBody TokenRefreshRequestDto requestDto) {
     //     JwtTokenResponseDto tokenDto = authService.refreshToken(requestDto);
     //     return ResponseEntity.ok(tokenDto);
+    //
     // }
+}

@@ -1,4 +1,4 @@
-package com.business.auth.infrastructure.client.dto;
+package com.business.auth.infrastructure.dto.request;
 
 import lombok.Builder;
 import lombok.Getter;
