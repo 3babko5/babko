@@ -10,10 +10,9 @@ import java.util.UUID;
 @Getter
 @Builder
 @AllArgsConstructor
-public class OrderDeliveryRequestDto {
+public class OrderDeliveryRequestDto { //주문 도메인 용
 
     private UUID orderId; //주문id
-    private Long userId; //수령인id
     private UUID receiverId; //수령업체id
     private String deliveryAddress; //배송지주소
     private UUID originHubId; //출발허브id
@@ -22,7 +21,6 @@ public class OrderDeliveryRequestDto {
     public static OrderDeliveryRequestDto fromOrder(Order order) {
         return OrderDeliveryRequestDto.builder()
                 .orderId(order.getOrderId())
-                .userId(order.getUserId())
                 .receiverId(order.getReceiverId())
                 .deliveryAddress(order.getDeliveryAddress())
                 .originHubId(order.getOriginHubId())
