@@ -1,5 +1,6 @@
-package com.business.order.infrastructure.dto.response;
+package com.business.order.application.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,12 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ProductDetailResponseDto {
     private UUID productId;
-    private Long productPrice;
+
+    @JsonProperty("productPrice")
+    private Long orderItemPrice;
+
     private Integer productQuantity; //재고
+
+    @JsonProperty("companyId")
     private UUID supplierId;
 }
