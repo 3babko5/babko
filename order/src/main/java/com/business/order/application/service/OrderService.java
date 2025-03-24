@@ -1,13 +1,12 @@
 package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
+import com.business.order.application.dto.mapper.DeliveryMapper;
 import com.business.order.application.dto.mapper.RequestMapper;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
-import com.business.order.application.dto.response.OrderStatusResponseDto;
-import com.business.order.application.dto.response.OrderCreateResponseDto;
+import com.business.order.application.dto.response.*;
 import com.business.order.application.dto.mapper.OrderMapper;
-import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.CompanyType;
 import com.business.order.domain.entity.Order;
@@ -16,8 +15,10 @@ import com.business.order.domain.repository.OrderRepository;
 import com.business.order.infrastructure.client.CompanyFeignClient;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
+import com.business.order.infrastructure.dto.queryDto.SearchCompanyQueryDto;
+import com.business.order.infrastructure.dto.queryDto.SearchProductQueryDto;
+import com.business.order.infrastructure.dto.request.CreateDeliveryRequestDto;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
-import com.business.order.application.dto.response.ProductDetailResponseDto;
 import com.business.order.infrastructure.dto.response.GetCompanyInfoResponseDto;
 import com.business.order.infrastructure.dto.response.GetDeliveryCreateResponseDto;
 import com.business.order.infrastructure.dto.response.GetProductInfoResponseDto;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.business.common.infrastructure.util.JpaUtil.OrderBy.CREATED;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -43,43 +46,55 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, Long userId){
-        //클라이언트가 보낸 주문 요청에서 아이템 목록을 꺼냄
+        log.info("주문 생성 요청 시작 - userId: {}, request: {}", userId, request);
+
         List<OrderItemRequestDto> items = request.getItems();
 
-        //각 아이템에 대해 반복처리 시작
         for (OrderItemRequestDto item : items) {
-            //상품id 추출
             UUID productId = item.getProductId();
+            log.info("상품 조회 시작 - productId: {}", productId);
 
-            // 상품 검색 API 호출 - response는 상품 검색 결과 전체를 담고 있는 DTO
-            GetProductInfoResponseDto response = productFeignClient.searchProduct(
-                    productId, null, null, 0, 1000, "productName", "asc"
+            SearchProductQueryDto queryDto = new SearchProductQueryDto(
+                    productId, null, null, null,
+                    1, 1000, "CREATED", "asc"
             );
 
-            //GetProductInfoResponseDto 안에 있는 List<ProductData> 형태
-            List<GetProductInfoResponseDto.ProductData> products = response.getProduct();//"product" 라는 리스트에 들어있는 모든 상품 객체
+            GetProductInfoResponseDto response;
+            try {
+                response = productFeignClient.searchProduct(queryDto);
+                log.info("상품 조회 성공 - 응답 데이터: {}", response);
+            } catch (FeignException e) {
+                throw new BusinessLogicException(OrderExceptionCode.PRODUCT_NOT_FOUND);
+            }
 
-            //상품id에서 원하는 값 추출해서 dto에 저장????
+            List<GetProductInfoResponseDto.ProductData> products = response.getProduct();
+            log.info("조회된 상품 수: {}", products.size());
+
             GetProductInfoResponseDto.ProductData targetProduct = products.stream()
                     .filter(p -> p.getProductId().equals(productId))
                     .findFirst()
-                    .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.PRODUCT_NOT_FOUND));
+                    .orElseThrow(() -> {
+                        log.error("해당 productId의 상품을 찾을 수 없음: {}", productId);
+                        return new BusinessLogicException(OrderExceptionCode.PRODUCT_NOT_FOUND);
+                    });
 
-            // 필요한 필드만 추출해 커스텀 DTO로 매핑
             ProductDetailResponseDto productDetail = RequestMapper.toProductDetailResponse(targetProduct);
+            log.info("상품 상세 정보: {}", productDetail);
 
-            //재고확인 로직
             if(item.getOrderItemAmount() > productDetail.getProductQuantity()){
                 throw new BusinessLogicException(OrderExceptionCode.PRODUCT_QUANTITY_EXCEEDED);
             }
 
-            // OrderItemRequestDto 안의 supplierId 필드를 채워주는 부분 (이 전엔 null값이었음)
-            item.setSupplierId(productDetail.getSupplierId());//상품api에서 조회한 공급자id를 주문아이템에 저장
+            item.setSupplierId(productDetail.getSupplierId());
             item.setOrderItemPrice(productDetail.getOrderItemPrice());
+            log.info("공급자 ID, 가격 설정 완료 - supplierId: {}, price: {}",
+                    item.getSupplierId(), item.getOrderItemPrice());
         }
 
-        UUID supplierId = items.get(0).getSupplierId();//첫번째 주문 아이템을 꺼내서 공급id 변수에 저장
+        UUID supplierId = items.get(0).getSupplierId();
         UUID receiverId = request.getReceiverId();
+        log.info("추출된 공급자 ID: {}", supplierId);
+        log.info("추출된 수령자 ID: {}", receiverId);
 
         UUID originHubId = extractHubIdByCompanyId(CompanyType.SUPPLIER, supplierId);
         UUID destinationHubId = extractHubIdByCompanyId(CompanyType.RECEIVER, receiverId);
@@ -89,21 +104,30 @@ public class OrderService {
         List<OrderItem> orderItems = items.stream()
                 .map(i -> i.createOrderItem(order))
                 .collect(Collectors.toList());
-
         order.addOrderItems(orderItems);
-        Order savedOrder  = orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
 
         OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
 
+        CreateDeliveryRequestDto deliveryFeignRequest = DeliveryMapper.toCreateDeliveryRequestDto(deliveryRequest);
+
+        log.info("배송 요청 생성 - Feign에 전달될 최종 값: {}", deliveryFeignRequest);
+
         try {
-            deliveryFeignClient.createDelivery(deliveryRequest);
-            // 성공 시 추가 로직 (필요하면)
+            deliveryFeignClient.createDelivery(deliveryFeignRequest);
+            log.info("배송 요청 성공 - orderId: {}", savedOrder.getOrderId());
         } catch (FeignException e) {
+            log.error("배송 요청 실패 - orderId: {}, error: {}", savedOrder.getOrderId(), e.getMessage(), e);
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
         }
 
-        return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
+        OrderCreateResponseDto responseDto = OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
+        log.info("주문 생성 완료 - responseDto: {}", responseDto);
+
+        return responseDto;
     }
+
 
     @Transactional(readOnly = true)
     public OrderGetResponseDto getOrder(UUID orderId) {
@@ -133,16 +157,40 @@ public class OrderService {
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
-    private UUID extractHubIdByCompanyId(CompanyType type, UUID companyId) {
-        GetCompanyInfoResponseDto response = companyFeignClient.searchCompanies(
-                null, type, 0, 1000, "createdAt", "asc"
-        );
+    private UUID extractHubIdByCompanyId(CompanyType type, UUID targetCompanyId) {
+        SearchCompanyQueryDto queryDto = new SearchCompanyQueryDto();
+        queryDto.setCompanyType(type);
+        queryDto.setPage(1);
+        queryDto.setSize(1000);
+        queryDto.setOrderBy("CREATED");
+        queryDto.setSort("asc");
 
-        return response.getCompany().stream()
-                .filter(c -> c.getCompanyId().equals(companyId))
+        // 2. 업체 조회 API 호출 → 원본 응답 DTO
+        log.info("companyFeignClient 조회 시작 - companyType: {}", type);
+        GetCompanyInfoResponseDto rawResponse = companyFeignClient.searchCompanies(queryDto);
+
+        // 3. 필요한 값만 담은 커스텀 DTO로 변환
+        hubIdResponseDto simplified = RequestMapper.toHubIdResponse(rawResponse);
+
+        // 4. 리스트 꺼냄 (company 안에 있는 실제 데이터 리스트)
+        List<hubIdResponseDto.CompanyData> companyList = simplified.getCompany();
+
+        log.info("조회된 업체 수: {}", companyList.size());
+        companyList.forEach(c -> log.info("업체 ID: {}, 타입: {}, 허브ID: {}", c.getCompanyId(), c.getCompanyType(), c.getHubId()));
+
+        // 5. 타입에 따라 필터링 및 허브 ID 추출
+        return companyList.stream()
+                .filter(c -> {
+                    if (type == CompanyType.SUPPLIER) {
+                        return c.getSupplierId().equals(targetCompanyId);
+                    } else {
+                        return c.getReceiverId().equals(targetCompanyId);
+                    }
+                })
                 .findFirst()
-                .map(GetCompanyInfoResponseDto.CompanyData::getHubId)
+                .map(hubIdResponseDto.CompanyData::getHubId)
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
+
 
 }
