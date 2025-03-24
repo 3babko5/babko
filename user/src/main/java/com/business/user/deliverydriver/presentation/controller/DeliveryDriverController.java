@@ -4,10 +4,12 @@ import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverRes
 import com.business.user.deliverydriver.application.dto.request.AssignDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.DeliveryDriverSearchRequestDto;
+import com.business.user.deliverydriver.application.dto.request.StatusUpdateRequestDto;
 import com.business.user.deliverydriver.application.dto.response.AssignDeliveryDriverResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverDetailResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverListResponseDto;
 import com.business.user.deliverydriver.application.dto.response.DeliveryDriverResponseDto;
+import com.business.user.deliverydriver.application.dto.response.DriverStatusUpdateResponseDto;
 import com.business.user.deliverydriver.application.service.DeliveryDriverService;
 import java.util.List;
 import java.util.UUID;
@@ -56,6 +58,15 @@ public class DeliveryDriverController {
     public ResponseEntity<DeliveryDriverDetailResponseDto> getDeliveryDriverDetail(@PathVariable Long deliveryDriverId) {
 
         DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{deliveryRouteId}/status")
+    public ResponseEntity<DriverStatusUpdateResponseDto> updateDriverStatus(
+        @PathVariable("deliveryRouteId") UUID deliveryRouteId,
+        @RequestBody StatusUpdateRequestDto request) {
+
+        DriverStatusUpdateResponseDto response = deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
         return ResponseEntity.ok(response);
     }
 
