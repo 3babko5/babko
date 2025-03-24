@@ -35,6 +35,13 @@ public class Company extends BaseDataEntity {
     @Column(name = "created_by")
     private Long createdBy;
 
+    @Column(nullable = false)
+    private boolean isDeleted = false;
+
+    public void delete() {
+        this.isDeleted = true;
+    }
+
     @Builder
     public Company(String companyName, String companyAddress, CompanyType companyType, UUID hubId, Long companyManagerId, Long createdBy) {
         this.companyName = companyName;

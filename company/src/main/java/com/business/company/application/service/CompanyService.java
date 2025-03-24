@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
@@ -35,5 +37,14 @@ public class CompanyService {
                 pageable
         );
         return CompanyMapper.toSearchResponseDto(companyPage);
+    }
+
+    @Transactional
+    public void deleteCompany(UUID companyId) {
+        Company company = companyRepository.findActiveCompanyById(companyId)
+                .orElseThrow(() -> new RuntimeException("해당 업체가 존재하지 않습니다."));
+
+        company.delete();
+        companyRepository.save(company);
     }
 }
