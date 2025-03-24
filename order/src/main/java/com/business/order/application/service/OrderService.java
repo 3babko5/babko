@@ -1,12 +1,12 @@
 package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
+import com.business.order.application.dto.mapper.DeliveryMapper;
+import com.business.order.application.dto.mapper.RequestMapper;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.OrderItemRequestDto;
-import com.business.order.application.dto.response.OrderStatusResponseDto;
-import com.business.order.application.dto.response.OrderCreateResponseDto;
+import com.business.order.application.dto.response.*;
 import com.business.order.application.dto.mapper.OrderMapper;
-import com.business.order.application.dto.response.OrderGetResponseDto;
 import com.business.order.application.exception.OrderExceptionCode;
 import com.business.order.domain.entity.CompanyType;
 import com.business.order.domain.entity.Order;
@@ -15,9 +15,13 @@ import com.business.order.domain.repository.OrderRepository;
 import com.business.order.infrastructure.client.CompanyFeignClient;
 import com.business.order.infrastructure.client.DeliveryFeignClient;
 import com.business.order.infrastructure.client.ProductFeignClient;
+import com.business.order.infrastructure.dto.queryDto.SearchCompanyQueryDto;
+import com.business.order.infrastructure.dto.queryDto.SearchProductQueryDto;
+import com.business.order.infrastructure.dto.request.CreateDeliveryRequestDto;
 import com.business.order.infrastructure.dto.request.OrderDeliveryRequestDto;
-import com.business.order.infrastructure.dto.response.ProductDetailResponseDto;
-import com.business.order.infrastructure.dto.response.hubIdResponseDto;
+import com.business.order.infrastructure.dto.response.GetCompanyInfoResponseDto;
+import com.business.order.infrastructure.dto.response.GetProductInfoResponseDto;
+import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -39,51 +43,78 @@ public class OrderService {
 
     @Transactional
     public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, Long userId){
+        log.info("주문 생성 요청 시작 - userId: {}, request: {}", userId, request);
+
         List<OrderItemRequestDto> items = request.getItems();
 
         for (OrderItemRequestDto item : items) {
+            UUID productId = item.getProductId();
 
-            ProductDetailResponseDto queryDto = new ProductDetailResponseDto(
-                    item.getProductId(),
-                    null, // 가격은 요청에는 필요 없음
-                    null, // 재고도 필요 없음
-                    null  // 공급자도 필요 없음
+            SearchProductQueryDto queryDto = new SearchProductQueryDto(
+                    productId, null, null, null,
+                    1, 1000, "CREATED", "asc"
             );
 
-            ProductDetailResponseDto productDetail = productFeignClient.getProductDetail(queryDto);
+            GetProductInfoResponseDto response;
+            try {
+                response = productFeignClient.searchProduct(queryDto);
+            } catch (FeignException e) {
+                throw new BusinessLogicException(OrderExceptionCode.PRODUCT_NOT_FOUND);
+            }
+
+            List<GetProductInfoResponseDto.ProductData> products = response.getProduct();
+
+            GetProductInfoResponseDto.ProductData targetProduct = products.stream()
+                    .filter(p -> p.getProductId().equals(productId))
+                    .findFirst()
+                    .orElseThrow(() -> {
+                        log.error("해당 productId의 상품을 찾을 수 없음: {}", productId);
+                        return new BusinessLogicException(OrderExceptionCode.PRODUCT_NOT_FOUND);
+                    });
+
+            ProductDetailResponseDto productDetail = RequestMapper.toProductDetailResponse(targetProduct);
+            log.info("상품 상세 정보: {}", productDetail);
 
             if(item.getOrderItemAmount() > productDetail.getProductQuantity()){
                 throw new BusinessLogicException(OrderExceptionCode.PRODUCT_QUANTITY_EXCEEDED);
             }
 
             item.setSupplierId(productDetail.getSupplierId());
-            item.setOrderItemPrice(productDetail.getProductPrice()); //여기서 매핑
+            item.setOrderItemPrice(productDetail.getOrderItemPrice());
         }
 
-        UUID supplierId = items.get(0).getSupplierId();//첫번째 주문 아이템을 꺼내서 공급id 변수에 저장
+        UUID supplierId = items.get(0).getSupplierId();
         UUID receiverId = request.getReceiverId();
 
-        hubIdResponseDto supplierResponse = companyFeignClient.searchCompanies(CompanyType.SUPPLIER);
-        UUID originHubId = extractHubIdFromCompanyResponse(supplierResponse, supplierId);
+        UUID originHubId = extractHubIdByCompanyId(CompanyType.SUPPLIER, supplierId);
+        UUID destinationHubId = extractHubIdByCompanyId(CompanyType.RECEIVER, receiverId);
 
-        hubIdResponseDto receiverResponse = companyFeignClient.searchCompanies(CompanyType.RECEIVER);
-        UUID destinationHubId = extractHubIdFromCompanyResponse(receiverResponse, receiverId);
         Order order = request.createOrder(userId, originHubId, destinationHubId);
 
         List<OrderItem> orderItems = items.stream()
                 .map(i -> i.createOrderItem(order))
                 .collect(Collectors.toList());
-
         order.addOrderItems(orderItems);
-        Order savedOrder  = orderRepository.save(order);
+
+        Order savedOrder = orderRepository.save(order);
 
         OrderDeliveryRequestDto deliveryRequest = OrderDeliveryRequestDto.fromOrder(savedOrder);
-        if(!deliveryFeignClient.createDelivery(deliveryRequest)){
+
+        CreateDeliveryRequestDto deliveryFeignRequest = DeliveryMapper.toCreateDeliveryRequestDto(deliveryRequest);
+
+        log.info("배송 요청 생성 - Feign에 전달될 최종 값: {}", deliveryFeignRequest);
+
+        try {
+            deliveryFeignClient.createDelivery(deliveryFeignRequest);
+        } catch (FeignException e) {
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
         }
 
-        return OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
+        OrderCreateResponseDto responseDto = OrderMapper.toOrderCreateResponseDto(savedOrder, orderItems);
+
+        return responseDto;
     }
+
 
     @Transactional(readOnly = true)
     public OrderGetResponseDto getOrder(UUID orderId) {
@@ -110,15 +141,37 @@ public class OrderService {
 
         order.cancelOrder(order.getUserId());
         orderRepository.save(order);
-        log.info("3. Cancel order {}", orderId);
         return OrderMapper.toOrderStatusResponseDto(order);
     }
 
-    private UUID extractHubIdFromCompanyResponse(hubIdResponseDto response, UUID targetCompanyId) {
-        return response.getCompany().stream()
-                .filter(c -> c.getCompanyId().equals(targetCompanyId))
+    private UUID extractHubIdByCompanyId(CompanyType type, UUID targetCompanyId) {
+        SearchCompanyQueryDto queryDto = new SearchCompanyQueryDto();
+        queryDto.setCompanyType(type);
+        queryDto.setPage(1);
+        queryDto.setSize(1000);
+        queryDto.setOrderBy("CREATED");
+        queryDto.setSort("asc");
+
+        GetCompanyInfoResponseDto rawResponse = companyFeignClient.searchCompanies(queryDto);
+
+        hubIdResponseDto simplified = RequestMapper.toHubIdResponse(rawResponse);
+
+        List<hubIdResponseDto.CompanyData> companyList = simplified.getCompany();
+
+        companyList.forEach(c -> log.info("업체 ID: {}, 타입: {}, 허브ID: {}", c.getCompanyId(), c.getCompanyType(), c.getHubId()));
+
+        return companyList.stream()
+                .filter(c -> {
+                    if (type == CompanyType.SUPPLIER) {
+                        return c.getSupplierId().equals(targetCompanyId);
+                    } else {
+                        return c.getReceiverId().equals(targetCompanyId);
+                    }
+                })
                 .findFirst()
                 .map(hubIdResponseDto.CompanyData::getHubId)
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
+
+
 }
