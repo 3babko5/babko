@@ -187,4 +187,15 @@ public class DeliveryDriverService {
             throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_DELIVERY_ROUTE_NOT_FOUND);
         }
     }
+
+    @Transactional
+    public void cancelDriverStatus(UUID deliveryRouteId) {
+
+        DeliveryDriver driver = deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId)
+            .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_CANCEL_ERROR));
+
+        driver.updateCancelStatus();
+
+        deliveryDriverRepository.save(driver);
+    }
 }
