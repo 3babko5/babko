@@ -1,13 +1,11 @@
 package com.business.hub.presentation;
 
+import com.business.common.aop.RoleCheck;
 import com.business.hub.application.dto.request.HubMovementCreateRequest;
 import com.business.hub.application.dto.request.HubMovementUpdateRequest;
 import com.business.hub.application.dto.response.HubMovementPageResponse;
 import com.business.hub.application.dto.response.HubMovementResponse;
-import com.business.hub.application.mapper.HubMovementMapper;
 import com.business.hub.application.service.HubMovementService;
-import com.business.hub.domain.entity.HubMovement;
-import com.business.hub.domain.repository.HubMovementRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -27,18 +25,19 @@ public class HubMovementController {
     private final HubMovementService hubMovementService;
 
     @PostMapping
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<List<HubMovementResponse>> registerHubMovement(
             @RequestBody @Valid HubMovementCreateRequest request,
-            Long userId) {
+            @RequestHeader("X-client-userId") Long userId) {
 
-        userId = 1111L;
         List<HubMovementResponse> responseList = hubMovementService.registerHubMovement(request, userId);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(responseList);
     }
 
-    //단건 조회
-    @GetMapping("/{hubmovementId}")
+
+    @GetMapping("/{hubMovementId}")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<HubMovementResponse> getHubMovement(
             @PathVariable UUID hubMovementId) {
         HubMovementResponse response = hubMovementService.getHubMovement(hubMovementId);
@@ -46,8 +45,9 @@ public class HubMovementController {
         return ResponseEntity.ok(response);
     }
 
-    //전체 조회
+
     @GetMapping
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<HubMovementPageResponse<HubMovementResponse>> getAllHubMovements(
             @PageableDefault(size = 10) Pageable pageable
     ) {
@@ -57,8 +57,9 @@ public class HubMovementController {
 
     }
 
-    //출발 허브 기준 이동 정보 조회
+
     @GetMapping("/departure/{departureHubId}")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<List<HubMovementResponse>>getMovementsByDepartureHub(
             @PathVariable UUID departureHubId
     ){
@@ -66,8 +67,9 @@ public class HubMovementController {
         return ResponseEntity.ok(responseList);
     }
 
-    //도착 허브 기준 이동 정보 조회
+
     @GetMapping("/arrival/{arrivalHubId}")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<List<HubMovementResponse>> getMovementsByArrivalHub(
             @PathVariable UUID arrivalHubId
     ){
@@ -75,8 +77,9 @@ public class HubMovementController {
         return ResponseEntity.ok(responseList);
     }
 
-    //특정 허브 간 이동 경로 조회 api
+
     @GetMapping("/path")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<HubMovementResponse> getMovementsByHubs(
             @RequestParam UUID departureHubId,
             @RequestParam UUID arrivalHubId
@@ -87,26 +90,29 @@ public class HubMovementController {
     }
 
     @PatchMapping("/{hubMovementId}")
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<HubMovementResponse> updateHubMovement(
             @PathVariable UUID hubMovementId,
             @RequestBody @Valid HubMovementUpdateRequest request,
-            Long userId
+            @RequestHeader("X-client-userId") Long userId
     ){
-        userId = 1112L;
+
         HubMovementResponse response = hubMovementService.updateHubMovement(hubMovementId, request, userId);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{hubMovementId}")
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public ResponseEntity<HubMovementResponse> deleteHubMovement(
             @PathVariable UUID hubMovementId,
-            Long userId
+            @RequestHeader("X-client-userId") Long userId
     ){
-        userId = 1111L;
+
         hubMovementService.deleteHubMovement(hubMovementId, userId);
         return ResponseEntity.noContent().build();
     }
     @GetMapping("/routes")
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<List<HubMovementResponse>> getRoutes(
             @RequestParam UUID departureHubId,
             @RequestParam UUID arrivalHubId
