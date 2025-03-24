@@ -12,6 +12,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/api/v1/companies")
 @RequiredArgsConstructor
@@ -33,5 +36,11 @@ public class CompanyController {
         );
         final SearchCompanyResponseDto response = companyService.searchCompanies(request, pageable);
         return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{companyId}")
+    public ResponseEntity<Map<String, String>> deleteCompany(@PathVariable UUID companyId) {
+        companyService.deleteCompany(companyId);
+        return ResponseEntity.ok(Map.of("message", "업체가 삭제되었습니다."));
     }
 }
