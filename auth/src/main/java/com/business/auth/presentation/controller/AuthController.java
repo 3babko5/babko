@@ -2,16 +2,20 @@ package com.business.auth.presentation.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.business.auth.application.dto.request.ChangeUserRoleRequest;
 import com.business.auth.application.service.AuthService;
 import com.business.auth.application.dto.response.JwtTokenResponseDto;
 import com.business.auth.application.dto.request.LoginRequestDto;
 import com.business.auth.application.dto.request.SignupRequestDto;
-import com.business.auth.application.dto.request.TokenRefreshRequestDto;
+import com.business.auth.infrastructure.client.UserClient;
+import com.business.auth.infrastructure.util.JwtTokenUtil;
 import com.business.common.aop.RoleCheck;
 
 import jakarta.validation.Valid;
@@ -23,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 
     private final AuthService authService;
+    private final UserClient userClient;
 
     /**
      * 회원가입
@@ -42,6 +47,14 @@ public class AuthController {
         return ResponseEntity.ok(tokenDto); // 200 OK
     }
 
+    @PutMapping("/users/role")
+    @RoleCheck(roles = {"ROLE_MASTER"}) // 마스터만 역할 변경 가능
+    public ResponseEntity<Void> changeUserRole(@RequestBody ChangeUserRoleRequest request) {
+        authService.changeUserRole(request);
+        return ResponseEntity.ok().build();
+    }
+}
+
     // // 토큰 재발급 부분 수정
     // @PostMapping("/refresh")
     // @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
@@ -50,4 +63,4 @@ public class AuthController {
     //     return ResponseEntity.ok(tokenDto);
     //
     // }
-}
+

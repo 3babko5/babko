@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.business.common.application.exception.BusinessLogicException;
+import com.business.common.application.exception.GlobalExceptionCode;
+
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 
@@ -35,7 +38,7 @@ public class RoleCheckAspect {
         
         // 역할 검증
         if (clientRole == null || !Arrays.asList(requiredRoles).contains(clientRole)) {
-            throw new RuntimeException("접근 권한이 없습니다.");
+            throw new BusinessLogicException(GlobalExceptionCode.FORBIDDEN);
         }
         
         // 권한 검증 통과, 메서드 실행
