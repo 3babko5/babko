@@ -125,7 +125,7 @@ public class DeliveryService {
     }
 
     @Transactional
-    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto reques) {
+    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request) {
 
         Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
         if (delivery == null) {
@@ -138,18 +138,20 @@ public class DeliveryService {
             .findFirst()
             .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
 
-        delivery.updateStatus(reques.getDeliveryStatus());
-        deliveryRoute.updateStatus(reques.getDeliveryRouteStatus());
-
-        Delivery updatedDelivery = deliveryRepository.save(delivery);
-
         DeliveryRoute lastRoute = delivery.getDeliveryRoutes().stream()
             .max(Comparator.comparing(DeliveryRoute::getRouteSequence))
-            .orElse(null);
+            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
+
+        delivery.updateStatus(request.getDeliveryStatus());
+        deliveryRoute.updateStatus(request.getDeliveryRouteStatus());
+
+        Delivery updatedDelivery = deliveryRepository.save(delivery);
 
         if (lastRoute != null && lastRoute.getDeliveryRouteStatus() == DeliveryRouteStatus.DELIVERED) {
             updatedDelivery.updateStatus(DeliveryStatus.DELIVERED);
             updatedDelivery = deliveryRepository.save(updatedDelivery);
+
+            orderClient.completeOrder(updatedDelivery.getOrderId());
         }
 
         userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId());
