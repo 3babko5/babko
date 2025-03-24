@@ -173,5 +173,12 @@ public class OrderService {
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.COMPANY_NOT_FOUND));
     }
 
+    @Transactional
+    public void completeOrder(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND));
+
+        order.completeOrder();
+    }
 
 }
