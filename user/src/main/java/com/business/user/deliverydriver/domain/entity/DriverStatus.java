@@ -3,8 +3,8 @@ package com.business.user.deliverydriver.domain.entity;
 public enum DriverStatus {
 
     ASSIGNED,
-    HUB_IN_TRANSIT,
-    DELIVERING,
-    COMPLETED,
+    IN_TRANSIT_TO_HUB,
+    OUT_FOR_DELIVERY,
+    DELIVERED,
     CANCELED;
 }
