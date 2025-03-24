@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum DeliveryDriverErrorCode implements ExceptionCode {
 
   // 배송 담당자
+  INVALID_USER_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 ID입니다."),
   DRIVER_ALREADY_EXISTS(HttpStatus.CONFLICT, "해당 사용자는 이미 배송 담당자로 등록되어 있습니다."),
   MAX_HUB_DRIVERS_EXCEEDED(HttpStatus.BAD_REQUEST, "허브 배송 담당자는 최대 10명까지만 등록 가능합니다."),
   MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED(HttpStatus.BAD_REQUEST, "해당 허브에는 최대 10명의 업체 배송 담당자만 추가할 수 있습니다."),
