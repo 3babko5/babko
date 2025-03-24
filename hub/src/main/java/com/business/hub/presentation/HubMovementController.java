@@ -38,7 +38,7 @@ public class HubMovementController {
     }
 
     //단건 조회
-    @GetMapping("/{hubmovementId}")
+    @GetMapping("/{hubMovementId}")
     public ResponseEntity<HubMovementResponse> getHubMovement(
             @PathVariable UUID hubMovementId) {
         HubMovementResponse response = hubMovementService.getHubMovement(hubMovementId);

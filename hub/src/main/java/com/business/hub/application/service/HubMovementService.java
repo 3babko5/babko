@@ -34,9 +34,9 @@ public class HubMovementService {
 
     @Transactional
     public List<HubMovementResponse> registerHubMovement(@Valid HubMovementCreateRequest request, Long userId) {
-        Hub departureHub = hubRepository.findById(request.getDepartureHubId())
+        Hub departureHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getDepartureHubId())
                 .orElseThrow(() -> new IllegalArgumentException("출발 허브가 존재하지 않습니다."));
-        Hub arrivalHub = hubRepository.findById(request.getArrivalHubId())
+        Hub arrivalHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(request.getArrivalHubId())
                 .orElseThrow(() -> new IllegalArgumentException("도착 허브가 존재하지 않습니다."));
 
         List<Hub> hubs = hubRepository.findAll();
