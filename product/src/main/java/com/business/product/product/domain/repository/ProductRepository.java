@@ -12,5 +12,5 @@ import java.util.UUID;
 public interface ProductRepository {
     Product save(Product product);
     Optional<Product> findById(UUID productId);
-    Page<Product> search(String productName, UUID companyId, Pageable pageable);
+    Page<Product> search(String productName, UUID companyId, UUID productId, Integer productQuantity, Pageable pageable);
 }

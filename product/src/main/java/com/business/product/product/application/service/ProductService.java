@@ -32,6 +32,8 @@ public class ProductService {
         Page<Product> productPage = productRepository.search(
                 request.getProductName(),
                 request.getCompanyId(),
+                request.getProductId(),
+                request.getProductQuantity(),
                 pageable
         );
         return ProductMapper.toSearchResponseDto(productPage);

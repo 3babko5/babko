@@ -29,5 +29,5 @@ public class CreateCompanyRequestDto {
     private UUID hubId;
 
     @NotNull(message = "해당 업체의 관리자 ID는 필수입니다.")
-    private UUID companyManagerId;
+    private Long companyManagerId;
 }

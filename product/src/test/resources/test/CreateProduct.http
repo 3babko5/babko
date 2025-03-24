@@ -1,0 +1,12 @@
+### 1. 상품 생성
+POST http://localhost:8081/api/v1/products
+Authorization: Bearer jwt_token_string
+Content-Type: application/json
+Accept: application/json
+
+{
+  "productName": "먹태깡",
+  "productPrice": 10000,
+  "productQuantity": 200,
+  "companyId": "f5844081-d854-438e-96dc-93e272dd9376"
+}
