@@ -90,13 +90,13 @@ public class HubService {
 
     }
 
+    @Transactional
     public void deleteHub(
             UUID hubId,
             Long userId) {
         Hub existingHub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
                 .orElseThrow(() -> new BusinessLogicException(HubExceptionCode.HUB_NOT_FOUND));
 
-        // 허브 간 이동 정보도 논리 삭제
         for (HubMovement movement : existingHub.getDepartureMovements()) {
             movement.deletedBy(userId);
         }
@@ -111,6 +111,7 @@ public class HubService {
 
     }
 
+    @Transactional
     public HubResponse getHub(UUID hubId) {
 
         Hub hub = hubRepository.findByHubIdAndDeletedAtIsNullAndDeletedByIsNull(hubId)
@@ -118,7 +119,7 @@ public class HubService {
         return HubMapper.toHubResponse(hub);
     }
 
-
+    @Transactional
     public HubPageResponse<HubResponse> getAllHubs(Pageable pageable) {
 
         Page<Hub> hubs = hubRepository.findAllByDeletedAtIsNullAndDeletedByIsNull(pageable);
@@ -126,6 +127,7 @@ public class HubService {
         return HubPageResponse.of(hubs.map(HubMapper::toHubResponse));
     }
 
+    @Transactional
     public Page<HubResponse> getHubSearch(
             HubSearchRequest request,
             Pageable pageable) {
