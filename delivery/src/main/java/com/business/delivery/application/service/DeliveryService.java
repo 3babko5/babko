@@ -47,7 +47,18 @@ public class DeliveryService {
     private final UserClient userClient;
     private final OrderClient orderClient;
 
-    public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request) {
+    public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
+
+        if (request.getStartHubId() == null || request.getEndHubId() == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_HUB_ID);
+        }
+        if (request.getDeliveryAddress() == null || request.getDeliveryAddress().isEmpty()) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_DELIVERY_ADDRESS);
+        }
 
         List<HubRoutesResponseDto> hubMovements = Optional
             .ofNullable(hubClient.getRoutesByStartAndEndHub(request.getStartHubId(), request.getEndHubId()))
@@ -59,21 +70,39 @@ public class DeliveryService {
                 .mapToObj(i -> HubMapper.toEntityFromHubMovement(hubMovements.get(i), (long) i + 1))
                 .toList();
 
-        HubIdResponseDto hubInfo = Optional
-            .ofNullable(hubClient.getLatitudeAndLongitude(request.getEndHubId()))
-            .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.HUB_COORDINATE_NOT_AVAILABLE));
+        HubIdResponseDto hubInfo = hubClient.getLatitudeAndLongitude(request.getEndHubId());
+        if (hubInfo == null || hubInfo.getLatitude() == null || hubInfo.getLongitude() == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.HUB_COORDINATE_NOT_AVAILABLE);
+        }
 
         BigDecimal hubIdLatitude = hubInfo.getLatitude();
         BigDecimal hubIdlongitude = hubInfo.getLongitude();
 
         double[] deliveryCoords = naverApiService.getCoordinates(request.getDeliveryAddress());
+        if (deliveryCoords == null || deliveryCoords.length < 2) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_DELIVERY_COORDINATES);
+        }
 
         String naverJsonResponse = naverApiService.getOptimalRoute(
             hubIdLatitude.doubleValue(), hubIdlongitude.doubleValue(),
             deliveryCoords[0], deliveryCoords[1]
         );
 
+        if (naverJsonResponse == null || naverJsonResponse.isEmpty()) {
+            throw new BusinessLogicException(DeliveryErrorCode.NAVER_ROUTE_NOT_AVAILABLE);
+        }
+
         BigDecimal finalEstimatedDistance = naverApiService.extractDistanceFromJson(naverJsonResponse);
+        if (finalEstimatedDistance == null || finalEstimatedDistance.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_DISTANCE);
+        }
+
+        int durationInSeconds = naverApiService.extractDurationFromJson(naverJsonResponse);
+
+        if (durationInSeconds <= 0) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_DURATION);
+        }
+
         Long finalEstimatedTime = (long) naverApiService.extractDurationFromJson(naverJsonResponse);
 
         DeliveryRoute finalRoute = DeliveryRequestMapper.toFinalRouteEntity(
@@ -104,7 +133,11 @@ public class DeliveryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<DeliveryPageResponseDto> getDeliveries(SearchRequestDto request) {
+    public Page<DeliveryPageResponseDto> getDeliveries(SearchRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
 
         Pageable pageable = DeliveryRequestMapper.deliverySearchRequestDtoToPageable(request);
 
@@ -115,9 +148,17 @@ public class DeliveryService {
         return responsePage;
     }
 
-    public DeliveryDetailResponseDto getDeliveryByDeliveryId(UUID deliveryId) {
+    public DeliveryDetailResponseDto getDeliveryByDeliveryId(UUID deliveryId, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
 
         Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
+        if (delivery == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND);
+        }
 
         Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId());
 
@@ -125,9 +166,14 @@ public class DeliveryService {
     }
 
     @Transactional
-    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request) {
+    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
 
         Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
         if (delivery == null) {
             throw new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND);
         }
@@ -160,9 +206,17 @@ public class DeliveryService {
     }
 
     @Transactional
-    public void cancelDelivery(UUID deliveryId) {
+    public void cancelDelivery(UUID deliveryId, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
 
         Delivery delivery = deliveryRepository.findByDeliveryId(deliveryId);
+
+        if (delivery == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND);
+        }
 
         delivery.updateCancelStatus();
 
@@ -182,7 +236,11 @@ public class DeliveryService {
     }
 
     @Transactional
-    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
+    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
+        }
 
         deliveryRepository.deleteByDeliveryId(deliveryId, deletedBy);
     }

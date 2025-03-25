@@ -1,5 +1,6 @@
 package com.business.user.deliverydriver.presentation.controller;
 
+import com.business.common.aop.RoleCheck;
 import com.business.user.deliverydriver.application.dto.mapper.DeliveryDriverResponseMapper;
 import com.business.user.deliverydriver.application.dto.request.AssignDeliveryDriverRequestDto;
 import com.business.user.deliverydriver.application.dto.request.CreateDeliveryDriverRequestDto;
@@ -21,11 +22,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 @RestController
 @RequestMapping("/api/v1/delivery-drivers")
@@ -34,48 +34,66 @@ public class DeliveryDriverController {
 
     private final DeliveryDriverService deliveryDriverService;
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
     @PostMapping
-    public ResponseEntity<DeliveryDriverResponseDto> createDeliveryDriver(@RequestBody CreateDeliveryDriverRequestDto request) {
+    public ResponseEntity<DeliveryDriverResponseDto> createDeliveryDriver(
+        @RequestBody CreateDeliveryDriverRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request);
+        DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
     @PostMapping("/assign")
-    public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(@RequestBody AssignDeliveryDriverRequestDto request) {
-        
-        List<AssignDeliveryDriverResponseDto> assignedDrivers = deliveryDriverService.assignDriversForDelivery(request.getDeliveryId());
+    public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(
+        @RequestBody AssignDeliveryDriverRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
+
+        List<AssignDeliveryDriverResponseDto> assignedDrivers =
+            deliveryDriverService.assignDriversForDelivery(request.getDeliveryId(), userId);
         return ResponseEntity.ok(assignedDrivers);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
     @GetMapping
-    public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(DeliveryDriverSearchRequestDto request) {
+    public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(
+        DeliveryDriverSearchRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request);
+        Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request, userId);
         return ResponseEntity.ok(DeliveryDriverResponseMapper.toPageListResponse(driverPage));
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
     @GetMapping("/{deliveryDriverId}")
-    public ResponseEntity<DeliveryDriverDetailResponseDto> getDeliveryDriverDetail(@PathVariable Long deliveryDriverId) {
+    public ResponseEntity<DeliveryDriverDetailResponseDto> getDeliveryDriverDetail(
+        @PathVariable Long deliveryDriverId,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId);
+        DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId, userId);
         return ResponseEntity.ok(response);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
     @PatchMapping("/{deliveryRouteId}/status")
     public ResponseEntity<DriverStatusUpdateResponseDto> updateDriverStatus(
         @PathVariable("deliveryRouteId") UUID deliveryRouteId,
-        @RequestBody StatusUpdateRequestDto request) {
+        @RequestBody StatusUpdateRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        DriverStatusUpdateResponseDto response = deliveryDriverService.updateDriverStatus(deliveryRouteId, request);
+        DriverStatusUpdateResponseDto response =
+            deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId);
         return ResponseEntity.ok(response);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
     @PatchMapping("/{deliveryRouteId}/cancel")
-    public ResponseEntity<Void> cancelDriverStatus(@PathVariable("deliveryRouteId") UUID deliveryRouteId) {
+    public ResponseEntity<Void> cancelDriverStatus(
+        @PathVariable("deliveryRouteId") UUID deliveryRouteId,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        deliveryDriverService.cancelDriverStatus(deliveryRouteId);
+        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId);
         return ResponseEntity.ok().build();
     }
 }
-

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum DeliveryErrorCode implements ExceptionCode {
 
   // 배송
+  INVALID_USER_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 사용자 ID입니다."),
   DELIVERY_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 정보를 찾을 수 없습니다."),
   DELIVERY_ALREADY_DELETED(HttpStatus.BAD_REQUEST, "이미 삭제된 배송입니다."),
   INVALID_STATUS_TRANSITION(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 상태 전환입니다."),
@@ -25,6 +26,12 @@ public enum DeliveryErrorCode implements ExceptionCode {
 
   // 외부 API
   HUB_MOVEMENT_NOT_AVAILABLE(HttpStatus.NOT_FOUND, "허브 간 이동 정보를 가져올 수 없습니다."),
+  INVALID_HUB_ID(HttpStatus.BAD_REQUEST, "유효하지 않은 허브 ID입니다."),
+  INVALID_DELIVERY_ADDRESS(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 주소입니다."),
+  INVALID_DELIVERY_COORDINATES(HttpStatus.BAD_REQUEST, "유효한 배송 좌표를 찾을 수 없습니다."),
+  NAVER_ROUTE_NOT_AVAILABLE(HttpStatus.NOT_FOUND, "네이버 경로 정보를 가져올 수 없습니다."),
+  INVALID_DISTANCE(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 거리입니다."),
+  INVALID_DURATION(HttpStatus.BAD_REQUEST, "유효하지 않은 배송 소요 시간입니다."),
   HUB_COORDINATE_NOT_AVAILABLE(HttpStatus.NOT_FOUND, "허브 좌표 정보를 가져올 수 없습니다."),
   NAVER_API_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "네이버 API 호출 중 오류가 발생했습니다."),
   DRIVER_CANCEL_ERROR(HttpStatus.SERVICE_UNAVAILABLE, "배송 담당자 취소 서비스와의 통신 중 오류가 발생했습니다.");

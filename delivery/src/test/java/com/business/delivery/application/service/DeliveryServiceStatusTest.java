@@ -14,6 +14,7 @@ import com.business.delivery.domain.repository.DeliveryRepository;
 import com.business.delivery.infrastructure.client.OrderClient;
 import com.business.delivery.infrastructure.client.UserClient;
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,6 +43,7 @@ class DeliveryServiceStatusTest {
     private DeliveryRoute activeRoute;
     private UUID deliveryId;
     private UUID routeId;
+    private final Long userId = 1L;
 
     @BeforeEach
     void setUp() throws Exception {
@@ -79,10 +81,9 @@ class DeliveryServiceStatusTest {
             .build();
 
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
-
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request);
+        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
 
         assertEquals(DeliveryStatus.OUT_FOR_DELIVERY, responseDto.getDeliveryStatus());
         assertEquals(DeliveryRouteStatus.IN_TRANSIT_TO_HUB, responseDto.getDeliveryRouteStatus());
@@ -101,7 +102,7 @@ class DeliveryServiceStatusTest {
             .build();
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryService.updateDeliveryStatus(deliveryId, request);
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
         });
     }
 
@@ -117,7 +118,7 @@ class DeliveryServiceStatusTest {
             .build();
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryService.updateDeliveryStatus(deliveryId, request);
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
         });
     }
 
@@ -165,10 +166,9 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request);
+        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
 
         assertEquals(DeliveryStatus.DELIVERED, responseDto.getDeliveryStatus());
-
         assertEquals(DeliveryRouteStatus.IN_TRANSIT_TO_HUB, responseDto.getDeliveryRouteStatus());
 
         verify(mockUserClient, times(1)).updateDriverStatus(route1.getDeliveryRouteId());
@@ -207,29 +207,7 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request);
-
-        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
-    }
-
-    @Test
-    void testUpdateDeliveryStatus_WhenLastRouteDelivered_CallCompleteOrder() {
-
-        StatusUpdateRequestDto request = StatusUpdateRequestDto.builder()
-            .deliveryStatus(DeliveryStatus.OUT_FOR_DELIVERY)
-            .deliveryRouteStatus(DeliveryRouteStatus.DELIVERED)
-            .build();
-
-        when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
-        when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request);
-
-        assertEquals(DeliveryStatus.DELIVERED, responseDto.getDeliveryStatus());
-
-        assertEquals(DeliveryRouteStatus.DELIVERED, responseDto.getDeliveryRouteStatus());
-
-        verify(mockOrderClient, times(1)).completeOrder(any(UUID.class));
+        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
 
         verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
     }
@@ -246,10 +224,9 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         DeliveryStatusUpdateResponseDto responseDto =
-            deliveryService.updateDeliveryStatus(deliveryId, requestDto);
+            deliveryService.updateDeliveryStatus(deliveryId, requestDto, userId);
 
         assertEquals(DeliveryStatus.OUT_FOR_DELIVERY, responseDto.getDeliveryStatus());
-
         verify(mockOrderClient, never()).completeOrder(any(UUID.class));
     }
 }

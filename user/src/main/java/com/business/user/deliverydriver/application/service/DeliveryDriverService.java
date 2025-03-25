@@ -39,7 +39,11 @@ public class DeliveryDriverService {
     private final HubClient hubClient;
     private final DeliveryClient deliveryClient;
 
-    public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request) {
+    public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         if (deliveryDriverRepository.existsById(request.getDeliveryDriverId())) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_ALREADY_EXISTS);
@@ -84,7 +88,11 @@ public class DeliveryDriverService {
     }
 
 
-    public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId) {
+    public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId);
 
@@ -106,6 +114,7 @@ public class DeliveryDriverService {
     }
 
     private DeliveryDriver saveAssignedDriver(Long deliveryDriverId, UUID deliveryRouteId, Long routeSequence) {
+
         DeliveryDriver driver = deliveryDriverRepository.findByDeliveryDriverId(deliveryDriverId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.NO_AVAILABLE_DRIVER));
 
@@ -115,6 +124,7 @@ public class DeliveryDriverService {
     }
 
     private Long assignNextDeliveryDriver(DriverType driverType, UUID hubId) {
+
         Optional<DeliveryDriver> lastAssignedDriver =
             driverType == DriverType.COMPANY
                 ? deliveryDriverRepository.findLastAssignedDriverByTypeAndHub(driverType, hubId)
@@ -140,16 +150,22 @@ public class DeliveryDriverService {
     }
 
     private DeliveryDriver updateAssignedDriver(DeliveryDriver driver) {
+
         driver.updateAssignAt(LocalDateTime.now());
         return driver;
     }
 
     private boolean isLastDestination(DeliveryClientResponseDto route) {
+
         return route.getDeliveryAddress() != null;
     }
 
     @Transactional(readOnly = true)
-    public Page<DeliveryDriverResponseDto> getDrivers(DeliveryDriverSearchRequestDto request) {
+    public Page<DeliveryDriverResponseDto> getDrivers(DeliveryDriverSearchRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         Pageable pageable = DeliveryDriverRequestMapper.SearchRequestDtoToPageable(request);
 
@@ -158,7 +174,11 @@ public class DeliveryDriverService {
     }
 
     @Transactional(readOnly = true)
-    public DeliveryDriverDetailResponseDto getDriverByDriverId(Long deliveryDriverId) {
+    public DeliveryDriverDetailResponseDto getDriverByDriverId(Long deliveryDriverId, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         DeliveryDriver deliveryDriver = deliveryDriverRepository.findByDeliveryDriverId(deliveryDriverId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND));
@@ -167,7 +187,6 @@ public class DeliveryDriverService {
         if (deliveryRouteId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_ROUTE_NOT_ASSIGNED);
         }
-
 
         List<DeliveryClientResponseDto> deliveryRoutes = safeGetRoutesByDeliveryId(deliveryRouteId);
         if (deliveryRoutes.isEmpty()) {
@@ -183,6 +202,7 @@ public class DeliveryDriverService {
     }
 
     private List<DeliveryClientResponseDto> safeGetRoutesByDeliveryId(UUID deliveryRouteId) {
+
         try {
             List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryRouteId);
             return routes == null ? Collections.emptyList() : routes;
@@ -192,7 +212,11 @@ public class DeliveryDriverService {
     }
 
     @Transactional
-    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request) {
+    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         DeliveryDriver driver = deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND));
@@ -206,7 +230,11 @@ public class DeliveryDriverService {
     }
 
     @Transactional
-    public void cancelDriverStatus(UUID deliveryRouteId) {
+    public void cancelDriverStatus(UUID deliveryRouteId, Long userId) {
+
+        if (userId == null) {
+            throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
+        }
 
         DeliveryDriver driver = deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId)
             .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DRIVER_CANCEL_ERROR));

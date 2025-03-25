@@ -1,5 +1,6 @@
 package com.business.delivery.presentation.controller;
 
+import com.business.common.aop.RoleCheck;
 import com.business.delivery.application.dto.mapper.DeliveryResponseMapper;
 import com.business.delivery.application.dto.request.CreateDeliveryRequestDto;
 import com.business.delivery.application.dto.request.SearchRequestDto;
@@ -21,8 +22,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,52 +35,65 @@ public class DeliveryController {
 
     private final DeliveryService deliveryService;
 
+    @RoleCheck(roles = {"ROLE_MASTER"})
     @PostMapping
     public ResponseEntity<DeliveryResponseDto> createDelivery(
-        @Valid @RequestBody CreateDeliveryRequestDto request
+        @Valid @RequestBody CreateDeliveryRequestDto request,
+        @RequestHeader("X-client-userId") Long userId
     ) {
 
-        DeliveryResponseDto response = deliveryService.createDelivery(request);
+        DeliveryResponseDto response = deliveryService.createDelivery(request, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     @GetMapping
     public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(
-        SearchRequestDto request) {
+        SearchRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request);
+        Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request, userId);
         return ResponseEntity.ok(DeliveryResponseMapper.toPageListResponse(deliveryPage));
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     @GetMapping("/{deliveryId}")
-    public ResponseEntity<DeliveryDetailResponseDto> getDeliveryDetail(@PathVariable("deliveryId") UUID deliveryId) {
+    public ResponseEntity<DeliveryDetailResponseDto> getDeliveryDetail(
+        @PathVariable("deliveryId") UUID deliveryId,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        DeliveryDetailResponseDto response = deliveryService.getDeliveryByDeliveryId(deliveryId);
+        DeliveryDetailResponseDto response = deliveryService.getDeliveryByDeliveryId(deliveryId, userId);
         return ResponseEntity.ok(response);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY"})
     @PatchMapping("/{deliveryId}/status")
     public ResponseEntity<DeliveryStatusUpdateResponseDto> updateDeliveryStatus(
         @PathVariable("deliveryId") UUID deliveryId,
-        @Valid @RequestBody StatusUpdateRequestDto request) {
+        @Valid @RequestBody StatusUpdateRequestDto request,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        DeliveryStatusUpdateResponseDto response = deliveryService.updateDeliveryStatus(deliveryId,
-            request);
+        DeliveryStatusUpdateResponseDto response =
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
         return ResponseEntity.ok(response);
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY"})
     @PatchMapping("/{deliveryId}/cancel")
-    public ResponseEntity<Void> cancelDelivery(@PathVariable("deliveryId") UUID deliveryId) {
+    public ResponseEntity<Void> cancelDelivery(@PathVariable("deliveryId") UUID deliveryId,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        deliveryService.cancelDelivery(deliveryId);
+        deliveryService.cancelDelivery(deliveryId, userId);
         return ResponseEntity.ok().build();
     }
 
+    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB"})
     @DeleteMapping("/{deliveryId}")
     public ResponseEntity<Void> deleteByDeliveryId(@PathVariable("deliveryId") UUID deliveryId,
-        @RequestParam Long deletedBy) {
+        @RequestParam Long deletedBy,
+        @RequestHeader("X-client-userId") Long userId) {
 
-        deliveryService.deleteByDeliveryId(deliveryId, deletedBy);
+        deliveryService.deleteByDeliveryId(deliveryId, deletedBy, userId);
         return ResponseEntity.noContent().build();
     }
 }
