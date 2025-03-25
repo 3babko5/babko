@@ -11,5 +11,5 @@ import java.util.UUID;
 public interface CompanyRepository {
     Company save(Company company);
     Page<Company> search(String companyName, CompanyType companyType, UUID companyId, Pageable pageable);
-    Optional<Company> findActiveCompanyById(UUID companyId);
+    Optional<Company> findById(UUID companyId);
 }
