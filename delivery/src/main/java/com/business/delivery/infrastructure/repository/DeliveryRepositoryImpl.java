@@ -33,6 +33,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
 
   @Override
   public Delivery saveAndFlush(Delivery delivery) {
+
     return deliveryJpaRepository.saveAndFlush(delivery);
   }
 
@@ -45,7 +46,7 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
 
     BooleanBuilder builder = new BooleanBuilder();
 
-    builder.and(delivery.deletedAt.isNull());
+    builder.and(delivery.deletedBy.isNull());
 
     if (request.getOrderId() != null) {
       builder.and(delivery.orderId.eq(request.getOrderId()));
@@ -104,14 +105,14 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
   @Override
   public Delivery findByDeliveryId(UUID deliveryId) {
 
-    return deliveryJpaRepository.findByDeliveryIdAndDeletedAtIsNull(deliveryId)
+    return deliveryJpaRepository.findByDeliveryIdAndDeletedByIsNull(deliveryId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
   }
 
   @Override
   public void deleteByDeliveryId(UUID deliveryId, Long deletedBy) {
 
-    Delivery delivery = deliveryJpaRepository.findByDeliveryIdAndDeletedAtIsNull(deliveryId)
+    Delivery delivery = deliveryJpaRepository.findByDeliveryIdAndDeletedByIsNull(deliveryId)
         .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ALREADY_DELETED));
 
     delivery.softDelete(deletedBy);
