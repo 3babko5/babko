@@ -10,6 +10,8 @@ public interface DeliveryRepository {
 
   Delivery save(Delivery delivery);
 
+  Delivery saveAndFlush(Delivery delivery);
+
   Page<Delivery> findDeliveries(SearchRequestDto request, Pageable pageable);
 
   Delivery findByDeliveryId(UUID deliveryId);
