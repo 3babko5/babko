@@ -25,12 +25,13 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER"})
+    @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER", "ROLE_HUB","ROLE_DELIVERY"})
     public ResponseEntity<OrderCreateResponseDto> createOrder(
             @Valid @RequestBody OrderCreateRequestDto request,
-            @RequestHeader("X-client-userId") Long userId
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role
     ) {
-        OrderCreateResponseDto response = orderService.createOrder(request, userId);
+        OrderCreateResponseDto response = orderService.createOrder(request, userId, role);
         return ResponseEntity.ok(response);
     }
 

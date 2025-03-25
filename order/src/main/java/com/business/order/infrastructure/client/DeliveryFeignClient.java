@@ -17,7 +17,10 @@ import java.util.UUID;
 public interface DeliveryFeignClient {
 
     @PostMapping("/api/v1/deliveries")
-    GetDeliveryCreateResponseDto createDelivery(@RequestBody CreateDeliveryRequestDto request);
+    GetDeliveryCreateResponseDto createDelivery(
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role,
+            @RequestBody CreateDeliveryRequestDto request);
 
     //주문 취소 시 배송 상태 확인 요청
     @GetMapping("/api/v1/deliveries")

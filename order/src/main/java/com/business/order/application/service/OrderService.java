@@ -49,7 +49,7 @@ public class OrderService {
     private final CompanyFeignClient companyFeignClient;
 
     @Transactional
-    public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, Long userId){
+    public OrderCreateResponseDto createOrder(OrderCreateRequestDto request, Long userId, String role){
         log.info("주문 생성 요청 시작 - userId: {}, request: {}", userId, request);
 
         List<OrderItemRequestDto> items = request.getItems();
@@ -112,7 +112,7 @@ public class OrderService {
         log.info("배송 요청 생성 - Feign에 전달될 최종 값: {}", deliveryFeignRequest);
 
         try {
-            deliveryFeignClient.createDelivery(deliveryFeignRequest);
+            deliveryFeignClient.createDelivery(userId, role, deliveryFeignRequest);
         } catch (FeignException e) {
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_REQUEST_FAILED);
         }
