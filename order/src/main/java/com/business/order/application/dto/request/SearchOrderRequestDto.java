@@ -13,6 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class SearchOrderRequestDto {
+    private Long userId;
     private UUID orderId;
     private OrderStatus orderStatus;
     private Integer page = 1;

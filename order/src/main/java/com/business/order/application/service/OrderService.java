@@ -1,6 +1,8 @@
 package com.business.order.application.service;
 
 import com.business.common.application.exception.BusinessLogicException;
+import com.business.common.application.exception.GlobalExceptionCode;
+import com.business.common.application.exception.GlobalExceptionHandler;
 import com.business.order.application.dto.mapper.DeliveryMapper;
 import com.business.order.application.dto.mapper.OrderMapper;
 import com.business.order.application.dto.mapper.RequestMapper;
@@ -122,7 +124,7 @@ public class OrderService {
 
 
     @Transactional(readOnly = true)
-    public OrderGetResponseDto getOrder(UUID orderId) {
+    public OrderGetResponseDto getOrder(UUID orderId, Long userId, String role)  {
 
         Order order = orderRepository.findByOrderIdWithItems(orderId);
 
@@ -130,11 +132,19 @@ public class OrderService {
             throw new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND);
         }
 
+        if ("ROLE_COMPANY".equals(role) && !order.getUserId().equals(userId)) {
+            throw new BusinessLogicException(GlobalExceptionCode.FORBIDDEN);
+        }
+
         return OrderMapper.toOrderGetResponse(order);
     }
 
     @Transactional(readOnly = true)
-    public SearchOrderResponseDto searchOrders(SearchOrderRequestDto request, Pageable pageable) {
+    public SearchOrderResponseDto searchOrders(SearchOrderRequestDto request, Pageable pageable, Long userId, String role)  {
+        if ("ROLE_COMPANY".equals(role)) {
+            request.setUserId(userId); // 본인 주문만 검색
+        }
+
         Page<Order> orderPage = orderRepository.search(
                 request.getOrderId(),
                 request.getOrderStatus(),
@@ -145,9 +155,13 @@ public class OrderService {
 
     //주문 취소
     @Transactional
-    public OrderStatusResponseDto cancelOrder(UUID orderId) {
+    public OrderStatusResponseDto cancelOrder(UUID orderId, Long userId, String role) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new BusinessLogicException(OrderExceptionCode.ORDER_NOT_FOUND));
+
+        if ("ROLE_COMPANY".equals(role) && !order.getUserId().equals(userId)) {
+            throw new BusinessLogicException(GlobalExceptionCode.FORBIDDEN);
+        }
 
         DeliverySearchForOrderRequestDto request = DeliverySearchForOrderRequestDto.fromOrderId(orderId);
         log.info("배송 상태 조회 요청 DTO 생성: {}", request);
