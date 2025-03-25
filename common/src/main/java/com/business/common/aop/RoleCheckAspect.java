@@ -44,4 +44,5 @@ public class RoleCheckAspect {
         // 권한 검증 통과, 메서드 실행
         return joinPoint.proceed();
     }
+    // 토큰 재발급
 }
