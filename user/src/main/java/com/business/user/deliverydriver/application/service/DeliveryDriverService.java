@@ -36,10 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class DeliveryDriverService {
 
     private final DeliveryDriverRepository deliveryDriverRepository;
-    private final HubClient hubClient;
     private final DeliveryClient deliveryClient;
 
-    public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request, Long userId) {
+    public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
@@ -54,8 +53,9 @@ public class DeliveryDriverService {
         }
 
         if (request.getDriverType() == DriverType.COMPANY) {
-            if (request.getHubId() == null || !hubClient.existsByHubId(request.getHubId().toString())) {
-                throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_HUB_NOT_FOUND);
+            long companyDriverCount = deliveryDriverRepository.countByHubIdAndDriverType(request.getHubId(), DriverType.COMPANY);
+            if (companyDriverCount >= 10) {
+                throw new BusinessLogicException(DeliveryDriverErrorCode.MAX_COMPANY_DRIVERS_PER_HUB_EXCEEDED);
             }
         }
 
@@ -78,7 +78,6 @@ public class DeliveryDriverService {
             case COMPANY -> deliveryDriverRepository.findLastDeliverySequenceForCompanyDrivers(request.getHubId()).orElse(0L) + 1;
         };
 
-
         DeliveryDriver deliveryDriver =
             DeliveryDriverRequestMapper.createRequestToEntity(request, newSequence);
 
@@ -87,14 +86,13 @@ public class DeliveryDriverService {
         return DeliveryDriverResponseMapper.driverToDriverResponseDto(deliveryDriver);
     }
 
-
-    public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId, Long userId) {
+    public List<AssignDeliveryDriverResponseDto> assignDriversForDelivery(UUID deliveryId, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
         }
 
-        List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId);
+        List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId, userId, role);
 
         List<AssignDeliveryDriverResponseDto> assignedDrivers = new ArrayList<>();
 
@@ -161,11 +159,13 @@ public class DeliveryDriverService {
     }
 
     @Transactional(readOnly = true)
-    public Page<DeliveryDriverResponseDto> getDrivers(DeliveryDriverSearchRequestDto request, Long userId) {
+    public Page<DeliveryDriverResponseDto> getDrivers(DeliveryDriverSearchRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
         }
+
+
 
         Pageable pageable = DeliveryDriverRequestMapper.SearchRequestDtoToPageable(request);
 
@@ -174,7 +174,7 @@ public class DeliveryDriverService {
     }
 
     @Transactional(readOnly = true)
-    public DeliveryDriverDetailResponseDto getDriverByDriverId(Long deliveryDriverId, Long userId) {
+    public DeliveryDriverDetailResponseDto getDriverByDriverId(Long deliveryDriverId, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
@@ -188,7 +188,7 @@ public class DeliveryDriverService {
             throw new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_ROUTE_NOT_ASSIGNED);
         }
 
-        List<DeliveryClientResponseDto> deliveryRoutes = safeGetRoutesByDeliveryId(deliveryRouteId);
+        List<DeliveryClientResponseDto> deliveryRoutes = safeGetRoutesByDeliveryId(deliveryRouteId, userId, role);
         if (deliveryRoutes.isEmpty()) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_DELIVERY_ROUTE_NOT_FOUND);
         }
@@ -201,10 +201,9 @@ public class DeliveryDriverService {
         return DeliveryDriverResponseMapper.driverToDriverDetailDto(deliveryDriver, assignedRoute);
     }
 
-    private List<DeliveryClientResponseDto> safeGetRoutesByDeliveryId(UUID deliveryRouteId) {
-
+    private List<DeliveryClientResponseDto> safeGetRoutesByDeliveryId(UUID deliveryRouteId, Long userId, String role) {
         try {
-            List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryRouteId);
+            List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryRouteId, userId, role);
             return routes == null ? Collections.emptyList() : routes;
         } catch (Exception e) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_DELIVERY_ROUTE_NOT_FOUND);
@@ -212,7 +211,7 @@ public class DeliveryDriverService {
     }
 
     @Transactional
-    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request, Long userId) {
+    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
@@ -230,7 +229,7 @@ public class DeliveryDriverService {
     }
 
     @Transactional
-    public void cancelDriverStatus(UUID deliveryRouteId, Long userId) {
+    public void cancelDriverStatus(UUID deliveryRouteId, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);

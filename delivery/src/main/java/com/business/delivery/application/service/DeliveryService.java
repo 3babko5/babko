@@ -47,7 +47,7 @@ public class DeliveryService {
     private final UserClient userClient;
     private final OrderClient orderClient;
 
-    public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request, Long userId) {
+    public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
@@ -61,7 +61,7 @@ public class DeliveryService {
         }
 
         List<HubRoutesResponseDto> hubMovements = Optional
-            .ofNullable(hubClient.getRoutesByStartAndEndHub(request.getStartHubId(), request.getEndHubId()))
+            .ofNullable(hubClient.getRoutesByStartAndEndHub(request.getStartHubId(), request.getEndHubId(), userId, role))
             .filter(list -> !list.isEmpty())
             .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.HUB_MOVEMENT_NOT_AVAILABLE));
 
@@ -70,7 +70,7 @@ public class DeliveryService {
                 .mapToObj(i -> HubMapper.toEntityFromHubMovement(hubMovements.get(i), (long) i + 1))
                 .toList();
 
-        HubIdResponseDto hubInfo = hubClient.getLatitudeAndLongitude(request.getEndHubId());
+        HubIdResponseDto hubInfo = hubClient.getLatitudeAndLongitude(request.getEndHubId(), userId, role);
         if (hubInfo == null || hubInfo.getLatitude() == null || hubInfo.getLongitude() == null) {
             throw new BusinessLogicException(DeliveryErrorCode.HUB_COORDINATE_NOT_AVAILABLE);
         }
@@ -122,18 +122,19 @@ public class DeliveryService {
 
         Delivery savedDelivery = deliveryRepository.saveAndFlush(delivery);
 
-        assignDeliveryDriver(savedDelivery.getDeliveryId());
+        assignDeliveryDriver(savedDelivery.getDeliveryId(), userId, role);
 
         return DeliveryResponseMapper.deliveryToDeliveryResponseDto(savedDelivery);
     }
 
-    private void assignDeliveryDriver(UUID deliveryId) {
+    private void assignDeliveryDriver(UUID deliveryId, Long userId, String role) {
 
-        userClient.assignDeliveryDriver(deliveryId);
+        userClient.assignDeliveryDriver(deliveryId, userId, role);
+
     }
 
     @Transactional(readOnly = true)
-    public Page<DeliveryPageResponseDto> getDeliveries(SearchRequestDto request, Long userId) {
+    public Page<DeliveryPageResponseDto> getDeliveries(SearchRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
@@ -148,7 +149,7 @@ public class DeliveryService {
         return responsePage;
     }
 
-    public DeliveryDetailResponseDto getDeliveryByDeliveryId(UUID deliveryId, Long userId) {
+    public DeliveryDetailResponseDto getDeliveryByDeliveryId(UUID deliveryId, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
@@ -160,13 +161,13 @@ public class DeliveryService {
             throw new BusinessLogicException(DeliveryErrorCode.DELIVERY_NOT_FOUND);
         }
 
-        Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId());
+        Map<String, Object> orderResponse = orderClient.getOrder(delivery.getOrderId(), userId, role);
 
         return DeliveryResponseMapper.deliveryAndOrderToDetailResponse(delivery, orderResponse);
     }
 
     @Transactional
-    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request, Long userId) {
+    public DeliveryStatusUpdateResponseDto updateDeliveryStatus(UUID deliveryId, StatusUpdateRequestDto request, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
@@ -197,16 +198,16 @@ public class DeliveryService {
             updatedDelivery.updateStatus(DeliveryStatus.DELIVERED);
             updatedDelivery = deliveryRepository.save(updatedDelivery);
 
-            orderClient.completeOrder(updatedDelivery.getOrderId());
+            orderClient.completeOrder(updatedDelivery.getOrderId(), userId, role);
         }
 
-        userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId());
+        userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId(), userId, role);
 
         return DeliveryResponseMapper.toStatusUpdateResponse(updatedDelivery, deliveryRoute);
     }
 
     @Transactional
-    public void cancelDelivery(UUID deliveryId, Long userId) {
+    public void cancelDelivery(UUID deliveryId, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);
@@ -229,14 +230,14 @@ public class DeliveryService {
             .orElseThrow(() -> new BusinessLogicException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND));
 
         try {
-            userClient.cancelDriverStatus(deliveryRouteId);
+            userClient.cancelDriverStatus(deliveryRouteId, userId, role);
         } catch (Exception e) {
             throw new BusinessLogicException(DeliveryErrorCode.DRIVER_CANCEL_ERROR);
         }
     }
 
     @Transactional
-    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy, Long userId) {
+    public void deleteByDeliveryId(UUID deliveryId, Long deletedBy, Long userId, String role) {
 
         if (userId == null) {
             throw new BusinessLogicException(DeliveryErrorCode.INVALID_USER_ID);

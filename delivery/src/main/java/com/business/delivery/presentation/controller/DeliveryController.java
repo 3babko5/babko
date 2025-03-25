@@ -39,20 +39,21 @@ public class DeliveryController {
     @PostMapping
     public ResponseEntity<DeliveryResponseDto> createDelivery(
         @Valid @RequestBody CreateDeliveryRequestDto request,
-        @RequestHeader("X-client-userId") Long userId
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
     ) {
-
-        DeliveryResponseDto response = deliveryService.createDelivery(request, userId);
+        DeliveryResponseDto response = deliveryService.createDelivery(request, userId, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     @GetMapping
     public ResponseEntity<DeliveryPageListResponseDto<DeliveryPageResponseDto>> getDeliveries(
         SearchRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
-
-        Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request, userId);
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
+    ) {
+        Page<DeliveryPageResponseDto> deliveryPage = deliveryService.getDeliveries(request, userId, role);
         return ResponseEntity.ok(DeliveryResponseMapper.toPageListResponse(deliveryPage));
     }
 
@@ -60,40 +61,45 @@ public class DeliveryController {
     @GetMapping("/{deliveryId}")
     public ResponseEntity<DeliveryDetailResponseDto> getDeliveryDetail(
         @PathVariable("deliveryId") UUID deliveryId,
-        @RequestHeader("X-client-userId") Long userId) {
-
-        DeliveryDetailResponseDto response = deliveryService.getDeliveryByDeliveryId(deliveryId, userId);
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
+    ) {
+        DeliveryDetailResponseDto response = deliveryService.getDeliveryByDeliveryId(deliveryId, userId, role);
         return ResponseEntity.ok(response);
     }
 
-    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY"})
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
     @PatchMapping("/{deliveryId}/status")
     public ResponseEntity<DeliveryStatusUpdateResponseDto> updateDeliveryStatus(
         @PathVariable("deliveryId") UUID deliveryId,
         @Valid @RequestBody StatusUpdateRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
-
-        DeliveryStatusUpdateResponseDto response =
-            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
+    ) {
+        DeliveryStatusUpdateResponseDto response = deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
         return ResponseEntity.ok(response);
     }
 
-    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB", "ROLE_DELIVERY"})
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
     @PatchMapping("/{deliveryId}/cancel")
-    public ResponseEntity<Void> cancelDelivery(@PathVariable("deliveryId") UUID deliveryId,
-        @RequestHeader("X-client-userId") Long userId) {
-
-        deliveryService.cancelDelivery(deliveryId, userId);
+    public ResponseEntity<Void> cancelDelivery(
+        @PathVariable("deliveryId") UUID deliveryId,
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
+    ) {
+        deliveryService.cancelDelivery(deliveryId, userId, role);
         return ResponseEntity.ok().build();
     }
 
-    @RoleCheck(roles = {"ROLE_MASTER","ROLE_HUB"})
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
     @DeleteMapping("/{deliveryId}")
-    public ResponseEntity<Void> deleteByDeliveryId(@PathVariable("deliveryId") UUID deliveryId,
+    public ResponseEntity<Void> deleteByDeliveryId(
+        @PathVariable("deliveryId") UUID deliveryId,
         @RequestParam Long deletedBy,
-        @RequestHeader("X-client-userId") Long userId) {
-
-        deliveryService.deleteByDeliveryId(deliveryId, deletedBy, userId);
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role
+    ) {
+        deliveryService.deleteByDeliveryId(deliveryId, deletedBy, userId, role);
         return ResponseEntity.noContent().build();
     }
 }

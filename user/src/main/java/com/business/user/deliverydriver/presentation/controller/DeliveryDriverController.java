@@ -38,9 +38,10 @@ public class DeliveryDriverController {
     @PostMapping
     public ResponseEntity<DeliveryDriverResponseDto> createDeliveryDriver(
         @RequestBody CreateDeliveryDriverRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
-        DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request, userId);
+        DeliveryDriverResponseDto responseDto = deliveryDriverService.createDeliveryDriver(request, userId, role);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
@@ -48,10 +49,11 @@ public class DeliveryDriverController {
     @PostMapping("/assign")
     public ResponseEntity<List<AssignDeliveryDriverResponseDto>> assignDriversForDelivery(
         @RequestBody AssignDeliveryDriverRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
         List<AssignDeliveryDriverResponseDto> assignedDrivers =
-            deliveryDriverService.assignDriversForDelivery(request.getDeliveryId(), userId);
+            deliveryDriverService.assignDriversForDelivery(request.getDeliveryId(), userId, role);
         return ResponseEntity.ok(assignedDrivers);
     }
 
@@ -59,9 +61,10 @@ public class DeliveryDriverController {
     @GetMapping
     public ResponseEntity<DeliveryDriverListResponseDto<DeliveryDriverResponseDto>> getDrivers(
         DeliveryDriverSearchRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
-        Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request, userId);
+        Page<DeliveryDriverResponseDto> driverPage = deliveryDriverService.getDrivers(request, userId, role);
         return ResponseEntity.ok(DeliveryDriverResponseMapper.toPageListResponse(driverPage));
     }
 
@@ -69,9 +72,10 @@ public class DeliveryDriverController {
     @GetMapping("/{deliveryDriverId}")
     public ResponseEntity<DeliveryDriverDetailResponseDto> getDeliveryDriverDetail(
         @PathVariable Long deliveryDriverId,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
-        DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId, userId);
+        DeliveryDriverDetailResponseDto response = deliveryDriverService.getDriverByDriverId(deliveryDriverId, userId, role);
         return ResponseEntity.ok(response);
     }
 
@@ -80,10 +84,11 @@ public class DeliveryDriverController {
     public ResponseEntity<DriverStatusUpdateResponseDto> updateDriverStatus(
         @PathVariable("deliveryRouteId") UUID deliveryRouteId,
         @RequestBody StatusUpdateRequestDto request,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
         DriverStatusUpdateResponseDto response =
-            deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId);
+            deliveryDriverService.updateDriverStatus(deliveryRouteId, request, userId, role);
         return ResponseEntity.ok(response);
     }
 
@@ -91,9 +96,10 @@ public class DeliveryDriverController {
     @PatchMapping("/{deliveryRouteId}/cancel")
     public ResponseEntity<Void> cancelDriverStatus(
         @PathVariable("deliveryRouteId") UUID deliveryRouteId,
-        @RequestHeader("X-client-userId") Long userId) {
+        @RequestHeader("X-client-userId") Long userId,
+        @RequestHeader("X-client-role") String role) {
 
-        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId);
+        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId, role);
         return ResponseEntity.ok().build();
     }
 }

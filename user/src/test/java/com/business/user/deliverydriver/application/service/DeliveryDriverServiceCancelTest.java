@@ -29,6 +29,7 @@ class DeliveryDriverServiceCancelTest {
     private UUID deliveryRouteId;
     private DeliveryDriver deliveryDriver;
     private final Long userId = 1L;
+    private final String role = "ROLE_HUB";
 
     @BeforeEach
     void setUp() throws Exception {
@@ -53,7 +54,7 @@ class DeliveryDriverServiceCancelTest {
         when(deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId))
             .thenReturn(Optional.of(deliveryDriver));
 
-        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId);
+        deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId, role);
 
         assertEquals(DriverStatus.CANCELED, deliveryDriver.getDriverStatus());
         verify(deliveryDriverRepository, times(1)).save(deliveryDriver);
@@ -64,7 +65,8 @@ class DeliveryDriverServiceCancelTest {
         when(deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId))
             .thenReturn(Optional.empty());
 
-        assertThrows(BusinessLogicException.class,
-            () -> deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId));
+        assertThrows(BusinessLogicException.class, () -> {
+            deliveryDriverService.cancelDriverStatus(deliveryRouteId, userId, role);
+        });
     }
 }
