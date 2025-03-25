@@ -76,6 +76,12 @@ public class User extends BaseDataEntity {
 		this.slackId = slackId;
 		this.role = role;
 	}
-
+	/**
+     * 역할 변경 메서드
+     * 새로운 역할로 업데이트
+     */
+	public void changeRole(UserType newType) {
+		this.role = newType;
+	}
 }
 

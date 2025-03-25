@@ -19,10 +19,12 @@ public class RouterConfig {
     public RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
                 // Auth 서비스로 라우팅
-                .route("auth-service", r -> r.path("/api/v1/auth/**")
-                        .uri("lb://auth-service"))
-                
-                // User 서비스로 라우팅 (JWT 필터 적용)
+            .route("auth-service", r -> r.path("/api/v1/auth/**")
+                .filters(f -> f.filter(jwtFilter.apply(new JwtFilter.Config())))
+                .uri("lb://auth-service"))
+
+
+            // User 서비스로 라우팅 (JWT 필터 적용)
                 .route("user-service", r -> r.path("/api/v1/users/**")
                         .filters(f -> f.filter(jwtFilter.apply(new JwtFilter.Config())))
                         .uri("lb://user-service"))

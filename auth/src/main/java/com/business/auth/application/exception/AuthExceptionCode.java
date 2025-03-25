@@ -14,7 +14,9 @@ public enum AuthExceptionCode implements ExceptionCode {
 	PASSWORD_MISMATCH(HttpStatus.UNAUTHORIZED, "비밀번호가 일치하지 않습니다."),
 	INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 	USER_CREATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 생성에 실패했습니다."),
-	INVALID_USER_ID(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 사용자 ID입니다.");
+	INVALID_USER_ID(HttpStatus.INTERNAL_SERVER_ERROR, "유효하지 않은 사용자 ID입니다."),
+	ROLE_UPDATE_NOT_ALLOWED(HttpStatus.FORBIDDEN, "해당 역할은 변경할 수 없습니다."); // 403 Forbidden 추가
+
 
 
 	private final HttpStatus status;
