@@ -23,6 +23,7 @@ import com.business.user.user.domain.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 
+
 @Service
 @RequiredArgsConstructor
 public class UserService {
@@ -137,6 +138,10 @@ public class UserService {
 		user.deletedBy(deletedBy);
 		userRepository.save(user);
 	}
+
+	/**
+	 * 사용자 역할 변경
+	 */
 	public void changeUserRole(Long userId, String newRole) {
 		User user = userRepository.findById(userId)
 			.orElseThrow(() -> new BusinessLogicException(UserExceptionCode.USER_NOT_FOUND));
@@ -144,5 +149,4 @@ public class UserService {
 		UserType userType = UserType.valueOf(newRole);
 		user.changeRole(userType);
 	}
-
 }

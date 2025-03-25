@@ -64,9 +64,11 @@ public class UserController {
 		@PathVariable Long userId,
 		HttpServletRequest request) {
 
+		// 요청 헤더에서 사용자 ID 및 역할 정보 추출
 		Long requesterId = Long.valueOf(request.getHeader("X-client-userId"));
 		String requesterRole = request.getHeader("X-client-role");
 
+		// 권한을 확인하여 사용자 정보 반환
 		UserDetailResponseDto responseDto = userService.getUserByIdWithAccessCheck(userId, requesterId, requesterRole);
 		return ResponseEntity.ok(responseDto);
 	}
@@ -110,6 +112,10 @@ public class UserController {
 		return ResponseEntity.noContent().build();
 	}
 
+	/**
+	 * 사용자 역할 변경
+	 * - 마스터만 가능
+	 */
 	@PutMapping("/{userId}/role")
 	public ResponseEntity<Void> changeUserRole(
 		@PathVariable Long userId,
