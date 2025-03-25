@@ -42,13 +42,13 @@ class DeliveryServiceStatusTest {
     private Delivery delivery;
     private DeliveryRoute activeRoute;
     private UUID deliveryId;
-    private UUID routeId;
     private final Long userId = 1L;
+    private final String role = "ROLE_HUB";
 
     @BeforeEach
     void setUp() throws Exception {
         deliveryId = UUID.randomUUID();
-        routeId = UUID.randomUUID();
+        UUID routeId = UUID.randomUUID();
 
         delivery = Delivery.deliveryCreateBuilder()
             .orderId(UUID.randomUUID())
@@ -83,12 +83,14 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+        DeliveryStatusUpdateResponseDto responseDto =
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
+
 
         assertEquals(DeliveryStatus.OUT_FOR_DELIVERY, responseDto.getDeliveryStatus());
         assertEquals(DeliveryRouteStatus.IN_TRANSIT_TO_HUB, responseDto.getDeliveryRouteStatus());
 
-        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
+        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId(), userId, role);
     }
 
     @Test
@@ -102,7 +104,8 @@ class DeliveryServiceStatusTest {
             .build();
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
+
         });
     }
 
@@ -118,7 +121,8 @@ class DeliveryServiceStatusTest {
             .build();
 
         assertThrows(BusinessLogicException.class, () -> {
-            deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
+
         });
     }
 
@@ -166,12 +170,13 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+        DeliveryStatusUpdateResponseDto responseDto =
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
 
         assertEquals(DeliveryStatus.DELIVERED, responseDto.getDeliveryStatus());
         assertEquals(DeliveryRouteStatus.IN_TRANSIT_TO_HUB, responseDto.getDeliveryRouteStatus());
 
-        verify(mockUserClient, times(1)).updateDriverStatus(route1.getDeliveryRouteId());
+        verify(mockUserClient, times(1)).updateDriverStatus(route1.getDeliveryRouteId(), userId, role);
     }
 
     @Test
@@ -207,15 +212,17 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        DeliveryStatusUpdateResponseDto responseDto = deliveryService.updateDeliveryStatus(deliveryId, request, userId);
+        DeliveryStatusUpdateResponseDto responseDto =
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
 
-        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId());
+
+        verify(mockUserClient, times(1)).updateDriverStatus(activeRoute.getDeliveryRouteId(), userId, role);
     }
 
     @Test
     void testUpdateDeliveryStatus_LastRouteNotDelivered_NoCompleteOrderCall() {
 
-        StatusUpdateRequestDto requestDto = StatusUpdateRequestDto.builder()
+        StatusUpdateRequestDto request = StatusUpdateRequestDto.builder()
             .deliveryStatus(DeliveryStatus.OUT_FOR_DELIVERY)
             .deliveryRouteStatus(DeliveryRouteStatus.ARRIVED_AT_HUB)
             .build();
@@ -224,9 +231,11 @@ class DeliveryServiceStatusTest {
         when(deliveryRepository.save(any(Delivery.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         DeliveryStatusUpdateResponseDto responseDto =
-            deliveryService.updateDeliveryStatus(deliveryId, requestDto, userId);
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
+
 
         assertEquals(DeliveryStatus.OUT_FOR_DELIVERY, responseDto.getDeliveryStatus());
-        verify(mockOrderClient, never()).completeOrder(any(UUID.class));
+        verify(mockOrderClient, never())
+            .completeOrder(any(UUID.class), eq(userId), eq(role));
     }
 }

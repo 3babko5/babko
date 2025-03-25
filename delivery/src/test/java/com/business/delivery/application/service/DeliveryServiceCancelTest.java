@@ -42,12 +42,15 @@ class DeliveryServiceCancelTest {
   private Delivery delivery;
   private DeliveryRoute deliveryRoute;
 
+  private final Long userId = 1L;
+  private final String role = "ROLE_HUB";
+
   @BeforeEach
   void setUp() throws Exception {
     deliveryId = UUID.randomUUID();
     routeId = UUID.randomUUID();
 
-    lenient().doNothing().when(mockUserClient).cancelDriverStatus(any(UUID.class));
+    lenient().doNothing().when(mockUserClient).cancelDriverStatus(any(UUID.class), any(Long.class), any(String.class));
 
     deliveryRoute = DeliveryRoute.deliveryRouteCreateBuilder()
         .delivery(null)
@@ -67,35 +70,30 @@ class DeliveryServiceCancelTest {
     delivery = createDeliveryInstance();
 
     setDeliveryStatus(delivery, DeliveryStatus.WAITING_AT_HUB);
-
     setDeliveryRoutes(delivery, List.of(deliveryRoute));
-
     associateRouteWithDelivery(deliveryRoute, delivery);
   }
 
   @Test
   void cancelDelivery_Success() throws Exception {
-    Long testUserId = 1L;
-
     when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
 
-    deliveryService.cancelDelivery(deliveryId, testUserId);
+    deliveryService.cancelDelivery(deliveryId, userId, role);
 
     assertEquals(DeliveryStatus.CANCELED, getDeliveryStatus(delivery));
     assertEquals(DeliveryRouteStatus.CANCELED, deliveryRoute.getDeliveryRouteStatus());
 
-    verify(mockUserClient, times(1)).cancelDriverStatus(routeId);
+    verify(mockUserClient, times(1)).cancelDriverStatus(routeId, userId, role);
   }
+
 
   @Test
   void cancelDelivery_WhenNoAssignedRoute_ThrowsException() throws Exception {
-    Long testUserId = 1L;
-
     setDeliveryRoutes(delivery, Collections.emptyList());
     when(deliveryRepository.findByDeliveryId(deliveryId)).thenReturn(delivery);
 
-    BusinessLogicException ex = assertThrows(BusinessLogicException.class,
-        () -> deliveryService.cancelDelivery(deliveryId, testUserId)
+    assertThrows(BusinessLogicException.class, () ->
+        deliveryService.cancelDelivery(deliveryId, userId, role)
     );
   }
 
