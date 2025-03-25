@@ -1,5 +1,6 @@
 package com.business.order.presentaion;
 
+import com.business.common.aop.RoleCheck;
 import com.business.common.infrastructure.util.JpaUtil;
 import com.business.order.application.dto.request.OrderCreateRequestDto;
 import com.business.order.application.dto.request.SearchOrderRequestDto;
@@ -24,44 +25,54 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
+    @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER", "ROLE_HUB","ROLE_DELIVERY"})
     public ResponseEntity<OrderCreateResponseDto> createOrder(
             @Valid @RequestBody OrderCreateRequestDto request,
-            Long userId
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role
     ) {
-        userId = 1L;
-        OrderCreateResponseDto response = orderService.createOrder(request, userId);
+        OrderCreateResponseDto response = orderService.createOrder(request, userId, role);
         return ResponseEntity.ok(response);
     }
 
     //주문 단일조회
     @GetMapping("/{orderId}")
+    @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER"})
     public ResponseEntity<OrderGetResponseDto> getOrder(
-            @PathVariable UUID orderId) {
-        OrderGetResponseDto response = orderService.getOrder(orderId);
+            @PathVariable UUID orderId,
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role) {
+        OrderGetResponseDto response = orderService.getOrder(orderId, userId, role);
         return ResponseEntity.ok(response);
     }
 
     //주문 검색
     @GetMapping
     public ResponseEntity<SearchOrderResponseDto> searchOrders(
-            @ModelAttribute SearchOrderRequestDto request){
+            @ModelAttribute SearchOrderRequestDto request,
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role){
         Pageable pageable = JpaUtil.getNormalPageable(
                 request.getPage(), request.getSize(), request.getOrderBy(), request.getSort()
         );
-        final SearchOrderResponseDto response = orderService.searchOrders(request, pageable);
+        final SearchOrderResponseDto response = orderService.searchOrders(request, pageable, userId, role);
         return ResponseEntity.ok(response);
     }
 
     //주문 취소
     @PatchMapping("/{orderId}/cancel")
+    @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER"})
     public ResponseEntity<OrderStatusResponseDto> cancelOrder(
-            @PathVariable UUID orderId) {
-        OrderStatusResponseDto response = orderService.cancelOrder(orderId);
+            @PathVariable UUID orderId,
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role) {
+        OrderStatusResponseDto response = orderService.cancelOrder(orderId, userId, role);
         return ResponseEntity.ok(response);
     }
 
     //주문 완료
     @PatchMapping("{orderId}/completed")
+    @RoleCheck(roles = {"ROLE_MASTER"})
     public void completeOrder(@PathVariable("orderId") UUID orderId) {
         orderService.completeOrder(orderId);
     }
