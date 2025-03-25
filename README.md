@@ -218,31 +218,32 @@ docker ps
 ![image](https://github.com/user-attachments/assets/6953f2d3-0f54-4027-b2f1-152f33eda5bb)
 
 ### 설계 대비 API 구현률
-API Count Summary
-==========================
-[order] - OrderController.java
+```
+# API Count Summary
+ ==========================
+ [order] - OrderController.java
     ├── GET APIs:        2
     ├── POST APIs:        1
     ├── PATCH APIs:        2
-==========================
-[auth] - AuthController.java
+ ==========================
+ [auth] - AuthController.java
     ├── POST APIs:        2
     ├── PUT APIs:        1
-==========================
-[user] - DeliveryDriverController.java
+ ==========================
+ [user] - DeliveryDriverController.java
     ├── GET APIs:        2
     ├── POST APIs:        2
     ├── PATCH APIs:        2
-[user] - UserController.java
+ [user] - UserController.java
     ├── GET APIs:        3
     ├── POST APIs:        1
     ├── PUT APIs:        2
     └── DELETE APIs:        1
-==========================
-[product] - ProductController.java
+ ==========================
+ [product] - ProductController.java
     ├── GET APIs:        1
     ├── POST APIs:        1
-[product] - InventoryController.java
+ [product] - InventoryController.java
     ├── PUT APIs:        1
 ==========================
 [common] - CommonController.java
@@ -285,6 +286,7 @@ API Statistics
 - DELETE APIs: 5
 - Total APIs: 51
 ==========================
+```
 
 ### 잘한점
 ![image](https://github.com/user-attachments/assets/c2510225-852f-483f-b52b-4ffd22c260f4)
