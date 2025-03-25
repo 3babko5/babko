@@ -1,12 +1,12 @@
 package com.business.company.presentation;
 
+import com.business.common.aop.RoleCheck;
 import com.business.common.infrastructure.util.JpaUtil;
 import com.business.company.application.dto.request.CreateCompanyRequestDto;
 import com.business.company.application.dto.request.SearchCompanyRequestDto;
 import com.business.company.application.dto.response.CreateCompanyResponseDto;
 import com.business.company.application.dto.response.SearchCompanyResponseDto;
 import com.business.company.application.service.CompanyService;
-import com.business.company.domain.entity.CompanyType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -23,12 +23,16 @@ public class CompanyController {
     private final CompanyService companyService;
 
     @PostMapping
-    public ResponseEntity<CreateCompanyResponseDto> createCompany(@RequestBody CreateCompanyRequestDto createCompanyRequestDto) {
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
+    public ResponseEntity<CreateCompanyResponseDto> createCompany(
+            @RequestBody CreateCompanyRequestDto createCompanyRequestDto,
+            @RequestHeader("X-client-userId") Long userId) {
         CreateCompanyResponseDto response = companyService.createCompany(createCompanyRequestDto);
         return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<SearchCompanyResponseDto> searchCompanies(
             @ModelAttribute SearchCompanyRequestDto request) {
         Pageable pageable = JpaUtil.getNormalPageable(
@@ -39,8 +43,11 @@ public class CompanyController {
     }
 
     @DeleteMapping("/{companyId}")
-    public ResponseEntity<Map<String, String>> deleteCompany(@PathVariable UUID companyId) {
-        companyService.deleteCompany(companyId);
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB"})
+    public ResponseEntity<Map<String, String>> deleteCompany(
+            @PathVariable UUID companyId,
+            @RequestHeader("X-client-userId") Long userId) {
+        companyService.deleteCompany(companyId, userId);
         return ResponseEntity.ok(Map.of("message", "업체가 삭제되었습니다."));
     }
 }

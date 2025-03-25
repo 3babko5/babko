@@ -2,3 +2,5 @@
 DELETE http://localhost:8087/api/v1/companies/{companyId}
 Authorization: Bearer jwt_token_string
 Accept: application/json
+X-client-userId: 1
+X-client-role: ROLE_MASTER

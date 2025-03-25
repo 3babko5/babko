@@ -33,6 +33,8 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     public Page<Company> search(String companyName, CompanyType companyType, UUID companyId, Pageable pageable) {
         BooleanBuilder builder = new BooleanBuilder();
 
+        builder.and(company.deletedAt.isNull());
+
         if (companyName != null && !companyName.isBlank()) {
             builder.and(company.companyName.containsIgnoreCase(companyName));
         }
@@ -62,7 +64,15 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     }
 
     @Override
-    public Optional<Company> findActiveCompanyById(UUID companyId) {
-        return companyJpaRepository.findActiveCompanyById(companyId);
+    public Optional<Company> findById(UUID companyId) {
+        return Optional.ofNullable(
+                queryFactory
+                        .selectFrom(company)
+                        .where(
+                                company.companyId.eq(companyId),
+                                company.deletedAt.isNull()
+                        )
+                        .fetchOne()
+        );
     }
 }

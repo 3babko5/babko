@@ -40,11 +40,10 @@ public class CompanyService {
     }
 
     @Transactional
-    public void deleteCompany(UUID companyId) {
-        Company company = companyRepository.findActiveCompanyById(companyId)
+    public void deleteCompany(UUID companyId, Long userId) {
+        Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("해당 업체가 존재하지 않습니다."));
 
-        company.delete();
-        companyRepository.save(company);
+        company.deletedBy(userId);
     }
 }
