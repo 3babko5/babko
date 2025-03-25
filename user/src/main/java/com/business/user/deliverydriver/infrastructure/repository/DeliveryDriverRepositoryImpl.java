@@ -47,37 +47,37 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
 
     @Override
     public Optional<DeliveryDriver> findLastAssignedDriver() {
-        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullOrderByAssignAtDesc();
+        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedByIsNullOrderByAssignAtDesc();
     }
 
     @Override
     public Optional<DeliveryDriver> findNextAvailableDriver(Long currentSequence) {
-        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullOrderByDeliverySequenceAsc(currentSequence);
+        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullOrderByDeliverySequenceAsc(currentSequence);
     }
 
     @Override
     public Optional<DeliveryDriver> findFirstAvailableDriver() {
-        return deliveryDriverJpaRepository.findFirstByDeletedAtIsNullOrderByDeliverySequenceAsc();
+        return deliveryDriverJpaRepository.findFirstByDeletedByIsNullOrderByDeliverySequenceAsc();
     }
 
     @Override
     public Optional<DeliveryDriver> findLastAssignedDriverByTypeAndHub(DriverType driverType, UUID hubId) {
-        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(driverType, hubId);
+        return deliveryDriverJpaRepository.findFirstByAssignAtIsNotNullAndDeletedByIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(driverType, hubId);
     }
 
     @Override
     public Optional<DeliveryDriver> findNextAvailableDriverByTypeAndHub(Long currentSequence, DriverType driverType, UUID hubId) {
-        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(currentSequence, driverType, hubId);
+        return deliveryDriverJpaRepository.findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(currentSequence, driverType, hubId);
     }
 
     @Override
     public boolean existsById(Long deliveryDriverId) {
-        return deliveryDriverJpaRepository.existsByDeliveryDriverIdAndDeletedAtIsNull(deliveryDriverId);
+        return deliveryDriverJpaRepository.existsByDeliveryDriverIdAndDeletedByIsNull(deliveryDriverId);
     }
 
     @Override
     public Optional<DeliveryDriver> findByDeliveryDriverId(Long deliveryDriverId) {
-        return deliveryDriverJpaRepository.findByDeliveryDriverIdAndDeletedAtIsNull(deliveryDriverId);
+        return deliveryDriverJpaRepository.findByDeliveryDriverIdAndDeletedByIsNull(deliveryDriverId);
     }
 
     @Override
@@ -93,7 +93,7 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        builder.and(driver.deletedAt.isNull());
+        builder.and(driver.deletedBy.isNull());
 
         if (request.getDeliveryDriverId() != null) {
             builder.and(driver.deliveryDriverId.eq(request.getDeliveryDriverId()));
@@ -134,6 +134,6 @@ public class DeliveryDriverRepositoryImpl implements DeliveryDriverRepository {
 
     @Override
     public Optional<DeliveryDriver> findByDeliveryRouteId(UUID deliveryRouteId) {
-        return deliveryDriverJpaRepository.findByDeliveryRouteIdAndDeletedAtIsNull(deliveryRouteId);
+        return deliveryDriverJpaRepository.findByDeliveryRouteIdAndDeletedByIsNull(deliveryRouteId);
     }
 }

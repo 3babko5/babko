@@ -16,23 +16,23 @@ public interface DeliveryDriverJpaRepository extends JpaRepository<DeliveryDrive
   @Query("SELECT MAX(d.deliverySequence) FROM DeliveryDriver d WHERE d.hubId = :hubId AND d.driverType = 'COMPANY'")
   Optional<Long> findLastDeliverySequenceForCompanyDrivers(@Param("hubId") UUID hubId);
 
-  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedAtIsNullOrderByAssignAtDesc();
+  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedByIsNullOrderByAssignAtDesc();
 
-  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullOrderByDeliverySequenceAsc(Long currentSequence);
+  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullOrderByDeliverySequenceAsc(Long currentSequence);
 
-  Optional<DeliveryDriver> findFirstByDeletedAtIsNullOrderByDeliverySequenceAsc();
+  Optional<DeliveryDriver> findFirstByDeletedByIsNullOrderByDeliverySequenceAsc();
 
-  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(DriverType driverType, UUID hubId);
+  Optional<DeliveryDriver> findFirstByAssignAtIsNotNullAndDeletedByIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(DriverType driverType, UUID hubId);
 
-  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(Long currentSequence, DriverType driverType, UUID hubId);
+  Optional<DeliveryDriver> findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(Long currentSequence, DriverType driverType, UUID hubId);
 
   long countByDriverType(DriverType driverType);
 
   long countByHubIdAndDriverType(UUID hubId, DriverType driverType);
 
-  boolean existsByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
+  boolean existsByDeliveryDriverIdAndDeletedByIsNull(Long deliveryDriverId);
 
-  Optional<DeliveryDriver> findByDeliveryDriverIdAndDeletedAtIsNull(Long deliveryDriverId);
+  Optional<DeliveryDriver> findByDeliveryDriverIdAndDeletedByIsNull(Long deliveryDriverId);
 
-  Optional<DeliveryDriver> findByDeliveryRouteIdAndDeletedAtIsNull(UUID deliveryRouteId);
+  Optional<DeliveryDriver> findByDeliveryRouteIdAndDeletedByIsNull(UUID deliveryRouteId);
 }

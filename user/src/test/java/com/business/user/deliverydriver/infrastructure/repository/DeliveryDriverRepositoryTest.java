@@ -57,7 +57,7 @@ public class DeliveryDriverRepositoryTest {
         driver2.updateAssignAt(LocalDateTime.now().plusMinutes(10));
         repository.save(driver2);
 
-        Optional<DeliveryDriver> result = repository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullOrderByAssignAtDesc();
+        Optional<DeliveryDriver> result = repository.findFirstByAssignAtIsNotNullAndDeletedByIsNullOrderByAssignAtDesc();
         assertTrue(result.isPresent());
 
         assertEquals(2L, result.get().getDeliveryDriverId());
@@ -104,7 +104,7 @@ public class DeliveryDriverRepositoryTest {
         driver3.createdBy(3L);
         repository.save(driver3);
 
-        Optional<DeliveryDriver> result = repository.findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullOrderByDeliverySequenceAsc(1L);
+        Optional<DeliveryDriver> result = repository.findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullOrderByDeliverySequenceAsc(1L);
         assertTrue(result.isPresent());
         assertEquals(3L, result.get().getDeliverySequence());
     }
@@ -142,7 +142,7 @@ public class DeliveryDriverRepositoryTest {
         driver1.deletedBy(999L); // 임의의 사용자 ID로 삭제 처리
         repository.save(driver1);
 
-        Optional<DeliveryDriver> result = repository.findFirstByDeletedAtIsNullOrderByDeliverySequenceAsc();
+        Optional<DeliveryDriver> result = repository.findFirstByDeletedByIsNullOrderByDeliverySequenceAsc();
         assertTrue(result.isPresent());
         assertEquals(4L, result.get().getDeliverySequence());
     }
@@ -182,7 +182,7 @@ public class DeliveryDriverRepositoryTest {
         driver2.updateAssignAt(LocalDateTime.now().plusMinutes(15));
         repository.save(driver2);
 
-        Optional<DeliveryDriver> result = repository.findFirstByAssignAtIsNotNullAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(DriverType.COMPANY, hubId);
+        Optional<DeliveryDriver> result = repository.findFirstByAssignAtIsNotNullAndDeletedByIsNullAndDriverTypeAndHubIdOrderByAssignAtDesc(DriverType.COMPANY, hubId);
         assertTrue(result.isPresent());
         assertEquals(11L, result.get().getDeliveryDriverId());
     }
@@ -231,7 +231,7 @@ public class DeliveryDriverRepositoryTest {
         repository.save(driver3);
 
         Optional<DeliveryDriver> result = repository
-            .findFirstByDeliverySequenceGreaterThanAndDeletedAtIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(15L, DriverType.COMPANY, hubId);
+            .findFirstByDeliverySequenceGreaterThanAndDeletedByIsNullAndDriverTypeAndHubIdOrderByDeliverySequenceAsc(15L, DriverType.COMPANY, hubId);
         assertTrue(result.isPresent());
         assertEquals(20L, result.get().getDeliverySequence());
     }
