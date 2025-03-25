@@ -11,12 +11,27 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class InventoryService {
 
     private final InventoryRepository inventoryRepository;
     private final ProductRepository productRepository;
+
+    @Transactional
+    public void createInventory(UUID productId, Integer quantity) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다."));
+
+        Inventory inventory = Inventory.builder()
+                .productId(productId)
+                .productQuantity(quantity)
+                .build();
+
+        inventoryRepository.save(inventory);
+    }
 
     @Transactional
     public InventoryResponseDto updateInventory(UpdateInventoryRequestDto dto) {
