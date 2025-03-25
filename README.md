@@ -217,9 +217,80 @@ docker ps
 #### 공통 트러블 슈팅 2
 ![image](https://github.com/user-attachments/assets/6953f2d3-0f54-4027-b2f1-152f33eda5bb)
 
+### 설계 대비 API 구현률
+API Count Summary
+==========================
+[order] - OrderController.java
+    ├── GET APIs:        2
+    ├── POST APIs:        1
+    ├── PATCH APIs:        2
+==========================
+[auth] - AuthController.java
+    ├── POST APIs:        2
+    ├── PUT APIs:        1
+==========================
+[user] - DeliveryDriverController.java
+    ├── GET APIs:        2
+    ├── POST APIs:        2
+    ├── PATCH APIs:        2
+[user] - UserController.java
+    ├── GET APIs:        3
+    ├── POST APIs:        1
+    ├── PUT APIs:        2
+    └── DELETE APIs:        1
+==========================
+[product] - ProductController.java
+    ├── GET APIs:        1
+    ├── POST APIs:        1
+[product] - InventoryController.java
+    ├── PUT APIs:        1
+==========================
+[common] - CommonController.java
+    ├── GET APIs:        1
+==========================
+[ai] - AiController.java
+    ├── GET APIs:        1
+==========================
+[delivery] - DeliveryController.java
+    ├── GET APIs:        2
+    ├── POST APIs:        1
+    ├── PATCH APIs:        2
+    └── DELETE APIs:        1
+==========================
+[slack] - SlackController.java
+    ├── GET APIs:        1
+==========================
+[hub] - HubMovementController.java
+    ├── GET APIs:        6
+    ├── POST APIs:        1
+    ├── PATCH APIs:        1
+    └── DELETE APIs:        1
+[hub] - HubController.java
+    ├── GET APIs:        3
+    ├── POST APIs:        1
+    ├── PATCH APIs:        1
+    └── DELETE APIs:        1
+==========================
+[company] - CompanyController.java
+    ├── GET APIs:        1
+    ├── POST APIs:        1
+    └── DELETE APIs:        1
+==========================
+API Statistics
+==========================
+- GET APIs: 23
+- POST APIs: 11
+- PATCH APIs: 8
+- PUT APIs: 4
+- DELETE APIs: 5
+- Total APIs: 51
+==========================
+
 ### 잘한점
+![image](https://github.com/user-attachments/assets/c2510225-852f-483f-b52b-4ffd22c260f4)
 
 ### 아쉬웠던 점
+![image](https://github.com/user-attachments/assets/86ae7c3d-fc71-4279-93ab-b6e710a7f5c4)
 
 ### 고도화
 ![image](https://github.com/user-attachments/assets/9abdb103-0346-4ebb-881f-374efa036aa1)
