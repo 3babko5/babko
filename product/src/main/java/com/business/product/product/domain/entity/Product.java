@@ -27,19 +27,14 @@ public class Product extends BaseDataEntity {
     @Column(nullable = false)
     private Integer productPrice;
 
-    @Min(0)
-    @Column(nullable = false)
-    private Integer productQuantity;
-
     @Column(nullable = false)
     private UUID companyId;
 
     @Builder
-    public Product(UUID productId, String productName, Integer productPrice, Integer productQuantity, UUID companyId) {
+    public Product(UUID productId, String productName, Integer productPrice, UUID companyId) {
         this.productId = productId;
         this.productName = productName;
         this.productPrice = productPrice;
-        this.productQuantity = productQuantity;
         this.companyId = companyId;
     }
 }

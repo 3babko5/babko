@@ -18,7 +18,6 @@ public class CreateProductResponseDto {
         private UUID productId;
         private String productName;
         private Integer productPrice;
-        private Integer productQuantity;
         private UUID companyId;
     }
 }

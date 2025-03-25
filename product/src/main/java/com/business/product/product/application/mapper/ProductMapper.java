@@ -1,5 +1,6 @@
 package com.business.product.product.application.mapper;
 
+import com.business.product.inventory.domain.repository.InventoryRepository;
 import com.business.product.product.application.dto.request.CreateProductRequestDto;
 import com.business.product.product.application.dto.response.CreateProductResponseDto;
 import com.business.product.product.application.dto.response.SearchProductResponseDto;
@@ -16,7 +17,6 @@ public class ProductMapper {
         return Product.builder()
                 .productName(dto.getProductName())
                 .productPrice(dto.getProductPrice())
-                .productQuantity(dto.getProductQuantity())
                 .companyId(dto.getCompanyId())
                 .build();
     }
@@ -29,22 +29,26 @@ public class ProductMapper {
                         .productId(product.getProductId())
                         .productName(product.getProductName())
                         .productPrice(product.getProductPrice())
-                        .productQuantity(product.getProductQuantity())
                         .companyId(product.getCompanyId())
                         .build())
                 .build();
     }
 
-    public static SearchProductResponseDto toSearchResponseDto(Page<Product> productPage) {
+    public static SearchProductResponseDto toSearchResponseDto(Page<Product> productPage, InventoryRepository inventoryRepository) {
         List<SearchProductResponseDto.ProductData> companyDataList = productPage.getContent().stream()
-                .map(product -> SearchProductResponseDto.ProductData.builder()
-                        .productId(product.getProductId())
-                        .productName(product.getProductName())
-                        .productPrice(product.getProductPrice())
-                        .productQuantity(product.getProductQuantity())
-                        .companyId(product.getCompanyId())
-                        .build())
-                .collect(Collectors.toList());
+                .map(product -> {
+                    Integer quantity = inventoryRepository.findById(product.getProductId())
+                            .map(inventory -> inventory.getProductQuantity())
+                            .orElse(null);
+
+                    return SearchProductResponseDto.ProductData.builder()
+                            .productId(product.getProductId())
+                            .productName(product.getProductName())
+                            .productPrice(product.getProductPrice())
+                            .productQuantity(quantity)
+                            .companyId(product.getCompanyId())
+                            .build();
+                }).toList();
 
         SearchProductResponseDto.PageInfo pageInfo = SearchProductResponseDto.PageInfo.builder()
                 .page(productPage.getNumber())

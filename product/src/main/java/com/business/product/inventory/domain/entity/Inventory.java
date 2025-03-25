@@ -9,20 +9,20 @@ import lombok.NoArgsConstructor;
 import java.util.UUID;
 
 @Entity
-@Table(name = "p_products")
+@Table(name = "p_inventories")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Inventory {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productId;
 
     @Column(nullable = false)
     private Integer productQuantity;
 
     @Builder
-    public Inventory(Integer productQuantity) {
+    public Inventory(UUID productId, Integer productQuantity) {
+        this.productId = productId;
         this.productQuantity = productQuantity;
     }
 
