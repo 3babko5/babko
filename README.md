@@ -1,4 +1,4 @@
-![Untitled diagram-2025-03-18-104254 (3)](https://github.com/user-attachments/assets/34f33b6d-41f8-4235-bc6d-5dad7a8f4387)
+
 ## 프로젝트 소개
 물류 관리 및 배송 시스템을 위한 MSA 기반 플랫폼 개발
 
@@ -206,7 +206,7 @@ docker ps
 
 ```
 ### 인증 인가 플로우
-
+![Untitled diagram-2025-03-18-104254 (3)](https://github.com/user-attachments/assets/34f33b6d-41f8-4235-bc6d-5dad7a8f4387)
 
 ## 개발 산출물
 
