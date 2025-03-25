@@ -1,5 +1,6 @@
 package com.business.product.product.presentation;
 
+import com.business.common.aop.RoleCheck;
 import com.business.common.infrastructure.util.JpaUtil;
 import com.business.product.product.application.dto.request.CreateProductRequestDto;
 import com.business.product.product.application.dto.request.SearchProductRequestDto;
@@ -11,8 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
@@ -21,12 +20,17 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<CreateProductResponseDto> createProduct(@RequestBody CreateProductRequestDto createProductRequestDto) {
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_COMPANY"})
+    public ResponseEntity<CreateProductResponseDto> createProduct(
+            @RequestBody CreateProductRequestDto createProductRequestDto,
+            @RequestHeader("X-client-userId") Long userId
+    ) {
         CreateProductResponseDto response = productService.createProduct(createProductRequestDto);
         return ResponseEntity.status(201).body(response);
     }
 
     @GetMapping
+    @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY", "ROLE_COMPANY"})
     public ResponseEntity<SearchProductResponseDto> searchProducts(
             @ModelAttribute SearchProductRequestDto request) {
         Pageable pageable = JpaUtil.getNormalPageable(
