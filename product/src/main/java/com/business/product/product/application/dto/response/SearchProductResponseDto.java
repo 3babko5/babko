@@ -20,6 +20,7 @@ public class SearchProductResponseDto {
         private final UUID productId;
         private final String productName;
         private final Integer productPrice;
+        private final Integer productQuantity;
         private final UUID companyId;
     }
 

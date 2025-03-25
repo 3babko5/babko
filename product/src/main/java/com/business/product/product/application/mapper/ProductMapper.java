@@ -1,5 +1,6 @@
 package com.business.product.product.application.mapper;
 
+import com.business.product.inventory.domain.repository.InventoryRepository;
 import com.business.product.product.application.dto.request.CreateProductRequestDto;
 import com.business.product.product.application.dto.response.CreateProductResponseDto;
 import com.business.product.product.application.dto.response.SearchProductResponseDto;
@@ -33,15 +34,21 @@ public class ProductMapper {
                 .build();
     }
 
-    public static SearchProductResponseDto toSearchResponseDto(Page<Product> productPage) {
+    public static SearchProductResponseDto toSearchResponseDto(Page<Product> productPage, InventoryRepository inventoryRepository) {
         List<SearchProductResponseDto.ProductData> companyDataList = productPage.getContent().stream()
-                .map(product -> SearchProductResponseDto.ProductData.builder()
-                        .productId(product.getProductId())
-                        .productName(product.getProductName())
-                        .productPrice(product.getProductPrice())
-                        .companyId(product.getCompanyId())
-                        .build())
-                .collect(Collectors.toList());
+                .map(product -> {
+                    Integer quantity = inventoryRepository.findById(product.getProductId())
+                            .map(inventory -> inventory.getProductQuantity())
+                            .orElse(null);
+
+                    return SearchProductResponseDto.ProductData.builder()
+                            .productId(product.getProductId())
+                            .productName(product.getProductName())
+                            .productPrice(product.getProductPrice())
+                            .productQuantity(quantity)
+                            .companyId(product.getCompanyId())
+                            .build();
+                }).toList();
 
         SearchProductResponseDto.PageInfo pageInfo = SearchProductResponseDto.PageInfo.builder()
                 .page(productPage.getNumber())

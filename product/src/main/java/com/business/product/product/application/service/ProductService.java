@@ -1,5 +1,6 @@
 package com.business.product.product.application.service;
 
+import com.business.product.inventory.domain.repository.InventoryRepository;
 import com.business.product.product.domain.event.CreateProductEvent;
 import com.business.product.product.application.dto.request.CreateProductRequestDto;
 import com.business.product.product.application.dto.request.SearchProductRequestDto;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final InventoryRepository inventoryRepository;
     private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
@@ -42,6 +44,6 @@ public class ProductService {
                 request.getProductQuantity(),
                 pageable
         );
-        return ProductMapper.toSearchResponseDto(productPage);
+        return ProductMapper.toSearchResponseDto(productPage, inventoryRepository);
     }
 }
