@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@FeignClient(name = "delivery-service", url = "http://localhost:8088")
+@FeignClient(name = "delivery-service")
 public interface DeliveryFeignClient {
 
     @PostMapping("/api/v1/deliveries")
@@ -25,11 +25,15 @@ public interface DeliveryFeignClient {
     //주문 취소 시 배송 상태 확인 요청
     @GetMapping("/api/v1/deliveries")
     DeliveryListForOrderResponseDto<DeliveryStatusForOrderDto> getDeliveries(
-            @SpringQueryMap DeliverySearchForOrderRequestDto request);
+            @SpringQueryMap DeliverySearchForOrderRequestDto request,
+            @RequestHeader("X-client-userId") Long userId,
+            @RequestHeader("X-client-role") String role);
 
     //주문 취소 시 배송 취소 요청
-    @PatchMapping("/api/v1/deliveries/{deliveryId}/cancel")
-    void cancelDelivery(@PathVariable("deliveryId") UUID deliveryId);
+    @PutMapping("/api/v1/deliveries/{deliveryId}/cancel")
+    void cancelDelivery(@PathVariable("deliveryId") UUID deliveryId,
+                         @RequestHeader("X-client-userId") Long userId,
+                        @RequestHeader("X-client-role") String role);
 
     @GetMapping("/deliveries")
     List<DeliveryIdResponseDto> getDeliveryInfo();

@@ -51,13 +51,14 @@ public class Order extends BaseDataEntity {
 
     @Builder
     public Order(Long userId, UUID receiverId, String deliveryAddress,
-                 UUID originHubId, UUID destinationHubId, Integer totalPrice) {
+                 UUID originHubId, UUID destinationHubId, Integer totalPrice, UUID deliveryId) {
         this.userId = userId;
         this.receiverId = receiverId;
         this.deliveryAddress = deliveryAddress;
         this.originHubId = originHubId;
         this.destinationHubId = destinationHubId;
         this.totalPrice = totalPrice;
+        this.deliveryId = deliveryId;
         createdBy(userId);
     }
 

@@ -80,18 +80,16 @@ public class DeliveryRepositoryImpl implements DeliveryRepository {
               .eq(request.getDeliveryRouteStatus()));
     }
 
-    OrderSpecifier<?>[] orderSpecifiers = QueryDslUtil.getAllOrderSpecifierArr(pageable, delivery);
-
     List<Delivery> deliveries =
-        queryFactory
-            .selectFrom(delivery)
-            .leftJoin(delivery.deliveryRoutes)
-            .fetchJoin()
-            .where(builder)
-            .orderBy(orderSpecifiers)
-            .offset(pageable.getOffset())
-            .limit(pageable.getPageSize())
-            .fetch();
+            queryFactory
+                    .selectFrom(delivery)
+                    .leftJoin(delivery.deliveryRoutes)
+                    .fetchJoin()
+                    .where(builder)
+                    .offset(pageable.getOffset())
+                    .limit(pageable.getPageSize())
+                    .orderBy(QueryDslUtil.getAllOrderSpecifierArr(pageable, delivery))
+                    .fetch();
 
     Long total = queryFactory
         .select(delivery.count())

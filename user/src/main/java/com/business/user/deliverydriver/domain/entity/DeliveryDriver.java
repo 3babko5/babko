@@ -17,12 +17,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 @Entity
 @Getter
+@Slf4j
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "p_delivery_drivers")
 @Comment("배송 담당자")
@@ -35,7 +37,6 @@ public class DeliveryDriver extends BaseDataEntity {
   @Comment("소속 허브 ID")
   private UUID hubId;
 
-  @Column(nullable = false)
   @JdbcTypeCode(SqlTypes.UUID)
   @Comment("슬랙 ID")
   private UUID slackId;
@@ -60,8 +61,7 @@ public class DeliveryDriver extends BaseDataEntity {
   @Comment("배정된 배송 경로 순서")
   private Long routeSequence;
 
-  @NotNull
-  @Column(nullable = false, length = 10)
+  @Column
   @Enumerated(EnumType.STRING)
   @Comment("배송 담당자 상태")
   private DriverStatus driverStatus;
@@ -95,14 +95,9 @@ public class DeliveryDriver extends BaseDataEntity {
   }
 
   public void updateStatus(DriverStatus newStatus) {
-
-    if (this.driverStatus.isTerminal()) {
-      throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_STATUS_LASTCHANGE);
-    }
-
-    this.driverStatus.validateTransition(newStatus);
-
+    //this.driverStatus.validateTransition(newStatus);
     this.driverStatus = newStatus;
+
   }
 
   public void updateCancelStatus() {

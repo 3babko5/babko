@@ -1,45 +1,51 @@
 ### 1. 배송 담당자 생성
-POST http://localhost:8086/api/v1/delivery-drivers
-Authorization: Bearer jwt_token_string
+POST http://localhost:8080/api/v1/delivery-drivers
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTE1MzcyLCJleHAiOjE3NDI5MTg5NzJ9.syYMGrodoSXxVVmT1LSbQ173ovbWgumYeNBQhL13bbyd3YUx60mPP1oVS8QfTfIpjmNYekBTi_u9E6u1_jn66g
+Accept: application/json
 Content-Type: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
 
 {
-  "deliveryDriverId": 1,
-  "hubId": "e4d5c6b7-1111-2222-3333-444444444444",
-  "slackId": "123e4567-e89b-12d3-a456-426614174000",
+  "deliveryDriverId": 2,
   "driverType": "HUB"
 }
 
 
 ### 2. 배송 담당자 전체 조회
-
 ### Test Case 1: 기본 요청 (쿼리 파라미터 없음)
 GET http://localhost:8086/api/v1/delivery-drivers
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json
 
 ### Test Case 2: deliveryDriverId 필터링
 GET http://localhost:8086/api/v1/delivery-drivers?deliveryDriverId=1
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json
 
 ### Test Case 3: hubId와 slackId 필터링
 GET http://localhost:8086/api/v1/delivery-drivers?hubId=e4d5c6b7-1111-2222-3333-444444444444&slackId=123e4567-e89b-12d3-a456-426614174000
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json
 
 ### Test Case 4: driverType 필터링 (예: HUB)
 GET http://localhost:8086/api/v1/delivery-drivers?driverType=HUB
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json
 
 ### Test Case 5: 모든 필터 조건 사용 (페이지, 사이즈, 정렬 등)
 GET http://localhost:8086/api/v1/delivery-drivers?page=2&size=5&orderBy=assignAt&sort=asc&deliveryDriverId=2&hubId=abcdefab-1111-2222-3333-444444444444&slackId=def12345-1111-2222-3333-444444444444&driverType=COMPANY&deliverySequence=3&assignAt=2025-03-23T12:10:00
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json
 
 
 ### 3. 배송 담당자 상세 조회 (경로 포함)
 GET http://localhost:8086/api/v1/delivery-drivers/1
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODk3MzE0LCJleHAiOjE3NDI5MDA5MTR9.pckt_ypxZVCwNdjbHPVzBeE0qUzjFZsFz_jBEd9Kxl_VXlBqJBdVE8Y3WhoiQoHrNwGHwYyg8I7RbIEioBM7YA
 Accept: application/json
+Content-Type: application/json

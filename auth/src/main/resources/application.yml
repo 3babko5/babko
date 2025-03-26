@@ -1,0 +1,41 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: auth-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/babko
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: update
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+
+
+jwt:
+  secret: Y3ABAoKZRG+IuTqq5jYUBgPoDR3wKgfHS66yYoTM325liBDiQB1dvSLhTDTfZR77OAUovalSHqJJ+4FXAvu79w==
+  access-token-expiration: 3600000  # 1시간
+  refresh-token-expiration: 86400000  # 24시간
+
+user:
+  service:
+    url: http://localhost:8084

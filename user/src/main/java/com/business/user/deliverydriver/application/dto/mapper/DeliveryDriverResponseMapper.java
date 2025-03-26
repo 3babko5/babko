@@ -32,7 +32,7 @@ public class DeliveryDriverResponseMapper {
             .driverType(deliveryDriver.getDriverType())
             .hubId(deliveryDriver.getHubId())
             .deliveryRouteId(deliveryDriver.getDeliveryRouteId())
-            .routeSequence(deliveryDriver.getRouteSequence())
+            .deliverySequence(deliveryDriver.getRouteSequence())
             .assignAt(deliveryDriver.getAssignAt())
             .build();
     }

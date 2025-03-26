@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,7 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Slf4j
 public class DeliveryService {
 
     private final DeliveryRepository deliveryRepository;
@@ -46,6 +47,7 @@ public class DeliveryService {
     private final NaverApiService naverApiService;
     private final UserClient userClient;
     private final OrderClient orderClient;
+
 
     public DeliveryResponseDto createDelivery(CreateDeliveryRequestDto request, Long userId, String role) {
 
@@ -68,15 +70,18 @@ public class DeliveryService {
         List<DeliveryRoute> hubDeliveryRoutes =
             IntStream.range(0, hubMovements.size())
                 .mapToObj(i -> HubMapper.toEntityFromHubMovement(hubMovements.get(i), (long) i + 1))
+                .peek(route -> route.createdBy(userId))
                 .toList();
 
+
+
         HubIdResponseDto hubInfo = hubClient.getLatitudeAndLongitude(request.getEndHubId(), userId, role);
-        if (hubInfo == null || hubInfo.getLatitude() == null || hubInfo.getLongitude() == null) {
+        if (hubInfo == null || hubInfo.getHubLatitude() == null || hubInfo.getHubLongitude() == null) {
             throw new BusinessLogicException(DeliveryErrorCode.HUB_COORDINATE_NOT_AVAILABLE);
         }
 
-        BigDecimal hubIdLatitude = hubInfo.getLatitude();
-        BigDecimal hubIdlongitude = hubInfo.getLongitude();
+        BigDecimal hubIdLatitude = hubInfo.getHubLatitude();
+        BigDecimal hubIdlongitude = hubInfo.getHubLongitude();
 
         double[] deliveryCoords = naverApiService.getCoordinates(request.getDeliveryAddress());
         if (deliveryCoords == null || deliveryCoords.length < 2) {
@@ -118,6 +123,9 @@ public class DeliveryService {
 
         Delivery delivery = DeliveryRequestMapper.createDeliveryRequestDtoToEntity(request);
 
+        delivery.createdBy(userId);
+        finalRoute.createdBy(userId);
+
         delivery.addDeliveryRoute(allRoutes);
 
         Delivery savedDelivery = deliveryRepository.saveAndFlush(delivery);
@@ -130,7 +138,6 @@ public class DeliveryService {
     private void assignDeliveryDriver(UUID deliveryId, Long userId, String role) {
 
         userClient.assignDeliveryDriver(deliveryId, userId, role);
-
     }
 
     @Transactional(readOnly = true)
@@ -201,8 +208,9 @@ public class DeliveryService {
             orderClient.completeOrder(updatedDelivery.getOrderId(), userId, role);
         }
 
-        userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId(), userId, role);
-
+        userClient.updateDriverStatus(deliveryRoute.getDeliveryRouteId(), request, userId, role);
+        log.info(updatedDelivery.toString());
+        log.info(deliveryRoute.toString());
         return DeliveryResponseMapper.toStatusUpdateResponse(updatedDelivery, deliveryRoute);
     }
 

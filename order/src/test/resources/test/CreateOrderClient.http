@@ -1,19 +1,19 @@
 ### 1. 주문 생성
-POST http://localhost:8082/api/v1/orders
-Authorization: Bearer jwt_token_string
+POST http://localhost:8080/api/v1/orders
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI1MTI4LCJleHAiOjE3NDI5Mjg3Mjh9.IWPCXLdiKiqmxNqT-uC5r1KM6Wvaqgx2dwwcU60WySRBGxU7MoLib9lE9SAupj5t_j68vurereaAOMwEWf68hw
 Content-Type: application/json
 Accept: application/json
 
 {
-  "receiverId": "0d47686e-c73c-4d70-80ae-ef51ea4bfed3",
-  "deliveryAddress": "경남",
+  "receiverId": "48aa06d0-f865-4a49-acf6-64c13adb389c",
+  "deliveryAddress": "서울 종로구 명륜2가 41-4",
   "items": [
     {
-      "productId": "7d64ac7f-fd24-4335-8797-10b283a862bd",
+      "productId": "c663fe81-b364-4ea5-b53d-671413006952",
       "orderItemAmount": 2
     },
     {
-      "productId": "b7618a0e-7997-42d1-8332-60ce83501170",
+      "productId": "c663fe81-b364-4ea5-b53d-671413006952",
       "orderItemAmount": 1
     }
   ]

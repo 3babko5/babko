@@ -95,6 +95,7 @@ public class Delivery extends BaseDataEntity {
     this.recipientId = recipientId;
     this.recipientSlackId = recipientSlackId;
     this.deliveryStatus = deliveryStatus;
+
   }
 
   @Builder(builderMethodName = "deliveryCreateBuilder")
