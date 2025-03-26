@@ -1,5 +1,5 @@
 ### 1. 업체 생성
-POST http://localhost:8087/api/v1/companies
+POST http://localhost:8080/api/v1/companies
 Authorization: Bearer jwt_token_string
 Content-Type: application/json
 Accept: application/json
@@ -7,9 +7,9 @@ X-client-userId: 1
 X-client-role: ROLE_MASTER
 
 {
-  "companyName": "먹태깡 제조회사",
+  "companyName": "먹태깡 받는회사",
   "companyAddress": "서울",
-  "companyType": "RECEIVER",
-  "hubId": "11111111-0d12-45ab-bbd2-9f1baf001234",
+  "companyType": "SUPPLIER",
+  "hubId": "13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd",
   "companyManagerId": 1
 }

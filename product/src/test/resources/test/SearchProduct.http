@@ -1,19 +1,32 @@
 ### 1. 상품 전체 조회
-GET http://localhost:8081/api/v1/products
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/products
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTEwNzY2LCJleHAiOjE3NDI5MTQzNjZ9.5DZy8b-jYa5WKARB6a_8kpxXlzTkiPHvbyiy47MZd9XmyW-dq2F3iBZpXI6ITKye25_SAnMMkuWzr66pvnD8dw
+Content-Type: application/json
 Accept: application/json
+X-client-role: ROLE_MASTER
+X-client-userId: 5
+
+
 
 ### 2.1. 상품 단건 조회 - 상품 ID
-GET http://localhost:8081/api/v1/products?productId={productId}
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/products?productId=65840c32-c6ea-4668-80d0-adc5f17a4346
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlJPTEVfQ09NUEFOWSIsImlhdCI6MTc0Mjg3Mzk4MSwiZXhwIjoxNzQyODc3NTgxfQ.5Wc4xh75pgqr34GK6TE6Zj29rk_OCQlWiVx_MQ4smrRP8RrmedVa0-KVnIeL7azeKZDOKATZ8bSMfm68e7GecA
 Accept: application/json
+
+
+
 
 ### 2.2. 상품 단건 조회 - 회사 ID
-GET http://localhost:8081/api/v1/products?companyId={companyId}
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/products?companyId=f5844081-d854-438e-96dc-93e272dd9376
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlJPTEVfQ09NUEFOWSIsImlhdCI6MTc0Mjg3Mzk4MSwiZXhwIjoxNzQyODc3NTgxfQ.5Wc4xh75pgqr34GK6TE6Zj29rk_OCQlWiVx_MQ4smrRP8RrmedVa0-KVnIeL7azeKZDOKATZ8bSMfm68e7GecA
+Content-Type: application/json
 Accept: application/json
+X-client-role: ROLE_MASTER
+X-client-userId: 5
+
+
 
 ### 2.3. 상품 단건 조회 - 상품 이름
-GET http://localhost:8081/api/v1/products?productName=먹태깡
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/products?productName=먹태깡
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI0Iiwicm9sZSI6IlJPTEVfQ09NUEFOWSIsImlhdCI6MTc0Mjg3Mzk4MSwiZXhwIjoxNzQyODc3NTgxfQ.5Wc4xh75pgqr34GK6TE6Zj29rk_OCQlWiVx_MQ4smrRP8RrmedVa0-KVnIeL7azeKZDOKATZ8bSMfm68e7GecA
 Accept: application/json

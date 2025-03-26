@@ -1,11 +1,20 @@
 ### 1. 정상적인 허브 이동 정보 등록
 POST http://localhost:8086/api/v1/hub-movements
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI2MjU0LCJleHAiOjE3NDI5Mjk4NTR9.Fn59Dr59GvveyHWcTzzm37_HbfGcgbx0Mwj_5gHkc8jMlwaOZRS4J4km_-Hzvvx25xvmeGaJe5mFwRg9r3roRA
+Content-Type: application/json
+Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
 
 {
-  "departureHubId": "bc71a7fc-4f55-4cdb-8813-b4aedf99d909",
-  "arrivalHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e"
+  "departureHubId": "dc7cd20f-abb5-4f5c-9d7f-530d207ad5de",
+  "arrivalHubId": "13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd"
 }
+
+
+
+
 
 ### 2. 출발 허브가 존재하지 않는 경우
 POST http://localhost:8086/api/v1/hub-movements

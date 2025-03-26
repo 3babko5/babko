@@ -1,5 +1,5 @@
 ### 1. 업체 단건 삭제
-DELETE http://localhost:8087/api/v1/companies/{companyId}
+DELETE http://localhost:8087/api/v1/companies/f2bb064f-e2bd-49c9-a15a-29fc1c45d2e2
 Authorization: Bearer jwt_token_string
 Accept: application/json
 X-client-userId: 1

@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HubIdResponseDto {
 
-    private BigDecimal latitude;
-    private BigDecimal longitude;
+    private BigDecimal hubLatitude;
+    private BigDecimal hubLongitude;
 }

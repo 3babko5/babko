@@ -60,7 +60,7 @@ public class OrderController {
     }
 
     //주문 취소
-    @PatchMapping("/{orderId}/cancel")
+    @PutMapping("/{orderId}/cancel")
     @RoleCheck(roles = {"ROLE_COMPANY", "ROLE_MASTER"})
     public ResponseEntity<OrderStatusResponseDto> cancelOrder(
             @PathVariable UUID orderId,
@@ -71,7 +71,7 @@ public class OrderController {
     }
 
     //주문 완료
-    @PatchMapping("{orderId}/completed")
+    @PutMapping("{orderId}/completed")
     @RoleCheck(roles = {"ROLE_MASTER"})
     public void completeOrder(@PathVariable("orderId") UUID orderId) {
         orderService.completeOrder(orderId);

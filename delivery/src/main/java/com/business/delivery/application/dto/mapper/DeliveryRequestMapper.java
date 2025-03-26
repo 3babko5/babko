@@ -52,11 +52,15 @@ public class DeliveryRequestMapper {
 
     public static Pageable deliverySearchRequestDtoToPageable(SearchRequestDto requestDto) {
 
+        String orderBy = requestDto.getOrderBy();
+        if (!"CREATED".equalsIgnoreCase(orderBy) && !"UPDATED".equalsIgnoreCase(orderBy)) {
+            orderBy = "CREATED";
+        }
         return JpaUtil.getNormalPageable(
-            requestDto.getPage(),
-            requestDto.getSize(),
-            requestDto.getOrderBy(),
-            requestDto.getSort()
+                requestDto.getPage(),
+                requestDto.getSize(),
+                orderBy,
+                requestDto.getSort()
         );
     }
 }

@@ -18,6 +18,6 @@ public class AssignDeliveryDriverResponseDto {
   private DriverType driverType;
   private UUID hubId;
   private UUID deliveryRouteId;
-  private Long routeSequence;
+  private Long deliverySequence;
   private LocalDateTime assignAt;
 }

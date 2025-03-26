@@ -1,5 +1,5 @@
 ### 1. 주문 단건 조회 - 성공
-GET http://localhost:8082/api/v1/orders/fda1dc7e-b766-442c-9e34-12ec4f5d2168
+GET http://localhost:8082/api/v1/orders/e43c1088-42d3-432c-9098-8b5893dc467d
 Authorization: Bearer jwt_token_string
 Accept: application/json
 
@@ -16,4 +16,10 @@ Accept: application/json
 ###4. 주문 특정 조회 - 주문 상태
 GET http://localhost:8082/api/v1/orders?status=created
 Authorization: Bearer jwt_token_string
+Accept: application/json
+
+###5. 주문 전체 조회
+GET http://localhost:8080/api/v1/orders
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTEyNjA0LCJleHAiOjE3NDI5MTYyMDR9.sxsgYIpbPOOBouWHkzFOzOr51XvpJE310KGxhm3tBYJ0gEDWjKQVaG0injlasIjC_y7Vc5_Z8iCtbVocDgB9lA
+Content-Type: application/json
 Accept: application/json

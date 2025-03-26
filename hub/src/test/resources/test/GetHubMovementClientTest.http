@@ -1,54 +1,66 @@
 ### 1. 허브 이동 정보 단건 조회 (성공)
-GET http://localhost:8086/api/v1/hub-movements/14891151-0bfb-4fce-b384-81f9728932da
-Authorization: Bearer jwt_token_string
+GET http://localhost:8086/api/v1/hub-movements/ffc13d8c-be99-46ad-8ba2-4fd56b5b6058
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI2MjU0LCJleHAiOjE3NDI5Mjk4NTR9.Fn59Dr59GvveyHWcTzzm37_HbfGcgbx0Mwj_5gHkc8jMlwaOZRS4J4km_-Hzvvx25xvmeGaJe5mFwRg9r3roRA
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+
+
+
+
 
 ### 2️. 허브 이동 정보 단건 조회 (존재하지 않는 ID)
 GET http://localhost:8086/api/v1/hub-movements/d3b0b58d-5fc8-4c8e-987e-1e2b238af000
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 3️. 출발 허브 기준 이동 정보 조회 (성공)
 GET http://localhost:8086/api/v1/hub-movements/departure/13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 4️. 출발 허브 기준 이동 정보 조회 (존재하지 않는 허브 ID)
 GET http://localhost:8086/api/v1/hub-movements/departure/d3b0b58d-5fc8-4c8e-987e-1e2b238af000
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 5️. 도착 허브 기준 이동 정보 조회 (성공)
 GET http://localhost:8086/api/v1/hub-movements/arrival/13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 6️. 도착 허브 기준 이동 정보 조회 (존재하지 않는 허브 ID)
 GET http://localhost:8086/api/v1/hub-movements/arrival/d3b0b58d-5fc8-4c8e-987e-1e2b238af000
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 7. 특정 허브 간 이동 정보 조회 (성공)
-GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=8212d99c-c9a2-4e86-9f46-41627ed23760&arrivalHubId=7609a092-134a-428a-9cb6-bfa8a7db1d9e
-Authorization: Bearer jwt_token_string
+GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=dc7cd20f-abb5-4f5c-9d7f-530d207ad5de&arrivalHubId=13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI2MjU0LCJleHAiOjE3NDI5Mjk4NTR9.Fn59Dr59GvveyHWcTzzm37_HbfGcgbx0Mwj_5gHkc8jMlwaOZRS4J4km_-Hzvvx25xvmeGaJe5mFwRg9r3roRA
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
 
 ### 8. 특정 허브 간 이동 정보 조회 (출발 허브가 존재하지 않는 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=d3b0b58d-5fc8-4c8e-987e-1e2b238af000&arrivalHubId=5c434274-b54f-46d7-88a7-2f8178823358
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 9. 특정 허브 간 이동 정보 조회 (도착 허브가 존재하지 않는 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476&arrivalHubId=d3b0b58d-5fc8-4c8e-987e-1e2b238af000
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 10. 특정 허브 간 이동 정보 조회 (출발과 도착 허브가 같은 경우)
 GET http://localhost:8086/api/v1/hub-movements/path?departureHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476&arrivalHubId=2b7eea00-22ff-4f9f-92bc-5933f6fa8476
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json
 
 ### 11. delivery 에서 경로 요청
-GET http://localhost:8086/api/v1/hub-movements/routes?departureHubId=13a1ca90-5a81-4f2e-b426-5b2d05dd5cfd&arrivalHubId=9b40a62b-33c6-4e5d-8816-7cd9eb647159
-Authorization: Bearer jwt_token_string
+GET http://localhost:8086/api/v1/hub-movements/routes?departureHubId=9b40a62b-33c6-4e5d-8816-7cd9eb647159&arrivalHubId=7609a092-134a-428a-9cb6-bfa8a7db1d9e
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyODgyNjM3LCJleHAiOjE3NDI4ODYyMzd9.rkuk9sLegSt-i7Pmo8k58vPd5Ka6BQat7dDZSO6B-D7jPproHmw1KouZmrVwVSdYe7sn_qL50iUYC8ZpU31lQg
 Accept: application/json

@@ -1,0 +1,70 @@
+spring:
+  application:
+    name: gateway
+
+  cloud:
+    gateway:
+      routes:
+        - id: product-service
+          uri: lb://product-service
+          predicates:
+            - Path=/api/v1/products/**, /api/v1/inventories/**
+
+        - id: ai-service
+          uri: lb://ai-service
+          predicates:
+            - Path=/api/v1/ai/**
+
+        - id: company-service
+          uri: lb://company-service
+          predicates:
+            - Path=/api/v1/companys/**
+
+        - id: hub-service
+          uri: lb://hub-service
+          predicates:
+            - Path=/api/v1/hubs/**
+
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/v1/orders/**
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/v1/users/**, /api/v1/delivery-drivers/**
+
+        - id: slack-service
+          uri: lb://slack-service
+          predicates:
+            - Path=/api/v1/slack/**
+
+        - id: delivery-service
+          uri: lb://delivery-service
+          predicates:
+            - Path=/api/v1/deliveries/**
+
+        - id: common-service
+          uri: lb://common-service
+          predicates:
+            - Path=/api/v1/common/**
+
+        - id: auth-service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/v1/auth/**
+
+      discovery:
+        locator:
+          enabled: true
+
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka-server:8761/eureka/
+
+jwt:
+  secret: Y3ABAoKZRG+IuTqq5jYUBgPoDR3wKgfHS66yYoTM325liBDiQB1dvSLhTDTfZR77OAUovalSHqJJ+4FXAvu79w==
+

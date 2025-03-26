@@ -1,0 +1,51 @@
+spring:
+  application:
+    name: delivery-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/babko
+    username: postgres
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: true
+        use_sql_comments: true
+    hibernate:
+      ddl-auto: update
+
+
+server:
+  port: 8088
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}
+
+order:
+  service:
+    url: http://localhost:8082
+
+user:
+  service:
+    url: http://localhost:8084
+
+hub:
+  service:
+    url: http://localhost:8086
+
+naver:
+  api:
+    client-id: "gsvvhkp9nc"
+    client-secret: "tta5CdMXf29b4hz0Edsnav1gIb64pIwWODSCLpZx"
+    base-url: "https://naveropenapi.apigw.ntruss.com"
+    geocode-api: "/map-geocode/v2/geocode"
+    direction-api: "/map-direction/v1/driving"

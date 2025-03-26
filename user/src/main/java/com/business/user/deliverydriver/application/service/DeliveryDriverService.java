@@ -24,20 +24,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import com.business.user.deliverydriver.infrastructure.dto.response.DeliveryResponseWrapperDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Slf4j
 public class DeliveryDriverService {
 
     private final DeliveryDriverRepository deliveryDriverRepository;
     private final DeliveryClient deliveryClient;
 
+    @Transactional
     public DeliveryDriverResponseDto createDeliveryDriver(CreateDeliveryDriverRequestDto request, Long userId, String role) {
 
         if (userId == null) {
@@ -81,6 +85,18 @@ public class DeliveryDriverService {
         DeliveryDriver deliveryDriver =
             DeliveryDriverRequestMapper.createRequestToEntity(request, newSequence);
 
+        log.info(deliveryDriver.toString());
+        log.info("📦 deliveryDriver 저장 전 상태 - id: {}, hubId: {}, slackId: {}, driverType: {}, sequence: {}, status: {}",
+                deliveryDriver.getDeliveryDriverId(),
+                deliveryDriver.getHubId(),
+                deliveryDriver.getSlackId(),
+                deliveryDriver.getDriverType(),
+                deliveryDriver.getDeliverySequence(),
+                deliveryDriver.getDriverStatus()
+        );
+
+        deliveryDriver.createdBy(userId);
+
         deliveryDriverRepository.save(deliveryDriver);
 
         return DeliveryDriverResponseMapper.driverToDriverResponseDto(deliveryDriver);
@@ -92,7 +108,9 @@ public class DeliveryDriverService {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
         }
 
-        List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryId, userId, role);
+        List<DeliveryClientResponseDto> routes =
+                deliveryClient.getRoutesByDeliveryId(deliveryId, userId, role)
+                        .getDeliveryRoutes();
 
         List<AssignDeliveryDriverResponseDto> assignedDrivers = new ArrayList<>();
 
@@ -165,8 +183,6 @@ public class DeliveryDriverService {
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
         }
 
-
-
         Pageable pageable = DeliveryDriverRequestMapper.SearchRequestDtoToPageable(request);
 
         Page<DeliveryDriver> driverPage = deliveryDriverRepository.findDeliveryDrivers(request, pageable);
@@ -203,29 +219,67 @@ public class DeliveryDriverService {
 
     private List<DeliveryClientResponseDto> safeGetRoutesByDeliveryId(UUID deliveryRouteId, Long userId, String role) {
         try {
-            List<DeliveryClientResponseDto> routes = deliveryClient.getRoutesByDeliveryId(deliveryRouteId, userId, role);
+            DeliveryResponseWrapperDto response = deliveryClient.getRoutesByDeliveryId(deliveryRouteId, userId, role);
+            List<DeliveryClientResponseDto> routes = response.getDeliveryRoutes();
             return routes == null ? Collections.emptyList() : routes;
         } catch (Exception e) {
             throw new BusinessLogicException(DeliveryDriverErrorCode.EXTERNAL_DELIVERY_ROUTE_NOT_FOUND);
         }
     }
 
-    @Transactional
-    public DriverStatusUpdateResponseDto updateDriverStatus(UUID deliveryRouteId, StatusUpdateRequestDto request, Long userId, String role) {
+    private DriverStatus convertToDriverStatus(String deliveryRouteStatus) {
+        if (deliveryRouteStatus == null) return null;
+
+        return switch (deliveryRouteStatus) {
+            case "PENDING" -> DriverStatus.ASSIGNED;
+            case "ARRIVED_AT_HUB" -> DriverStatus.IN_TRANSIT_TO_HUB;
+            case "OUT_FOR_DELIVERY" -> DriverStatus.OUT_FOR_DELIVERY;
+            case "DELIVERED" -> DriverStatus.DELIVERED;
+            default -> null; // 또는 예외 던지기
+        };
+    }
+
+
+    public DriverStatusUpdateResponseDto updateDriverStatus(
+            UUID deliveryRouteId,
+            StatusUpdateRequestDto request,
+            Long userId,
+            String role
+    ) {
+
+        log.info("[updateDriverStatus] Called with deliveryRouteId={}, userId={}, role={}, request.driverStatus={}",
+                deliveryRouteId, userId, role, request != null ? request.getDeliveryRouteStatus() : "nullRequest");
 
         if (userId == null) {
+            log.error("[updateDriverStatus] userId is null ⇒ throwing INVALID_USER_ID");
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_USER_ID);
         }
 
         DeliveryDriver driver = deliveryDriverRepository.findByDeliveryRouteId(deliveryRouteId)
-            .orElseThrow(() -> new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND));
+                .orElseThrow(() -> {
+                    log.error("[updateDriverStatus] No DeliveryDriver found for deliveryRouteId={}", deliveryRouteId);
+                    return new BusinessLogicException(DeliveryDriverErrorCode.DELIVERY_DRIVER_NOT_FOUND);
+                });
 
-        DriverStatus driverStatus = request.getDriverStatus();
-        driver.updateStatus(driverStatus);
+        DriverStatus newStatus = convertToDriverStatus(request.getDeliveryRouteStatus());
+        log.info("[updateDriverStatus] Fetched driverStatus={} from request", newStatus);
+
+        log.info("[updateDriverStatus] Before updateStatus(): current DriverStatus={}, newStatus={}",
+                driver.getDriverStatus(), newStatus);
+
+
+
+        driver.updateStatus(newStatus);
 
         DeliveryDriver updatedDriver = deliveryDriverRepository.save(driver);
+        log.info("[updateDriverStatus] After save(): updatedDriverStatus={}", updatedDriver.getDriverStatus());
 
-        return DeliveryDriverResponseMapper.toStatusUpdateResponse(updatedDriver);
+        DriverStatusUpdateResponseDto response =
+                DeliveryDriverResponseMapper.toStatusUpdateResponse(updatedDriver);
+        log.info("[updateDriverStatus] Returning response with finalDriverStatus={}",
+                response.getDriverStatus());
+
+        return response;
     }
 
     @Transactional

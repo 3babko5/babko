@@ -142,7 +142,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public SearchOrderResponseDto searchOrders(SearchOrderRequestDto request, Pageable pageable, Long userId, String role)  {
         if ("ROLE_COMPANY".equals(role)) {
-            request.setUserId(userId); // 본인 주문만 검색
+            request.setUserId(userId);
         }
 
         Page<Order> orderPage = orderRepository.search(
@@ -167,7 +167,7 @@ public class OrderService {
         log.info("배송 상태 조회 요청 DTO 생성: {}", request);
 
         DeliveryListForOrderResponseDto<DeliveryStatusForOrderDto> response =
-                deliveryFeignClient.getDeliveries(request);
+                deliveryFeignClient.getDeliveries(request, userId, role);
         log.info("배송 서비스 응답 수신: {}", response);
 
         if (response.getData().isEmpty()) {
@@ -185,7 +185,7 @@ public class OrderService {
 
         // 배송 상태도 취소로 변경 요청
         try {
-            deliveryFeignClient.cancelDelivery(deliveryInfo.getDeliveryId());
+            deliveryFeignClient.cancelDelivery(deliveryInfo.getDeliveryId(), userId, role);
         } catch (FeignException e) {
             throw new BusinessLogicException(OrderExceptionCode.DELIVERY_STATUS_NOT_FOUND);
         }

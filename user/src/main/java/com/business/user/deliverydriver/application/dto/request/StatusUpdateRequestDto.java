@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class StatusUpdateRequestDto {
 
-    private DriverStatus driverStatus;
+    private String deliveryRouteStatus;
 }

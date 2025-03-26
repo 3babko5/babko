@@ -4,9 +4,12 @@ import com.business.common.application.exception.BusinessLogicException;
 import com.business.user.deliverydriver.application.exception.DeliveryDriverErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @RequiredArgsConstructor
+@Slf4j
 public enum DriverStatus {
 
     ASSIGNED(0, "배송 담당자 배정 완료"),
@@ -23,17 +26,22 @@ public enum DriverStatus {
     }
 
     public void validateTransition(DriverStatus newStatus) {
+        log.info("[DriverStatus#validateTransition] oldStatus={}, newStatus={}",
+                this, newStatus);
 
-        if (!newStatus.canTransitionFrom(this)) {
+        if (!this.canTransitionTo(newStatus)) {
+            log.error("[DriverStatus#validateTransition] oldStatus={} cannot transition to newStatus={}",
+                    this, newStatus);
             throw new BusinessLogicException(DeliveryDriverErrorCode.INVALID_DRIVER_STATUS_TRANSITION);
         }
     }
 
-    public boolean canTransitionFrom(DriverStatus currentStatus) {
+    public boolean canTransitionTo(DriverStatus newStatus) {
+        log.info("[DriverStatus#canTransitionTo] oldStatus={}, newStatus={}", this, newStatus);
 
-        if (this == CANCELED || this == DELIVERED) {
+        if (this == CANCELED  || this == DELIVERED) {
             return false;
         }
-        return this.step > currentStatus.step;
+        return newStatus.step > this.step;
     }
 }

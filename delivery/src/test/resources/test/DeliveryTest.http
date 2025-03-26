@@ -1,49 +1,106 @@
 ### 테스트 시나리오
 ### 1. 배송 생성 (주문 생성 이벤트 수신 → 배송 엔티티 생성)
 ### (허브 간 이동 정보 조회 -> 최종 목적지 위도/경도 조회 -> 배송 담당자 할당 API 호출)
-POST http://localhost:8086/api/v1/deliveries
-Authorization: Bearer jwt_token_string
+POST http://localhost:8080/api/v1/deliveries
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTE1MzcyLCJleHAiOjE3NDI5MTg5NzJ9.syYMGrodoSXxVVmT1LSbQ173ovbWgumYeNBQhL13bbyd3YUx60mPP1oVS8QfTfIpjmNYekBTi_u9E6u1_jn66g
 Content-Type: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
 
 {
-  "orderId": "a3f7b70a-1111-2222-3333-444444444444",
-  "startHubId": "f7a2e3d1-1111-2222-3333-444444444444",
-  "endHubId": "c9d4f1b0-1111-2222-3333-444444444444",
-  "deliveryAddress": "서울특별시 강남구 역삼동 123-45",
-  "recipientId": "b1a4c2e3-1111-2222-3333-444444444444"
+  "orderId": "19df786d-6ec1-4c54-b4f5-f46c055ef88e",
+  "startHubId": "9b40a62b-33c6-4e5d-8816-7cd9eb647159",
+  "endHubId": "7609a092-134a-428a-9cb6-bfa8a7db1d9e",
+  "deliveryAddress": "충북 청주시 서원구 1순환로 727 1층",
+  "recipientId": "48aa06d0-f865-4a49-acf6-64c13adb389c"
 }
+
 
 ### 2. 배송 상세 조회 (주문 정보 포함)
 
-GET http://localhost:8086/api/v1/deliveries/{deliveryId}
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/deliveries/b184b70a-6040-4fe7-8252-6879143de17f
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTA3Nzk4LCJleHAiOjE3NDI5MTEzOTh9.FkrivKFb0YmsBymmu223kFgfizxqy_lqu848Kqno7f_jo_9qGEzg4Jjao6jQLZCAtZz67GaZG6ZrgL4ZqnpEFg
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+
 
 ### 3. 배송 전체 조회 (필터링)
-
 ### Test Case 1: 기본값 사용 (쿼리 파라미터 없음)
-GET http://localhost:8086/api/v1/deliveries
-Authorization: Bearer jwt_token_string
+GET http://localhost:8080/api/v1/deliveries
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI1Njk5LCJleHAiOjE3NDI5MjkyOTl9.M6-U498RQJznaXRg0-RAmS5VhcQQccVswxUjQ6GhINpF3ZhQg4H0XHYYdfowR_VrOIyBjWURYcIYWvqQAexC_Q",
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+
+
+
+
 
 ### Test Case 2: 주문 ID와 배송 상태 필터링
-GET http://localhost:8086/api/v1/deliveries?orderId=a3f7b70a-1111-2222-3333-444444444444&deliveryStatus=IN_TRANSIT
-Authorization: Bearer jwt_token_string
+GET http://localhost:8088/api/v1/deliveries?orderId=a3f7b70a-1111-2222-3333-444444444444&deliveryStatus=IN_TRANSIT
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTA3Nzk4LCJleHAiOjE3NDI5MTEzOTh9.FkrivKFb0YmsBymmu223kFgfizxqy_lqu848Kqno7f_jo_9qGEzg4Jjao6jQLZCAtZz67GaZG6ZrgL4ZqnpEFg
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+
 
 ### Test Case 3: 시작/종료 허브 필터링
-GET http://localhost:8086/api/v1/deliveries?startHubId=f7a2e3d1-1111-2222-3333-444444444444&endHubId=c9d4f1b0-1111-2222-3333-444444444444
-Authorization: Bearer jwt_token_string
+GET http://localhost:8088/api/v1/deliveries?startHubId=f7a2e3d1-1111-2222-3333-444444444444&endHubId=c9d4f1b0-1111-2222-3333-444444444444
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTA3Nzk4LCJleHAiOjE3NDI5MTEzOTh9.FkrivKFb0YmsBymmu223kFgfizxqy_lqu848Kqno7f_jo_9qGEzg4Jjao6jQLZCAtZz67GaZG6ZrgL4ZqnpEFg
+Content-Type: application/json
 Accept: application/json
+X-client-role: ROLE_MASTER
+X-client-userId: 5
 
 ### Test Case 4: 모든 필터 조건 사용 (페이지, 사이즈, 정렬, 추가 필드)
-GET http://localhost:8086/api/v1/deliveries?page=2&size=20&orderBy=createdAt&sort=asc&orderId=a3f7b70a-1111-2222-3333-444444444444&startHubId=f7a2e3d1-1111-2222-3333-444444444444&endHubId=c9d4f1b0-1111-2222-3333-444444444444&originHubId=123e4567-e89b-12d3-a456-426614174000&destinationHubId=987e6543-e21b-12d3-a456-426614174111&deliveryStatus=DELIVERED&deliveryRouteStatus=COMPLETED
-Authorization: Bearer jwt_token_string
+GET http://localhost:8088/api/v1/deliveries?page=2&size=20&orderBy=createdAt&sort=asc&orderId=a3f7b70a-1111-2222-3333-444444444444&startHubId=f7a2e3d1-1111-2222-3333-444444444444&endHubId=c9d4f1b0-1111-2222-3333-444444444444&originHubId=123e4567-e89b-12d3-a456-426614174000&destinationHubId=987e6543-e21b-12d3-a456-426614174111&deliveryStatus=DELIVERED&deliveryRouteStatus=COMPLETED
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTA3Nzk4LCJleHAiOjE3NDI5MTEzOTh9.FkrivKFb0YmsBymmu223kFgfizxqy_lqu848Kqno7f_jo_9qGEzg4Jjao6jQLZCAtZz67GaZG6ZrgL4ZqnpEFg
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
 
 ### 4. 배송 삭제
-DELETE http://localhost:8086/api/v1/deliveries/e3b0c442-98fc-1c14-9afb-000000000001?deletedBy=1001
-Authorization: Bearer jwt_token_string
+DELETE http://localhost:8088/api/v1/deliveries/b184b70a-6040-4fe7-8252-6879143de17f
+Authorization: Bearer  eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTA3Nzk4LCJleHAiOjE3NDI5MTEzOTh9.FkrivKFb0YmsBymmu223kFgfizxqy_lqu848Kqno7f_jo_9qGEzg4Jjao6jQLZCAtZz67GaZG6ZrgL4ZqnpEFg
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
 
+
+### 5. 배송 상태 업데이트
+PUT http://localhost:8080/api/v1/deliveries/4d112587-4caf-4d52-b5b9-0bd853cbb239/status
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTIyNjA4LCJleHAiOjE3NDI5MjYyMDh9.ZwELUySwe67d_dMrnvwE99ejGuJoQew1mag_OLuDR4Y-du-yWyCuEESvN8xd6XxLZbICEN8badvq3YfZZ1j1yw
+Content-Type: application/json
+Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+{
+  "deliveryStatus": "DELIVERED",
+  "deliveryRouteStatus": "DELIVERED",
+  "driverStatus": "DELIVERED"
+}
+
+
+### 6. 배송 완료 -> 주문 완료
+PATCH http://localhost:8080/api/v1/deliveries/4d112587-4caf-4d52-b5b9-0bd853cbb239/status
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTE1MzcyLCJleHAiOjE3NDI5MTg5NzJ9.syYMGrodoSXxVVmT1LSbQ173ovbWgumYeNBQhL13bbyd3YUx60mPP1oVS8QfTfIpjmNYekBTi_u9E6u1_jn66g
+Content-Type: application/json
+Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+{
+  "deliveryStatus": "OUT_FOR_DELIVERY",
+  "deliveryRouteStatus": "ARRIVED_AT_HUB"
+}
 

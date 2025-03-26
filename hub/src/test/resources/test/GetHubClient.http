@@ -1,7 +1,16 @@
 ### 1. 허브 단건 조회 (성공)
 GET http://localhost:8086/api/v1/hubs/a00ed850-d139-4eda-9294-f95c309dafc4
-Authorization: Bearer jwt_token_string
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI1Iiwicm9sZSI6IlJPTEVfTUFTVEVSIiwiaWF0IjoxNzQyOTI2MjU0LCJleHAiOjE3NDI5Mjk4NTR9.Fn59Dr59GvveyHWcTzzm37_HbfGcgbx0Mwj_5gHkc8jMlwaOZRS4J4km_-Hzvvx25xvmeGaJe5mFwRg9r3roRA
+Content-Type: application/json
 Accept: application/json
+X-client-userId: 5
+X-client-role: ROLE_MASTER
+
+
+
+
+
+
 
 
 ### 2. 허브 단건 조회 - 없는 허브 요청

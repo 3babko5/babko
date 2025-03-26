@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "hub-service", url = "${hub.service.url}")
+@FeignClient(name = "hub-service")
 public interface HubClient {
 
   @GetMapping("/api/v1/hub-movements/routes")

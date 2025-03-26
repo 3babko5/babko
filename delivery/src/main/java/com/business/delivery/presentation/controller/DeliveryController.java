@@ -17,16 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -69,19 +60,20 @@ public class DeliveryController {
     }
 
     @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
-    @PatchMapping("/{deliveryId}/status")
+    @PutMapping("/{deliveryId}/status")
     public ResponseEntity<DeliveryStatusUpdateResponseDto> updateDeliveryStatus(
         @PathVariable("deliveryId") UUID deliveryId,
         @Valid @RequestBody StatusUpdateRequestDto request,
         @RequestHeader("X-client-userId") Long userId,
-        @RequestHeader("X-client-role") String role
-    ) {
-        DeliveryStatusUpdateResponseDto response = deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
+        @RequestHeader("X-client-role") String role) {
+
+        DeliveryStatusUpdateResponseDto response =
+            deliveryService.updateDeliveryStatus(deliveryId, request, userId, role);
         return ResponseEntity.ok(response);
     }
 
     @RoleCheck(roles = {"ROLE_MASTER", "ROLE_HUB", "ROLE_DELIVERY"})
-    @PatchMapping("/{deliveryId}/cancel")
+    @PutMapping("/{deliveryId}/cancel")
     public ResponseEntity<Void> cancelDelivery(
         @PathVariable("deliveryId") UUID deliveryId,
         @RequestHeader("X-client-userId") Long userId,
